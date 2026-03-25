@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auditor Verification Email - Kindora</title>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8f9fc;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 850px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        text-align: center;
+      }
+      .header {
+        margin-bottom: 20px;
+      }
+      .header img {
+        max-width: 150px;
+        height: auto;
+      }
+      h1 {
+        font-size: 24px;
+        color: #333;
+      }
+      p {
+        color: #5d5d5d;
+        font-size: 14px;
+        line-height: 140%;
+        font-weight: 500;
+        font-style: normal;
+        margin: 10px 0;
+      }
+      c {
+        color: #5d5d5d;
+        font-size: 12px;
+        line-height: 140%;
+        font-weight: 500;
+        font-style: normal;
+        margin: 10px 0;
+      }
+      footer {
+        text-align: center;
+        color: grey;
+        font-size: 10px;
+        line-height: 1.5;
+        margin: 10px 0;
+        padding-bottom: 10px;
+        font-weight: 500;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 20px 0;
+        background-color: #5764f2;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 4px;
+      }
+      .footer {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #888;
+      }
+      .footer a {
+        color: #5764f2;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      {{#if logoUrl}}
+      <div class="header">
+        <img src="{{logoUrl}}" alt="Kindora" />
+      </div>
+      {{/if}}
+
+      <h1>You are invited to review as an Auditor By {{invited_by}}</h1>
+      <p>
+        Congratulations! You have been selected to participate as an auditor. To
+        confirm your participation and begin the review process,
+      </p>
+      <p>please click the link below:</p>
+
+      <a href="{{token}}" class="button">Confirm Participation</a>
+      <p>
+        If you did not expect this invitation or believe it was sent to you in error, you can safely ignore this email.<br />
+        For security reasons, this link will expire in 24 hours.
+      </p>
+
+      <p>Thank you,<br />The Kindora team</p>
+      <p>
+        Our team is always ready to support. If you need support,
+        <a href="{{supportUrl}}" style="color: #5764f2; text-decoration: none"
+          >Contact us!</a
+        >
+      </p>
+
+      <div class="footer">
+        <c>Copyright &copy; 2025 Kindora.</c><br />
+        <footer>Kindora connects volunteers with opportunities to make a difference in their community.</footer>
+      </div>
+    </div>
+  </body>
+</html>

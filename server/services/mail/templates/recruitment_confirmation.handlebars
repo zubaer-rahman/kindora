@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recruitment Confirmation - Kindora</title>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8f9fc;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 850px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        text-align: center;
+      }
+      .header {
+        margin-bottom: 20px;
+      }
+      .header img {
+        max-width: 150px;
+        height: auto;
+      }
+      h1 {
+        font-size: 24px;
+        color: #333;
+      }
+      p {
+        color: #5d5d5d;
+        font-size: 14px;
+        line-height: 140%;
+        font-weight: 500;
+        font-style: normal;
+        margin: 10px 0;
+      }
+      c {
+        color: #5d5d5d;
+        font-size: 12px;
+        line-height: 140%;
+        font-weight: 500;
+        font-style: normal;
+        margin: 10px 0;
+      }
+      footer {
+        text-align: center;
+        color: grey;
+        font-size: 10px;
+        line-height: 1.5;
+        margin: 10px 0;
+        padding-bottom: 10px;
+        font-weight: 500;
+      }
+      .footer {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #888;
+      }
+      .footer a {
+        color: #5764f2;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      {{#if logoUrl}}
+      <div class="header">
+        <img src="{{logoUrl}}" alt="Kindora" />
+      </div>
+      {{/if}}
+
+      <h1>Congratulations {{userName}}!</h1>
+      <p>
+        Great news! You have been recruited for the "{{opportunity}}" opportunity at {{organization}}.
+      </p>
+
+      <p>
+        This is an exciting opportunity to make a difference and contribute your skills. The organisation will be in touch with you shortly with more details about your role and next steps.
+      </p>
+
+      <p>
+        If you have any questions or need to discuss your availability, please don't hesitate to reach out to the organisation directly.
+      </p>
+
+      <p>Best of luck with your new role!<br />The Kindora Team</p>
+
+      <p>
+        Need help? Our team is always ready to support you.
+        <a href="{{supportUrl}}" style="color: #5764f2; text-decoration: none"
+          >Contact us!</a
+        >
+      </p>
+
+      <div class="footer">
+        <c>Copyright &copy; 2025 Kindora.</c><br />
+        <footer>Kindora connects volunteers with opportunities to make a difference in their community.</footer>
+      </div>
+    </div>
+  </body>
+</html>

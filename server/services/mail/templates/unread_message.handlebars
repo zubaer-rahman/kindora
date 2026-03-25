@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You have unread messages - Kindora</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header img {
+            max-width: 150px;
+            height: auto;
+        }
+        .title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .message-count {
+            background-color: #246BFD;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .message-list {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .message-item {
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 0;
+        }
+        .message-item:last-child {
+            border-bottom: none;
+        }
+        .sender-name {
+            font-weight: bold;
+            color: #246BFD;
+            margin-bottom: 5px;
+        }
+        .message-preview {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .message-time {
+            font-size: 12px;
+            color: #999;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #246BFD;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .cta-button:hover {
+            background-color: #1e5bb8;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            {{#if logoUrl}}
+            <img src="{{logoUrl}}" alt="Kindora" />
+            {{/if}}
+            <h1 class="title">You have unread messages</h1>
+            <div class="message-count">
+                {{unreadCount}} unread message{{#if multiple}}s{{/if}}
+            </div>
+        </div>
+
+        <p>Hi {{userName}},</p>
+
+        <p>You have {{unreadCount}} unread message{{#if multiple}}s{{/if}} waiting for you:</p>
+
+        <div class="message-list">
+            {{#each messages}}
+            <div class="message-item">
+                <div class="sender-name">
+                    {{senderName}}
+                    {{#if isGroup}}
+                        <span style="color: #666; font-size: 12px;">({{groupName}})</span>
+                    {{/if}}
+                </div>
+                <div class="message-preview">{{messagePreview}}</div>
+                <div class="message-time">{{timeAgo}}</div>
+            </div>
+            {{/each}}
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{loginUrl}}" class="cta-button">View Messages</a>
+        </div>
+
+        <div class="footer">
+            <p>This notification was sent because you have unread messages and appear to be offline.</p>
+            <p>If you're already online, you can ignore this email.</p>
+            <p>&copy; 2025 Kindora. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
