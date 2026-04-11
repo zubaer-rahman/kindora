@@ -1,0 +1,16 @@
+export { default as HeroSectionNew } from "./HeroSectionNew";
+export { default as PartnersSection } from "./PartnersSection";
+export { default as PopularSearchSection } from "./PopularSearchSection";
+export { default as LatestOpportunitiesSection } from "./LatestOpportunitiesSection";
+export { default as CommunitySection } from "./CommunitySection";
+export { default as ProgramBenefitsSection } from "./ProgramBenefitsSection";
+export { default as ReviewsSection } from "./ReviewsSection";
+export { default as BlogSection } from "./BlogSection";
+export { default as RegistrationBannerNew } from "./RegistrationBannerNew";
+export { default as ShowcaseVideoSection } from "./ShowcaseVideoSection";
+export { default as Hero } from "./Hero";
+export { default as Benefits } from "./Benefits";
+export { default as VideoTestimonial } from "./VideoTestimonial";
+export { default as VolunteerCategories } from "./VolunteerCategories";
+export { default as Volunteer } from "./Volunteer";
+export { default as NewFooter } from "./NewFooter";
