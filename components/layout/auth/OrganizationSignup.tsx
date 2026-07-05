@@ -134,22 +134,24 @@ export default function OrganizationSignup() {
             setTermsError={setTermsError}
           />
 
-          <div className="container mx-auto px-4">
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                disabled={isSignupLoading}
-                className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
-              >
-                {isSignupLoading ? (
-                  <div className="flex items-center">
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Creating account...
-                  </div>
-                ) : (
-                  "Create Organisation Account"
-                )}
-              </Button>
+          <div className="fixed bottom-0 left-0 right-0 bg-gray-50 py-4 px-6 border-t border-gray-200">
+            <div className="container mx-auto px-4">
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={isSignupLoading}
+                  className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                >
+                  {isSignupLoading ? (
+                    <div className="flex items-center">
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Creating account...
+                    </div>
+                  ) : (
+                    "Create Account"
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </form>
