@@ -1,5 +1,5 @@
-import { MENTOR_INVITATION_TEMPLATE } from "@/server/services/mail/constants";
-import sendEmail from "@/server/services/mail/sendMail";
+const VERIFY_EMAIL_TEMPLATE = ""; const MENTOR_INVITATION_TEMPLATE = ""; const RECRUITMENT_CONFIRMATION_TEMPLATE = ""; const APPLICATION_CONFIRMATION_TEMPLATE = "";
+const sendEmail = async () => { console.warn("sendEmail mocked during migration"); };
 import OrganizationProfile from "@/server/db/models/organization-profile";
 
 export const sendMentorInvitationMail = async (
