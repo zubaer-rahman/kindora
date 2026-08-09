@@ -1,44 +1,51 @@
-import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import connectDB from './config/mongoose'; // Adjust path if necessary
-import { initializeCronJobs } from './services/init-cron'; // Keep the cron initialization
+import express, { Request, Response } from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+// Load .env from repo root (works both locally and in CI)
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
+
+import connectDB from "./config/mongoose";
+import { initializeCronJobs } from "./services/init-cron";
+import apiRouter from "./routes";
+import { globalErrorHandler, notFoundHandler } from "./middleware/error";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') || '*' }));
-app.use(express.json());
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") ?? [
+  "http://localhost:3000",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin))
+        return callback(null, true);
+      callback(new Error(`CORS blocked: ${origin}`));
+    },
+    credentials: true,
+  }),
+);
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Database Connection
 connectDB().catch(console.error);
 
-// Initialize cron jobs
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
   initializeCronJobs();
 }
 
-// Healthcheck Route
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'ok', message: 'Express server is running' });
+app.get("/health", (_req: Request, res: Response) => {
+  res.json({ status: "ok", env: process.env.NODE_ENV, port: PORT });
 });
 
-// TODO: Define API Routes here
-// app.use('/api/v1/auth', authRouter);
+app.use("/api/v1", apiRouter);
 
-// Global Error Handler
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal Server Error',
-  });
-});
+app.use(notFoundHandler);
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
-  console.log(`🚀 API Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Kindora API running → http://localhost:${PORT}/api/v1`);
 });

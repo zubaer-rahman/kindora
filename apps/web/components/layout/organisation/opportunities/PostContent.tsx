@@ -1,9 +1,7 @@
+import React from "react";
 // import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 // import { Edit, Share } from "lucide-react";
-import Underline from "@tiptap/extension-underline";
 import { IOpportunity } from "@/server/db/interfaces/opportunity";
 import { MapPin } from "lucide-react";
 import { formatTimeToAMPM } from "@/utils/helpers/formatTime";
@@ -13,31 +11,6 @@ interface PostContentProps {
 }
 
 export function PostContent({ opportunity }: PostContentProps) {
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        bulletList: {
-          keepMarks: true,
-          keepAttributes: false,
-          HTMLAttributes: {
-            class: "list-disc pl-5 space-y-1.5",
-          },
-        },
-        orderedList: {
-          keepMarks: true,
-          keepAttributes: false,
-          HTMLAttributes: {
-            class: "list-decimal pl-5 space-y-1.5",
-          },
-        },
-      }),
-      Underline,
-    ],
-    content: opportunity.description,
-    editable: false,
-    immediatelyRender: false,
-  });
-
   return (
     <div className="flex-1 space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
@@ -114,9 +87,10 @@ export function PostContent({ opportunity }: PostContentProps) {
 
       <div>
         <h2 className="text-base sm:text-lg font-medium mb-3 sm:mb-4">{opportunity.title}</h2>
-        <div className="prose prose-sm sm:prose max-w-none">
-          <EditorContent editor={editor} />
-        </div>
+        <div 
+          className="prose prose-sm sm:prose max-w-none"
+          dangerouslySetInnerHTML={{ __html: opportunity.description || "" }}
+        />
       </div>
 
       <Separator />

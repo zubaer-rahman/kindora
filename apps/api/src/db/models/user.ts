@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 import { AuthProvider, IUser, UserRole } from "../interfaces/user";
 
 const UserSchema: Schema = new Schema<IUser>(
@@ -50,6 +50,6 @@ const UserSchema: Schema = new Schema<IUser>(
   { timestamps: true }
 );
 
-const User = mongoose.models.user || mongoose.model<IUser>("user", UserSchema);
+const User: Model<IUser> = (mongoose.models.user as Model<IUser>) || mongoose.model<IUser>("user", UserSchema);
 
 export default User;

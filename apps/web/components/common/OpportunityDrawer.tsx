@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { MapPin, Calendar, Users, Target, ExternalLink, Mail, Phone, Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,14 +10,10 @@ import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { formatTimeToAMPM } from "@/utils/helpers/formatTime";
 import { formatDistanceToNow } from "date-fns";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
 import { ApplyButton } from "@/components/buttons/ApplyButton";
 import { PostSidebar } from "@/components/layout/shared/PostSidebar";
 import { useFavorite } from "@/hooks/useFavorite";
 import { IoArrowBackOutline } from "react-icons/io5";
-
 
 interface OpportunityDrawerProps {
   opportunityId: string | null;
@@ -46,39 +42,6 @@ export default function OpportunityDrawer({
   } = trpc.opportunities.getOpportunity.useQuery(opportunityId || "", {
     enabled: !!opportunityId && isOpen,
   });
-
-  // Editor for description
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        bulletList: {
-          keepMarks: true,
-          keepAttributes: false,
-          HTMLAttributes: {
-            class: "list-disc pl-5 space-y-1",
-          },
-        },
-        orderedList: {
-          keepMarks: true,
-          keepAttributes: false,
-          HTMLAttributes: {
-            class: "list-decimal pl-5 space-y-1",
-          },
-        },
-      }),
-      Underline,
-    ],
-    content: opportunity?.description || "",
-    editable: false,
-    immediatelyRender: false,
-  });
-
-  // Update editor content when opportunity changes
-  useEffect(() => {
-    if (opportunity?.description && editor) {
-      editor.commands.setContent(opportunity.description);
-    }
-  }, [opportunity?.description, editor]);
 
   // Close drawer on escape key
   useEffect(() => {
@@ -215,9 +178,10 @@ export default function OpportunityDrawer({
                   {/* Description - Compact */}
                   <div className="space-y-2">
                     <p className="text-xs font-medium text-gray-500">Description</p>
-                    <div className="prose prose-sm max-w-none text-gray-700 text-sm leading-relaxed">
-                      <EditorContent editor={editor} />
-                    </div>
+                    <div 
+                      className="prose prose-sm max-w-none text-gray-700 text-sm leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: opportunity.description || "" }}
+                    />
                   </div>
                   {/* Categories and Skills - Compact */}
                   {(opportunity.category?.length > 0 || opportunity.required_skills?.length > 0) && (

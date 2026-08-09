@@ -20,38 +20,40 @@ export function TiptapEditor<T extends FieldValues>({
   field,
   placeholder,
 }: TiptapEditorProps<T>) {
+  const extensions = React.useMemo(() => [
+    StarterKit.configure({
+      bulletList: {
+        keepMarks: true,
+        keepAttributes: false,
+        HTMLAttributes: { class: "list-disc pl-4" },
+      },
+      orderedList: {
+        keepMarks: true,
+        keepAttributes: false,
+        HTMLAttributes: { class: "list-decimal pl-4" },
+      },
+      heading: {
+        levels: [1, 2, 3],
+        HTMLAttributes: { class: "font-bold" },
+      },
+    }),
+    Underline,
+    TextAlign.configure({ types: ["heading", "paragraph"] }),
+    TextStyle,
+    FontSize,
+    Color,
+    Link.configure({
+      openOnClick: false,
+      HTMLAttributes: { class: "text-blue-600 underline cursor-pointer" },
+    }),
+    Image.configure({
+      allowBase64: true,
+      HTMLAttributes: { class: "max-w-full rounded" },
+    }),
+  ], []);
+
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        bulletList: {
-          keepMarks: true,
-          keepAttributes: false,
-          HTMLAttributes: { class: "list-disc pl-4" },
-        },
-        orderedList: {
-          keepMarks: true,
-          keepAttributes: false,
-          HTMLAttributes: { class: "list-decimal pl-4" },
-        },
-        heading: {
-          levels: [1, 2, 3],
-          HTMLAttributes: { class: "font-bold" },
-        },
-      }),
-      Underline,
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
-      TextStyle,
-      FontSize,
-      Color,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: { class: "text-blue-600 underline cursor-pointer" },
-      }),
-      Image.configure({
-        allowBase64: true,
-        HTMLAttributes: { class: "max-w-full rounded" },
-      }),
-    ],
+    extensions,
     content: field.value || "",
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();

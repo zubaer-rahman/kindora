@@ -2,15 +2,12 @@
 import { ApplyButton } from "@/components/buttons/ApplyButton";
 import { FavoriteButton } from "@/components/buttons/FavoriteButton";
 import { useSession } from "next-auth/react";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
 import { formatTimeToAMPM } from "@/utils/helpers/formatTime";
 import { MapPin, Users, Calendar, Clock, ExternalLink, Target, Mail, Phone } from "lucide-react";
 import { trpc } from "@/utils/trpc";
 import { toast } from "react-hot-toast";
 import ConfirmationDialog from "@/components/modals/ConfirmationDialog";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 type Opportunity = {
   _id: string;
@@ -59,31 +56,6 @@ export function PostContent({ opportunity, }: PostContentProps) {
   const { data: session } = useSession();
   const isOrganisation = session?.user?.role === "admin";
   const isCreator = session?.user?.id === opportunity.created_by?._id;
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        bulletList: {
-          keepMarks: true,
-          keepAttributes: false,
-          HTMLAttributes: {
-            class: "list-disc pl-5 space-y-1.5",
-          },
-        },
-        orderedList: {
-          keepMarks: true,
-          keepAttributes: false,
-          HTMLAttributes: {
-            class: "list-decimal pl-5 space-y-1.5",
-          },
-        },
-      }),
-      Underline,
-    ],
-    content: opportunity.description,
-    editable: false,
-    immediatelyRender: false,
-  });
 
   const opportunityDetails = {
     id: opportunity._id,
@@ -323,9 +295,10 @@ export function PostContent({ opportunity, }: PostContentProps) {
       )}
 
       {/* Description */}
-      <div className="prose prose-sm max-w-none text-gray-700">
-        <EditorContent editor={editor} />
-      </div>
+      <div 
+        className="prose prose-sm max-w-none text-gray-700"
+        dangerouslySetInnerHTML={{ __html: opportunity.description || "" }}
+      />
 
       {/* Action Buttons */}
       {!isOrganisation && !isCreator && (
