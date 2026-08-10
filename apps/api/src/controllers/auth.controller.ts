@@ -1,18 +1,19 @@
-import { Response } from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { z } from 'zod';
-import User from '../db/models/user';
-import { UserRole, AuthProvider, IUser } from '../db/interfaces/user';
-import { catchAsync, sendResponse } from '../lib/utils';
-import { AuthRequest } from '../middleware/auth';
+import { Response } from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { z } from "zod";
+import User from "../db/models/user";
+import { UserRole, AuthProvider, IUser } from "../db/interfaces/user";
+import { catchAsync, sendResponse } from "../lib/utils";
+import { AuthRequest } from "../middleware/auth";
 
 const secret = () => process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET!;
 
-const generateToken = (payload: { id: string; email: string; role: UserRole }, expiresIn = '7d') =>
-  jwt.sign(payload, secret(), { expiresIn } as jwt.SignOptions);
+const generateToken = (
+  payload: { id: string; email: string; role: UserRole },
+  expiresIn = "7d",
+) => jwt.sign(payload, secret(), { expiresIn } as jwt.SignOptions);
 
-// Validation Schemas
 const signupSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
@@ -25,15 +26,14 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
-/**
- * POST /api/v1/auth/register
- */
 export const register = catchAsync(async (req, res: Response) => {
   const body = signupSchema.parse(req.body);
 
   const existingUser = await User.findOne({ email: body.email });
   if (existingUser) {
-    res.status(409).json({ success: false, message: 'Email already registered.' });
+    res
+      .status(409)
+      .json({ success: false, message: "Email already registered." });
     return;
   }
 
@@ -47,47 +47,74 @@ export const register = catchAsync(async (req, res: Response) => {
     is_verified: false,
   });
 
-  const token = generateToken({ id: user._id.toString(), email: user.email, role: user.role });
+  const token = generateToken({
+    id: user._id.toString(),
+    email: user.email,
+    role: user.role,
+  });
 
-  sendResponse(res, 201, {
-    token,
-    user: { id: user._id, name: user.name, email: user.email, role: user.role },
-  }, 'Account created successfully.');
+  sendResponse(
+    res,
+    201,
+    {
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    },
+    "Account created successfully.",
+  );
 });
 
-/**
- * POST /api/v1/auth/login
- */
 export const login = catchAsync(async (req, res: Response) => {
   const body = loginSchema.parse(req.body);
 
-  const user = await User.findOne({ email: body.email }).select('+password');
+  const user = await User.findOne({ email: body.email }).select("+password");
   if (!user || !user.password) {
-    res.status(401).json({ success: false, message: 'Invalid email or password.' });
+    res
+      .status(401)
+      .json({ success: false, message: "Invalid email or password." });
     return;
   }
 
   const isMatch = await bcrypt.compare(body.password, user.password);
   if (!isMatch) {
-    res.status(401).json({ success: false, message: 'Invalid email or password.' });
+    res
+      .status(401)
+      .json({ success: false, message: "Invalid email or password." });
     return;
   }
 
-  const token = generateToken({ id: user._id.toString(), email: user.email, role: user.role });
+  const token = generateToken({
+    id: user._id.toString(),
+    email: user.email,
+    role: user.role,
+  });
 
-  sendResponse(res, 200, {
-    token,
-    user: { id: user._id, name: user.name, email: user.email, role: user.role, image: user.image },
-  }, 'Login successful.');
+  sendResponse(
+    res,
+    200,
+    {
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        image: user.image,
+      },
+    },
+    "Login successful.",
+  );
 });
 
-/**
- * GET /api/v1/auth/me
- */
 export const getMe = catchAsync(async (req: AuthRequest, res: Response) => {
-  const user = await User.findById(req.user!.id).select('-password');
+  const user = await User.findById(req.user!.id).select("-password");
   if (!user) {
-    res.status(404).json({ success: false, message: 'User not found.' });
+    res.status(404).json({ success: false, message: "User not found." });
     return;
   }
   sendResponse(res, 200, user);
