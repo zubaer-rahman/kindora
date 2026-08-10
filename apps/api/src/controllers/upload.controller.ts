@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { uploadFileSchema } from '../validators/upload.validator.js';
 import { AppError } from '../lib/errors.js';
 import { uploadFile as uploadFileService } from '../services/upload.service.js';
-import { catchAsync, sendResponse, sendError } from '../lib/utils.js';
+import { catchAsync, sendResponse, sendError } from '../lib/http.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 function handleServiceError(err: unknown, res: Response) {

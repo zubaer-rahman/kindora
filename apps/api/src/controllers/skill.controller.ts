@@ -13,7 +13,7 @@ import {
   initializePredefined as initializePredefinedService,
   getForMultiSelect as getForMultiSelectService,
 } from '../services/skill.service.js';
-import { catchAsync, sendResponse, sendError } from '../lib/utils.js';
+import { catchAsync, sendResponse, sendError } from '../lib/http.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 function handleServiceError(err: unknown, res: Response) {

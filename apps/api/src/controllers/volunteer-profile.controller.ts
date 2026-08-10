@@ -16,7 +16,7 @@ import {
   getFavoriteOpportunitiesWithPagination as getFavoriteOpportunitiesWithPaginationService,
   getFavoriteOpportunitiesCount as getFavoriteOpportunitiesCountService,
 } from '../services/volunteer-profile.service.js';
-import { catchAsync, sendResponse, sendError } from '../lib/utils.js';
+import { catchAsync, sendResponse, sendError } from '../lib/http.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 function handleServiceError(err: unknown, res: Response) {

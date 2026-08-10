@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.js';
-import { messagePubSub } from '../services/message-pubsub.js';
+import { messagePubSub } from '../services/message-pubsub.service.js';
 
 const SSE_HEADERS = {
   'Content-Type': 'text/event-stream',

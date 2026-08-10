@@ -11,7 +11,7 @@ import {
   getMentorProfile as getMentorProfileService,
   updateMentorProfile as updateMentorProfileService,
 } from '../services/mentor-profile.service.js';
-import { catchAsync, sendResponse, sendError } from '../lib/utils.js';
+import { catchAsync, sendResponse, sendError } from '../lib/http.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 function handleServiceError(err: unknown, res: Response) {
