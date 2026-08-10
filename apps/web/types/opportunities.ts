@@ -1,5 +1,5 @@
 import { opportunityValidation } from "@/server/validators/opportunity.validator";
-import { userValidation } from "@/server/validators/user.validator";
+import { organizationProfileSchema } from "@/server/validators/user.validator";
 import { z } from "zod";
 
 export type CreateOpportunityInput = z.infer<
@@ -23,7 +23,8 @@ export type Opportunity = CreateOpportunityInput & {
     end_time?: string;
   };
   organization_profile: z.infer<
-    typeof userValidation.organizationProfileSchema
+    typeof organizationProfileSchema
+
   > & {
     _id: string;
   };

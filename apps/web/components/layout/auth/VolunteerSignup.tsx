@@ -3,23 +3,24 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { SignupStep } from "@/components/layout/auth/SignupStep";
 import { VolunteerSignupForm, volunteerSignupSchema } from "@/types/auth";
 import { useSearchParams, useRouter } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import toast from "react-hot-toast";
 import { Form } from "@/components/ui/form";
-import { UserRole } from "@/server/db/interfaces/user";
+
 import { Loader2 } from "lucide-react";
 
 export default function VolunteerSignup() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const utils = trpc.useUtils();
-  const { data: session } = useSession();
-  const { isLoading, isAuthenticated, updateSession } = useAuthCheck();
+  const queryClient = useQueryClient();
+  const axiosAuth = useAxiosAuth();
+  const { isLoading, isAuthenticated, session, updateSession } = useAuthCheck();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,16 +30,25 @@ export default function VolunteerSignup() {
   const [isProfileSetupComplete, setIsProfileSetupComplete] = useState(false);
   const redirectAfterProfileRef = useRef<"profile" | "dashboard">("dashboard");
 
-  const updateUser = trpc.users.updateUser.useMutation();
-  const setupVolunteerProfile = trpc.users.setupVolunteerProfile.useMutation({
+  const updateUser = useMutation({
+    mutationFn: async (payload: { volunteer_profile: string }) => {
+      const res = await axiosAuth.patch("/api/v1/users/me", payload);
+      return res.data;
+    },
+  });
+
+  const setupVolunteerProfile = useMutation({
+    mutationFn: async (payload: any) => {
+      const res = await axiosAuth.post("/api/v1/users/me/volunteer-profile", payload);
+      return res.data.data;
+    },
     onSuccess: async (data) => {
       try {
         await updateUser.mutateAsync({
           volunteer_profile: data._id,
         });
 
-        await utils.users.profileCheckup.invalidate();
-        await utils.users.profileCheckup.refetch();
+        await queryClient.invalidateQueries({ queryKey: ["profileCheckup"] });
 
         // Update session to avoid stale data
         if (typeof updateSession === 'function') {
@@ -63,8 +73,8 @@ export default function VolunteerSignup() {
         setIsSignupLoading(false);
       }
     },
-    onError: (error) => {
-      setError(error.message || "Failed to create account");
+    onError: (error: any) => {
+      setError(error?.response?.data?.message || error.message || "Failed to create account");
       setIsSignupLoading(false);
     },
   });
@@ -173,19 +183,15 @@ export default function VolunteerSignup() {
 
       const referral = searchParams?.get("referral");
 
-      // Check if email is already taken
-      const emailCheck = await utils.auth.checkEmail.fetch({ email: data.email });
-      if (emailCheck.exists) {
-        toast.error("This email is already registered. Please use a different email or log in.");
-        setIsSignupLoading(false);
-        return;
-      }
+      // We don't check email here directly via tRPC anymore since the API login handles it,
+      // but if we really want to, we should create a REST endpoint for it.
+      // For now, let's just proceed to signup which will fail if email is taken.
 
       const signInResult = await signIn("credentials", {
         email: data.email,
         password: data.password,
         name: data.name,
-        role: UserRole.VOLUNTEER,
+        role: "volunteer",
         redirect: false,
         action: "signup",
         referred_by: referral || undefined,

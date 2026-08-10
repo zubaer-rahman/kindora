@@ -81,8 +81,13 @@ export default function LoginPage() {
         action: "signin",
       });
       if (result?.error) {
-        toast.error("Invalid email or password", { duration: 4000 });
+        let errorMessage = result.error;
+        if (errorMessage === "CredentialsSignin") {
+          errorMessage = "Invalid email or password.";
+        }
+        toast.error(errorMessage, { duration: 4000 });
         setIsSubmitting(false);
+        return;
       }
       await utils.users.profileCheckup.invalidate();
     } catch (error) {

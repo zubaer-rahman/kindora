@@ -1,8 +1,12 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../db/models/user.js";
+import VolunteerProfile from "../db/models/volunteer-profile.js";
+import MentorProfile from "../db/models/mentor-profile.js";
+import OrganizationProfile from "../db/models/organization-profile.js";
 import { UserRole, AuthProvider } from "../db/interfaces/user.js";
 import env from "../config/env.js";
+import { generateTokenAndSendMail } from "../lib/mail/generateToken.js";
 import { RegisterInput, LoginInput } from "../validators/auth.validator.js";
 
 const getJwtSecret = () => env.jwt_secret || env.nextauth_secret!;
@@ -21,25 +25,59 @@ export async function register(body: RegisterInput) {
   }
 
   const hashedPassword = await bcrypt.hash(body.password, 12);
-  const user = await User.create({
+  const role = body.role || UserRole.VOLUNTEER;
+
+  const user = new User({
     name: body.name,
     email: body.email,
     password: hashedPassword,
-    role: body.role,
+    referred_by: body.referred_by,
+    role,
     provider: AuthProvider.CREDENTIALS,
     is_verified: false,
   });
 
-  const token = generateToken({
-    id: user._id.toString(),
-    email: user.email,
-    role: user.role,
-  });
+  if (role === UserRole.VOLUNTEER) {
+    const profile = await VolunteerProfile.create({
+      interested_on: ["General Support"],
+      phone_number: "+61",
+      referral_source: "Other",
+      is_currently_studying: "yes",
+      non_student_type: "general_public",
+    });
+    user.volunteer_profile = profile._id;
+  } else if (role === UserRole.MENTOR) {
+    const profile = await MentorProfile.create({
+      interested_on: ["Mentoring"],
+      phone_number: "+61",
+      referral_source: "Other",
+      is_currently_studying: "yes",
+      non_student_type: "general_public",
+    });
+    user.mentor_profile = profile._id;
+  } else if (role === UserRole.ADMIN || role === UserRole.ORGANIZATION) {
+    const profile = await OrganizationProfile.create({
+      title: body.name,
+      type: "nonprofit",
+      opportunity_types: ["General Support"],
+      required_skills: ["General"],
+    });
+    user.organization_profile = profile._id;
+  }
 
-  return {
-    token,
-    user: { id: user._id, name: user.name, email: user.email, role: user.role },
-  };
+  await user.save();
+
+  try {
+    await generateTokenAndSendMail(user, "Verify Email");
+  } catch (err) {
+    console.error("[Auth] Verification email failed:", err);
+  }
+
+  const err: any = new Error(
+    "Registration successful. Please check your email to verify your account. You can sign in after verifying."
+  );
+  err.statusCode = 200;
+  throw err;
 }
 
 export async function login(body: LoginInput) {
@@ -47,6 +85,12 @@ export async function login(body: LoginInput) {
   if (!user || !user.password) {
     const err: any = new Error("Invalid email or password.");
     err.statusCode = 401;
+    throw err;
+  }
+
+  if (!user.is_verified) {
+    const err: any = new Error("Please verify your email first!");
+    err.statusCode = 400;
     throw err;
   }
 

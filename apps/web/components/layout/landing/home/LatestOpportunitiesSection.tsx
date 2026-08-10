@@ -6,7 +6,8 @@ import {
   BsChevronRight as ChevronRight,
 } from "react-icons/bs";
 import { useState } from "react";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import { Opportunity } from "@/types/opportunities";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
@@ -27,13 +28,20 @@ export default function LatestOpportunitiesSection({
 }: LatestOpportunitiesSectionProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch opportunities using public endpoint (works for both authenticated and unauthenticated users)
-  const { data: opportunitiesData, isLoading, error } =
-    trpc.opportunities.getPublicOpportunities.useQuery({
-      page: currentPage,
-      limit: limit,
-      sortBy: "recently_added",
-    });
+  // Fetch opportunities using public endpoint
+  const { data: opportunitiesData, isLoading, error } = useQuery({
+    queryKey: ['publicOpportunities', currentPage, limit],
+    queryFn: async () => {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/opportunities/public`, {
+        params: {
+          page: currentPage,
+          limit: limit,
+          sortBy: "recently_added"
+        }
+      });
+      return res.data.data;
+    }
+  });
 
   const opportunities = (opportunitiesData?.opportunities ||
     []) as unknown as Opportunity[];

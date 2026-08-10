@@ -1,13 +1,25 @@
 import { useSession, signOut } from "next-auth/react";
-import { trpc } from "@/utils/trpc";
 import { useEffect, useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "./useAxiosAuth";
 
 export function useAuthCheck() {
   const { data: session, status, update: updateSession } = useSession();
-  const { data: profileCheck, isLoading: isProfileLoading, error: profileError } = trpc.users.profileCheckup.useQuery(undefined, {
-    enabled: status === "authenticated",
-    retry: false, // Don't retry if it fails (e.g. user deleted)
-    staleTime: 1000 * 60 * 5, // 5 minutes
+  const axiosAuth = useAxiosAuth();
+
+  // If there's a session but no api_token, the cookie is stale (pre-migration).
+  // Skip the profile query entirely — we'll handle sign-out below.
+  const hasApiToken = !!(session?.user as any)?.api_token;
+
+  const { data: profileCheck, isLoading: isProfileLoading, error: profileError } = useQuery({
+    queryKey: ['profileCheckup'],
+    queryFn: async () => {
+      const res = await axiosAuth.get('/api/v1/users/me/profile-checkup');
+      return res.data.data;
+    },
+    enabled: status === "authenticated" && hasApiToken,
+    retry: false,
+    staleTime: 1000 * 60 * 5,
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -16,8 +28,13 @@ export function useAuthCheck() {
 
   // Memoize the authentication state to prevent unnecessary re-renders
   const authState = useMemo(() => {
-    // If we're loading session or the profile check is in progress, we're loading
-    if (status === "loading" || (status === "authenticated" && isProfileLoading)) {
+    // Stale session (pre-migration): has session but no api_token
+    if (status === "authenticated" && !hasApiToken) {
+      return { isLoading: false, isAuthenticated: false, hasProfile: false, error: 'session_invalid' };
+    }
+
+    // If session is loading or profile check is in progress, we're loading
+    if (status === "loading" || (status === "authenticated" && hasApiToken && isProfileLoading)) {
       return { isLoading: true, isAuthenticated: false, hasProfile: false };
     }
 
@@ -26,18 +43,15 @@ export function useAuthCheck() {
       return { isLoading: false, isAuthenticated: false, hasProfile: false };
     }
 
-    // If we have an error fetching profile, we're not loading and probably not authenticated (user might be gone)
+    // If profile check errored, treat as session invalid (401/404 from Axios)
     if (profileError) {
       console.error("Profile check failed:", profileError);
-
-      // If the error indicates the user is gone or session is invalid, ensure we report as unauthenticated
-      const isSessionInvalid = profileError.data?.code === 'NOT_FOUND' || profileError.data?.code === 'UNAUTHORIZED';
-
+      const status401or404 = [401, 403, 404].includes((profileError as any)?.response?.status);
       return {
         isLoading: false,
         isAuthenticated: false,
         hasProfile: false,
-        error: isSessionInvalid ? 'session_invalid' : 'error'
+        error: status401or404 ? 'session_invalid' : 'error',
       };
     }
 

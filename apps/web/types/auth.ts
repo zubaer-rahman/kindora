@@ -1,13 +1,14 @@
-import { userValidation } from "@/server/validators/user.validator";
+import { volunteerProfileSchema, organizationProfileSchema } from "@/server/validators/user.validator";
+import { registerSchema } from "@/server/validators/auth.validator";
 import { z } from "zod";
 
-export const signupBaseSchema = userValidation.userSchema.pick({
+export const signupBaseSchema = registerSchema.pick({
   name: true,
   email: true,
   password: true,
 });
 
-export const profileBasicSchema = userValidation.volunteerProfileSchema.pick({
+export const profileBasicSchema = volunteerProfileSchema.pick({
   bio: true,
   interested_on: true,
   interested_categories: true,
@@ -17,7 +18,7 @@ export const profileBasicSchema = userValidation.volunteerProfileSchema.pick({
   postcode: true,
 });
 
-export const profileDetailSchema = userValidation.volunteerProfileSchema.pick({
+export const profileDetailSchema = volunteerProfileSchema.pick({
   student_type: true,
   home_country: true,
   course: true,
@@ -32,7 +33,7 @@ export const profileDetailSchema = userValidation.volunteerProfileSchema.pick({
   study_area: true,
 });
 
-export const orgProfileSchema = userValidation.organizationProfileSchema;
+export const orgProfileSchema = organizationProfileSchema;
 export const volunteerSignupSchema = z
   .object({
     ...signupBaseSchema.shape,
