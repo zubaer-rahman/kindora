@@ -1,5 +1,5 @@
-import { opportunityValidation } from "@/server/modules/opportunity/opportunities.validation";
-import { userValidation } from "@/server/modules/users/users.validation";
+import { opportunityValidation } from "@/server/validators/opportunity.validator";
+import { userValidation } from "@/server/validators/user.validator";
 import { z } from "zod";
 
 export type CreateOpportunityInput = z.infer<

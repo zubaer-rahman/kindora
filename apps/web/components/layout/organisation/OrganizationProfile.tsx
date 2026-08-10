@@ -14,13 +14,10 @@ import {
 import { SKILL_OPTIONS } from "@/utils/constants";
 import { userValidation } from "@/server/modules/users/users.validation";
 import { PhoneField } from "@/components/form-input/PhoneField";
-import { trpc } from "@/utils/trpc";
 import { useEffect, useState } from "react";
 import NextImage from "next/image";
 import toast from "react-hot-toast";
 import { z } from "zod";
-import { TRPCClientErrorLike } from "@trpc/client";
-import { AppRouter } from "@/server";
 import { SelectField } from "@/components/form-input/SelectField";
 import BackButton from "@/components/buttons/BackButton";
 import { MultiSelectField } from "@/components/form-input/MultiSelectField";
@@ -80,7 +77,7 @@ export default function OrganizationProfile() {
           setEditMode("none");
         }
       },
-      onError: (error: TRPCClientErrorLike<AppRouter>) => {
+      onError: (error: Error) => {
         toast.error(error.message || "Failed to update profile");
       },
     });

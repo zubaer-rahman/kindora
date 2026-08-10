@@ -3,10 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { MapPin, Loader2, CheckCircle2 } from "lucide-react";
 import { HiClipboardDocumentList } from "react-icons/hi2";
-import { trpc } from "@/utils/trpc";
-import toast from "react-hot-toast";
-import type { TRPCClientErrorLike } from "@trpc/client";
-import type { AppRouter } from "@/server";
 import { useRecruitmentStatus } from "@/hooks/useRecruitmentStatus";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -104,7 +100,7 @@ export function ApplicantsCard({
       utils.applications.getDynamicCompletedOpportunities.invalidate();
       utils.opportunities.getOrganizationOpportunities.invalidate();
     },
-    onError: (error: TRPCClientErrorLike<AppRouter>) => {
+    onError: (error: Error) => {
       toast.error(error.message);
     },
   });
@@ -127,7 +123,7 @@ export function ApplicantsCard({
       utils.opportunities.getMentorOpportunities.invalidate();
       utils.opportunities.getMentorOpportunitiesCount.invalidate();
     },
-    onError: (error: TRPCClientErrorLike<AppRouter>) => {
+    onError: (error: Error) => {
       toast.error(error.message);
     },
   });

@@ -15,7 +15,6 @@
 
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import superjson from 'superjson';
-import type { AppRouter } from '@/server';
 
 interface TokenStorage {
   accessToken: string | null;
@@ -110,7 +109,7 @@ export const createMobileClient = (config: MobileClientConfig) => {
     refreshQueue = [];
   };
 
-  return createTRPCClient<AppRouter>({
+  return createTRPCClient<any>({
     links: [
       httpBatchLink({
         url: `${config.apiUrl}/api/trpc`,

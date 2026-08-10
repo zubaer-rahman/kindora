@@ -1,4 +1,3 @@
- type AppRouter = any; // mocked for migration
-import { createTRPCReact } from '@trpc/react-query';
+import { createTRPCReact } from "@trpc/react-query";
 
-export const trpc = createTRPCReact<AppRouter>() as any;
+export const trpc = createTRPCReact<any>() as any;
