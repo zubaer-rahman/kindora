@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import env from '../config/env.js';
 
 export const globalErrorHandler = (
   err: any,
@@ -9,14 +10,14 @@ export const globalErrorHandler = (
   const statusCode = err.statusCode || err.status || 500;
   const message = err.message || 'Internal Server Error';
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (env.env !== 'production') {
     console.error(`[ERROR] ${req.method} ${req.url} —`, err);
   }
 
   res.status(statusCode).json({
     success: false,
     message,
-    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
+    ...(env.env !== 'production' && { stack: err.stack }),
   });
 };
 

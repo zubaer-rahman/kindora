@@ -1,14 +1,15 @@
 import mongoose from 'mongoose';
+import env from './env.js';
 
 const connectToDatabase = async () => {
   if (mongoose.connection.readyState >= 1) return;
 
   try {
-    if (!process.env.MONGODB_URI) {
+    if (!env.mongodb_uri) {
       throw new Error('MONGODB_URI is not set');
     }
 
-    await mongoose.connect(process.env.MONGODB_URI, {
+    await mongoose.connect(env.mongodb_uri, {
       maxPoolSize: 100,
       minPoolSize: 0,
       connectTimeoutMS: 30000,

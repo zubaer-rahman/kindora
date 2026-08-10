@@ -14,7 +14,7 @@ import {
   getFavoriteOrganizationsWithPagination as getFavoriteOrganizationsWithPaginationService,
   getOrganizationNames as getOrganizationNamesService,
 } from '../services/organization-profile.service.js';
-import { catchAsync, sendResponse, sendError } from '../lib/utils.js';
+import { catchAsync, sendResponse, sendError } from '../lib/http.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 function handleServiceError(err: unknown, res: Response) {

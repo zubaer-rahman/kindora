@@ -1,20 +1,15 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-import path from "path";
+import env from "./config/env.js";
 
-// Load .env from repo root (works both locally and in CI)
-dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
-
-import connectDB from "./config/mongoose";
-import { initializeCronJobs } from "./services/init-cron";
-import apiRouter from "./routes";
-import { globalErrorHandler, notFoundHandler } from "./middleware/error";
+import connectDB from "./config/mongoose.js";
+import { initializeCronJobs } from "./jobs/init-cron.js";
+import apiRouter from "./routes/index.js";
+import { globalErrorHandler, notFoundHandler } from "./middleware/error.js";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") ?? [
+const allowedOrigins = env.allowed_origins?.split(",") ?? [
   "http://localhost:3000",
 ];
 
@@ -33,12 +28,12 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB().catch(console.error);
 
-if (process.env.NODE_ENV !== "test") {
+if (env.env !== "test") {
   initializeCronJobs();
 }
 
 app.get("/health", (_req: Request, res: Response) => {
-  res.json({ status: "ok", env: process.env.NODE_ENV, port: PORT });
+  res.json({ status: "ok", env: env.env, port: env.port });
 });
 
 app.use("/api/v1", apiRouter);
@@ -46,6 +41,6 @@ app.use("/api/v1", apiRouter);
 app.use(notFoundHandler);
 app.use(globalErrorHandler);
 
-app.listen(PORT, () => {
-  console.log(`🚀 Kindora API running → http://localhost:${PORT}/api/v1`);
+app.listen(env.port, () => {
+  console.log(`🚀 Kindora API running → http://localhost:${env.port}/api/v1`);
 });

@@ -10,8 +10,8 @@ import {
   PaginationInput,
   CompletedOpportunitiesQuery,
 } from '../validators/volunteer-application.validator.js';
-import { notificationService } from './notification.js';
-import { formatText } from '../helpers/formatText.js';
+import { notificationService } from './notification-sender.service.js';
+import { formatText } from '../utils/formatText.js';
 
 // Cast models to avoid Mongoose union-type generic issues with .find() overloads
 const UserModel = User as any;

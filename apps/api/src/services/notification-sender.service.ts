@@ -56,7 +56,8 @@ export class NotificationService {
       await this.debugNotificationCount(opportunityId);
 
       // Get the opportunity creator and organization members
-      const opportunity = await Opportunity.findById(opportunityId)
+      const OpportunityModel = Opportunity as any;
+      const opportunity = await OpportunityModel.findById(opportunityId)
         .populate('created_by', 'name email')
         .populate('organization_profile', 'title contact_email');
 
@@ -66,7 +67,8 @@ export class NotificationService {
       }
 
       // Find all users associated with this organization only
-      const organizationUsers = await User.find({
+      const UserModel = User as any;
+      const organizationUsers = await UserModel.find({
         organization_profile: organizationId,
         role: { $in: ['organization', 'admin', 'mentor'] }
       });
@@ -102,7 +104,8 @@ export class NotificationService {
         
         // Use a more robust duplicate check with a time window
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000); // 1 hour ago
-        const existingNotification = await Notification.findOne({
+        const NotificationModel = Notification as any;
+        const existingNotification = await NotificationModel.findOne({
           user: user._id,
           opportunity_id: opportunityId,
           type: 'opportunity_archived',
@@ -125,7 +128,7 @@ export class NotificationService {
         }
 
         console.log(`   📧 Sending to: ${user.name} (${user.email})`);
-        await this.sendNotificationToUser(user, notificationData);
+        await this.sendNotificationToUser(user as any, notificationData);
       }
 
       // Note: We're now only sending notifications to users from the specific organization
@@ -159,7 +162,8 @@ export class NotificationService {
       console.log(`🏢 Organization: ${organizationName} (${organizationId})`);
 
       // Get the opportunity to find all users who should be notified
-      const opportunity = await Opportunity.findById(opportunityId)
+      const OpportunityModel = Opportunity as any;
+      const opportunity = await OpportunityModel.findById(opportunityId)
         .populate('created_by', 'name email')
         .populate('organization_profile', 'title contact_email');
 
@@ -169,7 +173,8 @@ export class NotificationService {
       }
 
       // Find all users associated with this organization
-      const allUsers = await User.find({
+      const UserModel = User as any;
+      const allUsers = await UserModel.find({
         organization_profile: organizationId,
         is_deleted: { $ne: true }
       }).select('name email _id');
@@ -196,7 +201,8 @@ export class NotificationService {
         
         // Use a more robust duplicate check with a time window
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000); // 1 hour ago
-        const existingNotification = await Notification.findOne({
+        const NotificationModel = Notification as any;
+        const existingNotification = await NotificationModel.findOne({
           user: user._id,
           opportunity_id: opportunityId,
           type: 'opportunity_unarchived',
@@ -261,7 +267,8 @@ export class NotificationService {
   ): Promise<void> {
     try {
       // Get the opportunity creator and organization members
-      const opportunity = await Opportunity.findById(opportunityId)
+      const OpportunityModel = Opportunity as any;
+      const opportunity = await OpportunityModel.findById(opportunityId)
         .populate('created_by', 'name email')
         .populate('organization_profile', 'title contact_email');
 
@@ -271,7 +278,8 @@ export class NotificationService {
       }
 
       // Find all users associated with this organization only
-      const organizationUsers = await User.find({
+      const UserModel = User as any;
+      const organizationUsers = await UserModel.find({
         organization_profile: organizationId,
         role: { $in: ['organization', 'admin', 'mentor'] }
       });
@@ -295,7 +303,8 @@ export class NotificationService {
       for (const user of allUsers) {
         // Prevent duplicate notifications within a short window
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-        const existingNotification = await Notification.findOne({
+        const NotificationModel = Notification as any;
+        const existingNotification = await NotificationModel.findOne({
           user: user._id,
           opportunity_id: opportunityId,
           type: 'volunteer_withdrew',
@@ -304,7 +313,7 @@ export class NotificationService {
         if (existingNotification) {
           continue;
         }
-        await this.sendNotificationToUser(user, notificationData);
+        await this.sendNotificationToUser(user as any, notificationData);
       }
     } catch (error) {
       console.error('❌ Error sending volunteer withdrew notification:', error);
@@ -356,7 +365,8 @@ export class NotificationService {
    * Debug function to check notification count
    */
   private async debugNotificationCount(opportunityId: string): Promise<void> {
-    const count = await Notification.countDocuments({
+    const NotificationModel = Notification as any;
+    const count = await NotificationModel.countDocuments({
       opportunity_id: opportunityId,
       type: 'opportunity_archived'
     });
@@ -395,7 +405,8 @@ export class NotificationService {
 
       console.log(`💾 Storing notification with data:`, notificationDataToStore);
 
-      const notification = await Notification.create(notificationDataToStore);
+      const NotificationModel = Notification as any;
+      const notification = await NotificationModel.create(notificationDataToStore);
       
       console.log(`✅ Successfully stored notification:`, {
         id: notification._id,

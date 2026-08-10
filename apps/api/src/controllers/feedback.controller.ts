@@ -6,7 +6,7 @@ import {
   getAllFeedback as getAllFeedbackService,
   getMyFeedback as getMyFeedbackService,
 } from '../services/feedback.service.js';
-import { catchAsync, sendResponse, sendError } from '../lib/utils.js';
+import { catchAsync, sendResponse, sendError } from '../lib/http.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 function handleServiceError(err: unknown, res: Response) {

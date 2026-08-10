@@ -7,7 +7,7 @@ import OpportunityMentor from '../db/models/opportunity-mentor';
 import Notification from '../db/models/notification';
 import { IMessage } from '../db/interfaces/message';
 import { AppError } from '../lib/errors.js';
-import { sendPushNotification, sendPushNotifications } from '../helpers/pushNotifications.js';
+import { sendPushNotification, sendPushNotifications } from '../lib/pushNotifications.js';
 import {
   SendMessageInput,
   SendGroupMessageInput,
@@ -19,7 +19,7 @@ import {
   GroupMemberParams,
   SetTypingInput,
 } from '../validators/message.validator.js';
-import { messagePubSub } from './message-pubsub.js';
+import { messagePubSub } from './message-pubsub.service.js';
 
 // Cast models to avoid Mongoose union-type generic issues with .find() overloads
 const MessageModel = Message as any;
