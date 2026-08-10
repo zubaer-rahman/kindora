@@ -1,4 +1,4 @@
-import { userValidation } from "@/server/modules/users/users.validation";
+import { userValidation } from "@/server/validators/user.validator";
 import { z } from "zod";
 
 export const signupBaseSchema = userValidation.userSchema.pick({

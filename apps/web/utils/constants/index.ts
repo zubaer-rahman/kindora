@@ -1,8 +1,8 @@
-import { authValidation } from "@/server/modules/auth/auth.validation";
-import { userValidation } from "@/server/modules/users/users.validation";
+import { authValidation } from "@/server/validators/auth.validator";
+import { userValidation } from "@/server/validators/user.validator";
 import { z } from "zod";
-import { volunteerValidation } from "@/server/modules/volunteer-profile/volunteer-profile.valdation";
-import { mentorProfileValidation } from "@/server/modules/mentor-profile/mentor-profile.validation";
+import { volunteerValidation } from "@/server/validators/volunteer-profile.validator";
+import { mentorProfileValidation } from "@/server/validators/mentor-profile.validator";
 import { SKILL_OPTIONS, CATEGORIES_OPTIONS, STATES_OPTIONS, ORGANIZATION_TYPES } from "./select-options";
 
 export const SignupFormSchema = authValidation.signupSchema;

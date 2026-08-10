@@ -1,4 +1,4 @@
-import { volunteerValidation } from "@/server/modules/volunteer-profile/volunteer-profile.valdation";
+import { volunteerValidation } from "@/server/validators/volunteer-profile.validator";
 import { z } from "zod";
 
 export type VolunteerProfileFormData = z.infer<typeof volunteerValidation.updateVolunteerProfileSchema>;
