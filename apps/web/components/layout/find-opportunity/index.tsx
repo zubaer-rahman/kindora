@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { Opportunity } from "@/types/opportunities";
 import { VolunteerOpportunityCard, SearchBar, CustomTabs } from "@/components/common";
@@ -15,6 +17,7 @@ export default function FindOpportunity() {
   const { data: session } = useSession();
   const { filters } = useSearch();
   const [currentPage, setCurrentPage] = useState(1);
+  const axiosAuth = useAxiosAuth();
   const params = useParams();
   const slug = params.slug as string[];
   const activeTab = slug?.[0] || "most-recent";
@@ -32,36 +35,48 @@ export default function FindOpportunity() {
 
   // Fetch opportunities with filters (for "best-matches" and "most-recent" tabs)
   const isGenericTab = activeTab === "best-matches" || activeTab === "most-recent";
-  const { data: opportunitiesData, isLoading: isLoadingOpportunities } =
-    trpc.opportunities.getAllOpportunities.useQuery(
-      {
-        page: isGenericTab ? currentPage : 1,
-        limit: isGenericTab ? 6 : 1,
-        search: filters.searchQuery || undefined,
-        categories: filters.categories.length > 0 ? filters.categories : undefined,
-        commitmentType: filters.commitmentType,
-        location: filters.location || undefined,
-        sortBy: activeTab === "best-matches" ? "best_matches" : "recently_added",
-      },
-      {
-        enabled: isGenericTab
-      }
-    );
+  const { data: opportunitiesData, isLoading: isLoadingOpportunities } = useQuery({
+    queryKey: ['allOpportunities', isGenericTab ? currentPage : 1, filters],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/opportunities`, {
+        params: {
+          page: isGenericTab ? currentPage : 1,
+          limit: isGenericTab ? 6 : 1,
+          search: filters.searchQuery || undefined,
+          categories: filters.categories.length > 0 ? filters.categories.join(",") : undefined,
+          commitmentType: filters.commitmentType,
+          location: filters.location || undefined,
+          sortBy: activeTab === "best-matches" ? "best_matches" : "recently_added",
+        }
+      });
+      return res.data.data;
+    },
+    enabled: isGenericTab
+  });
 
   // Fetch total count for "Most recent" tab
-  const { data: allCountData } = trpc.opportunities.getAllOpportunitiesCount.useQuery();
+  const { data: allCountData } = useQuery({
+    queryKey: ['allOpportunitiesCount'],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/opportunities/count`);
+      return res.data.data;
+    }
+  });
 
   // Fetch user's favorite/saved opportunities (for "saved" tab)
-  const { data: savedOpportunitiesData, isLoading: isLoadingSaved } =
-    trpc.volunteers.getFavoriteOpportunitiesWithPagination.useQuery(
-      {
-        page: activeTab === "saved" ? currentPage : 1,
-        limit: activeTab === "saved" ? 6 : 1,
-      },
-      {
-        enabled: !!session?.user
-      }
-    );
+  const { data: savedOpportunitiesData, isLoading: isLoadingSaved } = useQuery({
+    queryKey: ['favoriteOpportunities', activeTab === "saved" ? currentPage : 1],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/volunteer-profiles/favorites/paginated`, {
+        params: {
+          page: activeTab === "saved" ? currentPage : 1,
+          limit: activeTab === "saved" ? 6 : 1,
+        }
+      });
+      return res.data.data;
+    },
+    enabled: !!session?.user
+  });
 
   // Determine which data to use based on active tab
   const isLoading =
