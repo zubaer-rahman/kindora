@@ -5,6 +5,7 @@ import { httpBatchLink, httpSubscriptionLink } from "@trpc/client";
 import { splitLink } from "@trpc/client";
 import React, { useState } from "react";
 import { getBaseUrl, trpc } from "./client";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const TrpcProvider = ({ children }: { children: React.ReactNode }) => {
   const [queryClient] = useState(() => new QueryClient({
@@ -33,7 +34,9 @@ export const TrpcProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>{children}</TooltipProvider>
+      </QueryClientProvider>
     </trpc.Provider>
   );
 };

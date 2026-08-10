@@ -12,7 +12,7 @@ import {
   STATES_OPTIONS,
 } from "@/utils/constants";
 import { SKILL_OPTIONS } from "@/utils/constants";
-import { userValidation } from "@/server/modules/users/users.validation";
+import { organizationProfileSchema } from "@/server/validators/user.validator";
 import { PhoneField } from "@/components/form-input/PhoneField";
 import { useEffect, useState } from "react";
 import NextImage from "next/image";
@@ -36,7 +36,7 @@ import { ProfilePhotoInput } from "@/components/form-input/ProfilePhotoInput";
 import { FormImageInput } from "@/components/form-input/FormImageInput";
 
 type OrganizationProfileData = Omit<
-  z.infer<typeof userValidation.organizationProfileSchema>,
+  z.infer<typeof organizationProfileSchema>,
   "opportunity_types" | "required_skills"
 > & {
   opportunity_types: string[];
@@ -83,7 +83,7 @@ export default function OrganizationProfile() {
     });
 
   const form = useForm<OrganizationProfileData>({
-    resolver: zodResolver(userValidation.organizationProfileSchema),
+    resolver: zodResolver(organizationProfileSchema),
     defaultValues,
   });
 

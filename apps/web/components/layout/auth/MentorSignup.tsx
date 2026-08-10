@@ -3,22 +3,23 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { SignupStep } from "@/components/layout/auth/SignupStep";
 import { MentorSignupForm, mentorSignupSchema } from "@/types/auth";
 import { useSearchParams, useRouter } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import { Form } from "@/components/ui/form";
-import { UserRole } from "@/server/db/interfaces/user";
 import { Loader2 } from "lucide-react";
 
 
 export default function MentorSignup() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const utils = trpc.useUtils();
+    const queryClient = useQueryClient();
+    const axiosAuth = useAxiosAuth();
     const { isLoading, isAuthenticated, session, updateSession } = useAuthCheck();
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,33 +30,29 @@ export default function MentorSignup() {
     const [isProfileSetupComplete, setIsProfileSetupComplete] = useState(false);
     const redirectAfterProfileRef = useRef<"profile" | "dashboard">("dashboard");
 
-    const updateUser = trpc.users.updateUser.useMutation();
-    const setupMentorProfile = trpc.users.setupMentorProfile.useMutation({
+    const updateUser = useMutation({
+        mutationFn: async (payload: { mentor_profile: string }) => {
+            const res = await axiosAuth.patch("/api/v1/users/me", payload);
+            return res.data;
+        },
+    });
+
+    const setupMentorProfile = useMutation({
+        mutationFn: async (payload: any) => {
+            const res = await axiosAuth.post("/api/v1/users/me/mentor-profile", payload);
+            return res.data.data;
+        },
         onSuccess: async (data) => {
             try {
-                await updateUser.mutateAsync({
-                    mentor_profile: data._id,
-                });
-
-                await utils.users.profileCheckup.invalidate();
-                await utils.users.profileCheckup.refetch();
-
-                // Update session to pick up new role and profile
-                if (typeof updateSession === 'function') {
-                    await updateSession();
-                }
-
+                await updateUser.mutateAsync({ mentor_profile: data._id });
+                await queryClient.invalidateQueries({ queryKey: ["profileCheckup"] });
+                if (typeof updateSession === "function") await updateSession();
                 const goToProfile = redirectAfterProfileRef.current === "profile";
                 toast.success(goToProfile ? "Profile created. Add your details below." : "Profile completed! Taking you to the app…");
                 setIsProfileSetupComplete(true);
                 setIsLoggedIn(true);
-
                 setTimeout(() => {
-                    if (goToProfile) {
-                        router.push("/mentor/profile");
-                    } else {
-                        router.push("/mentor/dashboard");
-                    }
+                    router.push(goToProfile ? "/mentor/profile" : "/mentor/dashboard");
                 }, 800);
             } catch (error) {
                 console.error("Error updating user with profile:", error);
@@ -63,8 +60,8 @@ export default function MentorSignup() {
                 setIsSignupLoading(false);
             }
         },
-        onError: (error) => {
-            setError(error.message || "Failed to create mentor account");
+        onError: (error: any) => {
+            setError(error?.response?.data?.message || error.message || "Failed to create mentor account");
             setIsSignupLoading(false);
         },
     });
@@ -177,19 +174,11 @@ export default function MentorSignup() {
 
             const referral = searchParams?.get("referral");
 
-            // Check if email is already taken
-            const emailCheck = await utils.auth.checkEmail.fetch({ email: data.email });
-            if (emailCheck.exists) {
-                toast.error("This email is already registered. Please use a different email or log in.");
-                setIsSignupLoading(false);
-                return;
-            }
-
             const signInResult = await signIn("credentials", {
                 email: data.email,
                 password: data.password,
                 name: data.name,
-                role: UserRole.MENTOR,
+                role: "mentor",
                 redirect: false,
                 action: "signup",
                 referred_by: referral || undefined,

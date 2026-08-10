@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { UserRole } from "../db/interfaces/user.js";
 
 export const registerSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(6),
-  role: z.nativeEnum(UserRole).default(UserRole.VOLUNTEER),
+  role: z.enum(["admin", "volunteer", "mentor", "organization"]).default("volunteer"),
+  referred_by: z.string().optional(),
 });
 
 export const loginSchema = z.object({
