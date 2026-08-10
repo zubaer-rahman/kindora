@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { UserRole } from '../db/interfaces/user';
+import { UserRole } from '../db/interfaces/user.js';
+import env from '../config/env.js';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -25,7 +26,7 @@ export const requireAuth = (req: AuthRequest, res: Response, next: NextFunction)
   const token = authHeader.slice(7);
 
   try {
-    const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET!;
+    const secret = env.jwt_secret || env.nextauth_secret!;
     const decoded = jwt.verify(token, secret) as { id: string; email: string; role: UserRole };
     req.user = { id: decoded.id, email: decoded.email, role: decoded.role };
     next();

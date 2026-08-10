@@ -41,12 +41,12 @@ const OrganizationProfileSchema: Schema = new Schema<IOrgnizationPofile>(
 );
 
 // Add pre-save middleware to ensure arrays are not empty
-OrganizationProfileSchema.pre('save', function(this: IOrgnizationPofile, next) {
+OrganizationProfileSchema.pre('save', function(this: IOrgnizationPofile, next: any) {
   if (this.opportunity_types.length === 0) {
-    next(new Error('At least one opportunity type is required'));
+    next(new Error('At least one opportunity type is required') as any);
   }
   if (this.required_skills.length === 0) {
-    next(new Error('At least one required skill is required'));
+    next(new Error('At least one required skill is required') as any);
   }
   next();
 });

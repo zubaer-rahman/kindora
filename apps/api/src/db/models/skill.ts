@@ -14,7 +14,7 @@ const SkillSchema: Schema = new Schema<ISkill>(
       default: false
     },
     created_by: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId as any,
       ref: "user",
       required: function () {
         return this.is_custom === true;

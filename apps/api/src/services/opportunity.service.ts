@@ -7,7 +7,7 @@ import OrganisationRecruitment from '../db/models/organisation-recruitment';
 import OpportunityMentor from '../db/models/opportunity-mentor';
 import { AppError } from '../lib/errors.js';
 import { CreateOpportunityInput, ListOpportunitiesQuery } from '../validators/opportunity.validator.js';
-import { notificationService } from './notification.js';
+import { notificationService } from './notification-sender.service.js';
 
 // Cast models to avoid Mongoose union-type generic issues with .find() overloads
 const OppModel = Opportunity as any;

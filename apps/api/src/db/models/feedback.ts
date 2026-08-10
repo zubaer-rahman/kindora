@@ -1,7 +1,6 @@
 import { Schema, model, models, Document } from "mongoose";
 
 export interface IFeedback extends Document {
-  _id: string;
   userId: string;
   message: string;
   createdAt: Date;

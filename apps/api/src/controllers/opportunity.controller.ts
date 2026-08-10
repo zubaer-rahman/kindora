@@ -22,7 +22,7 @@ import {
   unarchiveOpportunity as unarchiveOpportunityService,
   deleteOpportunity as deleteOpportunityService,
 } from '../services/opportunity.service.js';
-import { catchAsync, sendResponse, sendError } from '../lib/utils.js';
+import { catchAsync, sendResponse, sendError } from '../lib/http.js';
 import { AuthRequest } from '../middleware/auth.js';
 
 function handleServiceError(err: unknown, res: Response) {
