@@ -1,6 +1,7 @@
 "use client";
 
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { Key, useState, useMemo } from "react";
 import BackButton from "@/components/buttons/BackButton";
 import MessageDialog from "@/components/layout/organisation/MessageDialog";
@@ -32,10 +33,23 @@ interface Application {
 }
 
 export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
-  const { data: volunteer, isLoading } =
-    trpc.volunteers.getVolunteerById.useQuery(volunteerId);
-  const { data: applications, isLoading: isLoadingApplications } =
-    trpc.applications.getVolunteerApplications.useQuery(volunteerId);
+  const axiosAuth = useAxiosAuth();
+  const { data: volunteer, isLoading } = useQuery({
+    queryKey: ['volunteer', volunteerId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/volunteer-profiles/${volunteerId}`);
+      return res.data.data;
+    },
+    enabled: !!volunteerId,
+  });
+  const { data: applications, isLoading: isLoadingApplications } = useQuery({
+    queryKey: ['volunteerApplications', volunteerId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/applications/volunteer/${volunteerId}`);
+      return res.data.data;
+    },
+    enabled: !!volunteerId,
+  });
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 
   const countryOptions = useMemo(() => countryList().getData(), []);

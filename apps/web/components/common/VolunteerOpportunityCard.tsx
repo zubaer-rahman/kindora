@@ -6,7 +6,8 @@ import { formatDistanceToNow } from "date-fns";
 import { Opportunity } from "@/types/opportunities";
 import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useOpportunityDrawer } from "./OpportunityDrawerProvider";
 import { useVolunteerApplication } from "@/hooks/useVolunteerApplication";
 import {
@@ -41,15 +42,24 @@ export default function VolunteerOpportunityCard({
     const [canScrollRight, setCanScrollRight] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    const utils = trpc.useContext();
-    const { data: favoriteData } = trpc.volunteers.getFavoriteStatus.useQuery(
-        { opportunityId: opportunity._id },
-        { enabled: !!session?.user && !!opportunity._id }
-    );
+    const utils = useQueryClient();
+    const axiosAuth = useAxiosAuth();
+    const { data: favoriteData } = useQuery({
+        queryKey: ["favoriteStatus", opportunity._id],
+        queryFn: async () => {
+            const res = await axiosAuth.get(`/api/v1/applications/favorite-status/${opportunity._id}`);
+            return res.data.data;
+        },
+        enabled: !!session?.user && !!opportunity._id,
+    });
 
-    const toggleFavoriteMutation = trpc.volunteers.toggleFavorite.useMutation({
+    const toggleFavoriteMutation = useMutation({
+        mutationFn: async (payload: { opportunityId: string }) => {
+            const res = await axiosAuth.put(`/api/v1/applications/favorite/${payload.opportunityId}`);
+            return res.data.data;
+        },
         onSuccess: () => {
-            utils.volunteers.getFavoriteStatus.invalidate({ opportunityId: opportunity._id });
+            utils.invalidateQueries({ queryKey: ["favoriteStatus", opportunity._id] });
         },
     });
 

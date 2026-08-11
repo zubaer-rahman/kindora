@@ -1,7 +1,8 @@
 "use client";
 
 import OrganizationOpportunities from "@/components/layout/volunteer/home-page/OrganizationOpportunities";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import BackButton from "@/components/buttons/BackButton";
 import QueryStateWrapper from "@/components/layout/shared/QueryStateWrapper";
 import OrganisationProfileBanner from "./OrganisationProfileBanner";
@@ -11,10 +12,15 @@ interface OrganizationProfileViewProps {
 }
 
 export default function OrganizationProfileView({ organizerId }: OrganizationProfileViewProps) {
-  const { data, isLoading, error } =
-    trpc.organizations.getOrganizationProfile.useQuery(organizerId, {
-      enabled: !!organizerId,
-    });
+  const axiosAuth = useAxiosAuth();
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["organizationProfile", organizerId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/organization-profiles/${organizerId}`);
+      return res.data.data;
+    },
+    enabled: !!organizerId,
+  });
 
   const organizationProfile = data?.organizationProfile;
 

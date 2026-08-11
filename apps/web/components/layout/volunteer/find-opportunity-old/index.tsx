@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSearch } from "@/contexts/SearchContext";
 import { PaginationWrapper } from "@/components/PaginationWrapper";
 import FilterSidebar from "./FilterSidebar";
@@ -30,18 +31,25 @@ export default function FindOpportunityOld() {
     sortBy,
   ]);
 
-  const { data: opportunitiesData, isLoading } =
-    trpc.opportunities.getAllOpportunities.useQuery({
-      page: currentPage,
-      limit: 6,
-      search: filters.searchQuery || undefined,
-      categories:
-        filters.categories.length > 0 ? filters.categories : undefined,
-      commitmentType: filters.commitmentType,
-      location: filters.location || undefined,
-      availability: filters.availability || undefined,
-      sortBy: sortBy,
-    });
+  const axiosAuth = useAxiosAuth();
+  const { data: opportunitiesData, isLoading } = useQuery({
+    queryKey: ['opportunities', currentPage, filters, sortBy],
+    queryFn: async () => {
+      const res = await axiosAuth.get('/api/v1/opportunities', {
+        params: {
+          page: currentPage,
+          limit: 6,
+          search: filters.searchQuery || undefined,
+          categories: filters.categories.length > 0 ? filters.categories : undefined,
+          commitmentType: filters.commitmentType,
+          location: filters.location || undefined,
+          availability: filters.availability || undefined,
+          sortBy: sortBy,
+        }
+      });
+      return res.data.data;
+    },
+  });
 
   // Debug logging
   console.log("Current filters:", filters);

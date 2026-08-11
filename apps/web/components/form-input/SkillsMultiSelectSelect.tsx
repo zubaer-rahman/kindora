@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { SKILL_OPTIONS } from "@/utils/constants";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { cn } from "@/lib/utils";
 
 interface SkillsMultiSelectProps {
@@ -27,10 +28,27 @@ export const SkillsMultiSelect: React.FC<SkillsMultiSelectProps> = ({
     []
   );
   const [isLoading, setIsLoading] = useState(true);
+  const axiosAuth = useAxiosAuth();
 
-  const { data } = trpc.skills.getForMultiSelect.useQuery({ limit: 100 });
+  const { data, refetch: refetchSkills } = useQuery({
+    queryKey: ["skills"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/skills/multi-select", {
+        params: { limit: 100 },
+      });
+      return res.data.data;
+    },
+  });
 
-  const initializeMutation = trpc.skills.initializePredefined.useMutation();
+  const initializeMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosAuth.post("/api/v1/skills/initialize");
+      return res.data.data;
+    },
+    onSuccess: () => {
+      refetchSkills();
+    },
+  });
 
   useEffect(() => {
     if (data?.success && data.data) {

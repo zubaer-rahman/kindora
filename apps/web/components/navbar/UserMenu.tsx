@@ -17,7 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { useState, useEffect, useRef } from "react";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { usePathname } from "next/navigation";
 import { isProtectedPath } from "@/utils/helpers/pathCheck";
 
@@ -30,6 +31,7 @@ export function UserMenu({ user }: UserMenuProps) {
   const [isMobile, setIsMobile] = useState(false);
   const hasInitialized = useRef(false);
   const pathname = usePathname();
+  const axiosAuth = useAxiosAuth();
 
   const protectedPath = isProtectedPath(pathname);
 
@@ -57,28 +59,39 @@ export function UserMenu({ user }: UserMenuProps) {
   const isVolunteer = user.role === "volunteer";
   const organizationName = user.organization_profile?.title || "Organisation";
 
-  const { data: volunteerProfile } =
-    trpc.volunteers.getVolunteerProfile.useQuery(undefined, {
-      enabled: isVolunteer,
-    });
+  const { data: volunteerProfile } = useQuery({
+    queryKey: ["volunteerProfile"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/volunteer-profiles/me");
+      return res.data.data;
+    },
+    enabled: isVolunteer,
+  });
 
-  const { data: mentorProfile } =
-    trpc.mentorProfile.getMentorProfile.useQuery(undefined, {
-      enabled: isMentor,
-    });
+  const { data: mentorProfile } = useQuery({
+    queryKey: ["mentorProfile"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/mentor-profiles/me");
+      return res.data.data;
+    },
+    enabled: isMentor,
+  });
 
-  const updateVolunteerProfile =
-    trpc.volunteers.updateVolunteerProfile.useMutation({
-      onSuccess: () => {
-        // Don't update local state here, let the user's choice persist
-        // The server update was successful, so we trust the local state
-      },
-      onError: (error) => {
-        // Revert the switch if update fails
-        setIsAvailable(!isAvailable);
-        console.error("Failed to update availability:", error.message);
-      },
-    });
+  const updateVolunteerProfile = useMutation({
+    mutationFn: async (payload: { is_available: boolean }) => {
+      const res = await axiosAuth.patch("/api/v1/volunteer-profiles/me", payload);
+      return res.data.data;
+    },
+    onSuccess: () => {
+      // Don't update local state here, let the user's choice persist
+      // The server update was successful, so we trust the local state
+    },
+    onError: (error) => {
+      // Revert the switch if update fails
+      setIsAvailable(!isAvailable);
+      console.error("Failed to update availability:", error.message);
+    },
+  });
 
   // Update local state when profile data changes (only on initial load)
   useEffect(() => {

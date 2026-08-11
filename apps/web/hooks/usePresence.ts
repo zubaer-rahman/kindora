@@ -1,4 +1,5 @@
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useEffect, useRef, type RefObject } from "react";
 // import { useCallback } from "react"; // used by commented heartbeat code
 // import { useSession } from "next-auth/react";
@@ -27,50 +28,6 @@ export function usePresence() {
     //     lastHeartbeatRef.current = now;
     //     sendHeartbeat();
     // }, [sendHeartbeat]);
-
-    // const setupHeartbeatInterval = useCallback(() => {
-    //     if (intervalRef.current) {
-    //         clearInterval(intervalRef.current);
-    //         intervalRef.current = null;
-    //     }
-    //     const interval = isPageVisibleRef.current ? HEARTBEAT_INTERVAL : HEARTBEAT_INTERVAL_INACTIVE;
-    //     sendOptimizedHeartbeat();
-    //     intervalRef.current = setInterval(() => sendOptimizedHeartbeat(), interval);
-    // }, [sendOptimizedHeartbeat]);
-
-    // useEffect(() => {
-    //     if (status !== "authenticated" || !session?.user) {
-    //         if (intervalRef.current) {
-    //             clearInterval(intervalRef.current);
-    //             intervalRef.current = null;
-    //         }
-    //         return;
-    //     }
-    //     const handleVisibilityChange = () => {
-    //         isPageVisibleRef.current = !document.hidden;
-    //         setupHeartbeatInterval();
-    //     };
-    //     const handleOnline = () => setupHeartbeatInterval();
-    //     const handleOffline = () => {
-    //         if (intervalRef.current) {
-    //             clearInterval(intervalRef.current);
-    //             intervalRef.current = null;
-    //         }
-    //     };
-    //     setupHeartbeatInterval();
-    //     document.addEventListener('visibilitychange', handleVisibilityChange);
-    //     window.addEventListener('online', handleOnline);
-    //     window.addEventListener('offline', handleOffline);
-    //     return () => {
-    //         if (intervalRef.current) {
-    //             clearInterval(intervalRef.current);
-    //             intervalRef.current = null;
-    //         }
-    //         document.removeEventListener('visibilitychange', handleVisibilityChange);
-    //         window.removeEventListener('online', handleOnline);
-    //         window.removeEventListener('offline', handleOffline);
-    //     };
-    // }, [session, status, setupHeartbeatInterval]);
 }
 
 /**
@@ -81,22 +38,27 @@ export function usePresence() {
  * @returns Object mapping userId to boolean (true = online, false = offline)
  */
 export function useOnlineStatus(userIds: string[], enabled: boolean = true) {
-    return trpc.users.getUsersOnlineStatus.useQuery(
-        { userIds },
-        {
-            enabled: enabled && userIds.length > 0,
-            // Stale-while-revalidate strategy
-            staleTime: 10000, // Consider data fresh for 10 seconds
-            gcTime: 60000, // Keep in cache for 1 minute (renamed from cacheTime)
-            refetchInterval: 30000, // Refresh every 30 seconds (reduced from 15s)
-            refetchIntervalInBackground: false, // Don't refetch when tab is hidden
-            refetchOnWindowFocus: true, // Refetch when user returns to tab
-            refetchOnReconnect: true, // Refetch when connection is restored
-            // Reduce network requests
-            retry: 1, // Only retry once on failure
-            retryDelay: 5000, // Wait 5s before retry
-        }
-    );
+    const axiosAuth = useAxiosAuth();
+    return useQuery({
+        queryKey: ["onlineStatus", userIds],
+        queryFn: async () => {
+            const res = await axiosAuth.get("/api/v1/users/online-status", {
+                params: { userIds: userIds.join(",") },
+            });
+            return res.data.data;
+        },
+        enabled: enabled && userIds.length > 0,
+        // Stale-while-revalidate strategy
+        staleTime: 10000, // Consider data fresh for 10 seconds
+        gcTime: 60000, // Keep in cache for 1 minute (renamed from cacheTime)
+        refetchInterval: 30000, // Refresh every 30 seconds (reduced from 15s)
+        refetchIntervalInBackground: false, // Don't refetch when tab is hidden
+        refetchOnWindowFocus: true, // Refetch when user returns to tab
+        refetchOnReconnect: true, // Refetch when connection is restored
+        // Reduce network requests
+        retry: 1, // Only retry once on failure
+        retryDelay: 5000, // Wait 5s before retry
+    });
 }
 
 /**

@@ -4,7 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { trpc } from "@/utils/trpc";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 
 interface Applicant {
@@ -21,17 +22,22 @@ interface MessageApplicantModalProps {
 
 export default function MessageApplicantModal({ isOpen, onClose, applicant }: MessageApplicantModalProps) {
   const [message, setMessage] = useState("");
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
 
-  const sendMessageMutation = trpc.messages.sendMessage.useMutation({
+  const sendMessageMutation = useMutation({
+    mutationFn: async (payload: { receiverId: string; content: string }) => {
+      const res = await axiosAuth.post("/api/v1/messages", payload);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Message sent successfully!");
       setMessage("");
       onClose();
-      utils.messages.getConversations.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to send message");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to send message");
     },
   });
 

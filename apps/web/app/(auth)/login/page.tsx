@@ -10,8 +10,8 @@ import { signIn } from "next-auth/react";
 import { Loader2, Lock, Mail } from "lucide-react";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
-import { trpc } from "@/utils/trpc";
 import Loading from "@/app/loading";
 import { Button } from "@/components/ui/button";
 
@@ -26,7 +26,7 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isLoading, isAuthenticated, session, hasProfile } = useAuthCheck();
-  const utils = trpc.useUtils();
+  const queryClient = useQueryClient();
   const error = searchParams.get("error");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -89,7 +89,7 @@ export default function LoginPage() {
         setIsSubmitting(false);
         return;
       }
-      await utils.users.profileCheckup.invalidate();
+      await queryClient.invalidateQueries({ queryKey: ["profileCheckup"] });
     } catch (error) {
       toast.error(`An unexpected error occurred: ${error}`, { duration: 4000 });
       setIsSubmitting(false);

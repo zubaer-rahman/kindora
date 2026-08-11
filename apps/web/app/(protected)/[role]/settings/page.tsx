@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import {
   Loader2,
   Users,
@@ -31,10 +32,22 @@ import UserAvatar from "@/components/ui/UserAvatar";
 export default function OrganizationSettingsPage() {
   const [activeSection, setActiveSection] = useState("users");
   const { data: session } = useSession();
-  const { data: profileData } = trpc.users.profileCheckup.useQuery();
-  const updateUserMutation = trpc.users.updateUser.useMutation({
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+  const { data: profileData } = useQuery({
+    queryKey: ["profileCheckup"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/users/me/profile-checkup");
+      return res.data.data;
+    },
+  });
+  const updateUserMutation = useMutation({
+    mutationFn: async (payload: { image: string }) => {
+      const res = await axiosAuth.patch("/api/v1/users/me", payload);
+      return res.data.data;
+    },
     onSuccess: async () => {
-      utils.users.profileCheckup.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["profileCheckup"] });
       toast.success("Profile picture updated successfully!");
       // Force a page refresh to ensure the session is updated
       console.log("Profile picture updated, refreshing page...");
@@ -42,29 +55,37 @@ export default function OrganizationSettingsPage() {
         window.location.reload();
       }, 500);
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to update profile picture");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to update profile picture");
     },
   });
   const {
     data: mentors,
     isLoading: isLoadingMentors,
     refetch: refetchMentors,
-  } = trpc.mentors.getMentors.useQuery(
-    { organizationId: profileData?.organizationProfile?._id || "" },
-    { enabled: !!profileData?.organizationProfile?._id }
-  );
+  } = useQuery({
+    queryKey: ["mentors", profileData?.organizationProfile?._id || ""],
+    queryFn: async () => {
+      const res = await axiosAuth.get(
+        `/api/v1/organization-mentors/organization/${profileData?.organizationProfile?._id}`
+      );
+      return res.data.data;
+    },
+    enabled: !!profileData?.organizationProfile?._id,
+  });
 
-  const utils = trpc.useUtils();
-
-  const demoteMentorMutation = trpc.users.demoteMentor.useMutation({
+  const demoteMentorMutation = useMutation({
+    mutationFn: async (payload: { userId: string }) => {
+      const res = await axiosAuth.post(`/api/v1/users/${payload.userId}/demote`);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Mentor role removed successfully");
       refetchMentors();
-      utils.users.getOrganizationUsers.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["organizationUsers"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to remove mentor role");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to remove mentor role");
     },
   });
 

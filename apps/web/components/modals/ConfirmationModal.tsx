@@ -7,7 +7,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { MapPin, Calendar, Clock } from "lucide-react";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import React from "react";
@@ -29,35 +30,44 @@ export function ConfirmationModal({
   const logoSrc = "/collab.svg";
   const [isChecked, setIsChecked] = React.useState(false);
   const router = useRouter();
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
 
   // Fetch full opportunity details for the modal
-  const { data: fullOpportunity } = trpc.opportunities.getOpportunity.useQuery(
-    opportunityDetails.id,
-    { enabled: isOpen }
-  );
+  const { data: fullOpportunity } = useQuery({
+    queryKey: ["opportunity", opportunityDetails.id],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/opportunities/${opportunityDetails.id}`);
+      return res.data.data;
+    },
+    enabled: isOpen,
+  });
 
-  const applyMutation = trpc.applications.applyToOpportunity.useMutation({
+  const applyMutation = useMutation({
+    mutationFn: async (payload: { opportunityId: string }) => {
+      const res = await axiosAuth.post("/api/v1/applications/apply", payload);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success(
         `Successfully applied to "${opportunityDetails.title}"!`,
         {}
       );
       // Invalidate all application-related queries to update dashboard tabs
-      utils.applications.getApplicationStatus.invalidate();
-      utils.applications.getCurrentUserActiveApplicationsCount.invalidate();
-      utils.applications.getCurrentUserRecentApplicationsCount.invalidate();
-      utils.applications.getCurrentUserActiveApplications.invalidate();
-      utils.applications.getCurrentUserRecentApplications.invalidate();
-      utils.applications.getCurrentUserApprovedApplications.invalidate();
-      utils.opportunities.getAllOpportunities.invalidate();
-      utils.applications.getVolunteerApplications.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["applicationStatus"] });
+      queryClient.invalidateQueries({ queryKey: ["applicationsActiveCount"] });
+      queryClient.invalidateQueries({ queryKey: ["applicationsRecentCount"] });
+      queryClient.invalidateQueries({ queryKey: ["activeApplications"] });
+      queryClient.invalidateQueries({ queryKey: ["recentApplications"] });
+      queryClient.invalidateQueries({ queryKey: ["approvedApplications"] });
+      queryClient.invalidateQueries({ queryKey: ["allOpportunities"] });
+      queryClient.invalidateQueries({ queryKey: ["volunteerApplications"] });
       onClose();
       router.refresh();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(
-        error.message || "You have already applied for this opportunity."
+        error?.response?.data?.message || "You have already applied for this opportunity."
       );
     },
   });

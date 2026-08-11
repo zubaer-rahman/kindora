@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CreateOpportunityButton } from "@/components/buttons/CreateOpportunityButton";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 import OpportunityTabs from "@/components/layout/organisation/opportunities/OpportunityTabs";
 import OpportunityList from "@/components/layout/organisation/opportunities/OpportunityList";
@@ -13,9 +14,15 @@ import { usePagination } from "@/hooks/usePagination";
 export default function MentorManageOpportunitiesPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("open");
+  const axiosAuth = useAxiosAuth();
 
-  const { data: opportunities, isLoading, refetch } =
-    trpc.opportunities.getMentorOpportunitiesAll.useQuery();
+  const { data: opportunities, isLoading, refetch } = useQuery({
+    queryKey: ["mentorOpportunitiesAll"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/opportunities/mentor/all");
+      return res.data.data;
+    },
+  });
 
   useEffect(() => {
     refetch();

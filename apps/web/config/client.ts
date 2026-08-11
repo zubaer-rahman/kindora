@@ -1,6 +1,3 @@
-import { createTRPCReact } from '@trpc/react-query';
-
-export const trpc = createTRPCReact<any>();
 export function getBaseUrl() {
   if (typeof window !== "undefined") {
     return "";

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
 import { OrgSignupFormData, orgSignupSchema } from "@/types/auth";
 import { useRouter } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import toast from "react-hot-toast";
 import { OrgSignupStep } from "./OrgSignupStep";
@@ -16,7 +16,6 @@ import { UserRole } from "@/server/db/interfaces/user";
 export default function OrganizationSignup() {
   const router = useRouter();
   const { isLoading, isAuthenticated, session } = useAuthCheck();
-  const utils = trpc.useUtils();
 
   const [error, setError] = useState<string | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -34,10 +33,13 @@ export default function OrganizationSignup() {
     },
   });
 
-  const checkEmail = trpc.auth.checkEmail.useQuery(
-    { email: form.getValues("email") },
-    { enabled: false }
-  );
+  const checkEmail = async (email: string) => {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/auth/check-email`,
+      { email }
+    );
+    return res.data.data as { exists: boolean };
+  };
 
   useEffect(() => {
     if (!isLoading) {
@@ -72,7 +74,7 @@ export default function OrganizationSignup() {
       setError(null);
 
       // Check if email is already taken
-      const emailCheck = await utils.auth.checkEmail.fetch({ email: data.email });
+      const emailCheck = await checkEmail(data.email);
       if (emailCheck.exists) {
         toast.error("This email is already registered. Please use a different email or log in.");
         setIsSignupLoading(false);

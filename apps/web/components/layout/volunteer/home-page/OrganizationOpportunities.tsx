@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
@@ -24,6 +25,7 @@ export default function OrganizationOpportunities({
   const { data: session } = useSession();
   const { profileCheck } = useAuthCheck();
   const volunteerId = session?.user?.id;
+  const axiosAuth = useAxiosAuth();
 
   const ITEMS_PER_PAGE = 6;
 
@@ -31,18 +33,32 @@ export default function OrganizationOpportunities({
     data: opportunitiesData,
     isLoading,
     error,
-  } = trpc.opportunities.getAllOpportunities.useQuery({
-    page: 1,
-    limit: 50,
+  } = useQuery({
+    queryKey: ["allOpportunities"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/opportunities", {
+        params: { page: 1, limit: 50 },
+      });
+      return res.data.data;
+    },
   });
 
-  const { data: applications } =
-    trpc.applications.getVolunteerApplications.useQuery(volunteerId!, {
-      enabled: !!volunteerId,
-    });
+  const { data: applications } = useQuery({
+    queryKey: ["volunteerApplications", volunteerId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/applications/volunteer/${volunteerId}`);
+      return res.data.data;
+    },
+    enabled: !!volunteerId,
+  });
 
-  const { data: favoriteOpportunities } =
-    trpc.volunteers.getFavoriteOpportunities.useQuery();
+  const { data: favoriteOpportunities } = useQuery({
+    queryKey: ["favoriteOpportunities"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/volunteer-profiles/favorites");
+      return res.data.data;
+    },
+  });
 
   const isOrgAdminOrMentor =
     session?.user?.role === "admin" || session?.user?.role === "mentor" ||

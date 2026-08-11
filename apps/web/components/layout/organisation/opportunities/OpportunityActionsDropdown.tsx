@@ -1,6 +1,8 @@
+"use client";
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { trpc } from '@/utils/trpc';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAxiosAuth } from '@/hooks/useAxiosAuth';
 import { toast } from 'react-hot-toast';
 import ConfirmationDialog from '@/components/modals/ConfirmationDialog';
 import { Pencil, Trash2, FileText, ArchiveRestore } from 'lucide-react';
@@ -28,48 +30,62 @@ export default function OpportunityActionsDropdown({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<'archive' | 'unarchive' | 'delete' | null>(null);
 
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
   const invalidateList = () => {
     if (actionsMode === 'mentor') {
-      utils.opportunities.getMentorOpportunitiesAll.invalidate();
-      utils.opportunities.getMentorOpportunities.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['mentorOpportunitiesAll'] });
+      queryClient.invalidateQueries({ queryKey: ['mentorOpportunities'] });
     } else {
-      utils.opportunities.getOrganizationOpportunities.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['organizationOpportunities'] });
     }
   };
 
-  const deleteMutation = trpc.opportunities.deleteOpportunity.useMutation({
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosAuth.delete(`/api/v1/opportunities/${opportunityId}`);
+      return res.data;
+    },
     onSuccess: () => {
       invalidateList();
       setIsDeleteDialogOpen(false);
       toast.success('Opportunity deleted successfully');
     },
-    onError: (error) => {
-      toast.error(error.message || 'Failed to delete opportunity');
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to delete opportunity');
       setIsDeleteDialogOpen(false);
     },
   });
 
-  const archiveMutation = trpc.opportunities.archiveOpportunity.useMutation({
+  const archiveMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosAuth.patch(`/api/v1/opportunities/${opportunityId}/archive`);
+      return res.data;
+    },
     onSuccess: () => {
       invalidateList();
       setIsDeleteDialogOpen(false);
       toast.success('Opportunity archived successfully');
     },
-    onError: (error) => {
-      toast.error(error.message || 'Failed to archive opportunity');
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to archive opportunity');
       setIsDeleteDialogOpen(false);
     },
   });
 
-  const unarchiveMutation = trpc.opportunities.unarchiveOpportunity.useMutation({
+  const unarchiveMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosAuth.patch(`/api/v1/opportunities/${opportunityId}/unarchive`);
+      return res.data;
+    },
     onSuccess: () => {
       invalidateList();
       setIsDeleteDialogOpen(false);
       toast.success('Opportunity unarchived successfully');
     },
-    onError: (error) => {
-      toast.error(error.message || 'Failed to unarchive opportunity');
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to unarchive opportunity');
       setIsDeleteDialogOpen(false);
     },
   });
@@ -99,11 +115,11 @@ export default function OpportunityActionsDropdown({
 
   const confirmDeleteOrArchive = () => {
     if (pendingAction === 'delete') {
-      deleteMutation.mutate(opportunityId);
+      deleteMutation.mutate();
     } else if (pendingAction === 'archive') {
-      archiveMutation.mutate(opportunityId);
+      archiveMutation.mutate();
     } else if (pendingAction === 'unarchive') {
-      unarchiveMutation.mutate(opportunityId);
+      unarchiveMutation.mutate();
     }
     setPendingAction(null);
     setIsDeleteDialogOpen(false);
@@ -165,10 +181,10 @@ export default function OpportunityActionsDropdown({
             : 'This will move the opportunity to the archive. You can delete it from there.'
         }
         confirmText={
-          pendingAction === 'delete' 
-            ? 'Delete' 
-            : pendingAction === 'unarchive' 
-            ? 'Unarchive' 
+          pendingAction === 'delete'
+            ? 'Delete'
+            : pendingAction === 'unarchive'
+            ? 'Unarchive'
             : 'Archive'
         }
         onConfirm={confirmDeleteOrArchive}

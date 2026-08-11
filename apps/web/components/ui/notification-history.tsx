@@ -9,19 +9,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { formatDistanceToNow } from "date-fns";
 import { History, Bell, Users, User } from "lucide-react";
 import type { Notification, UserInfo } from "@/types/notification";
 
 export function NotificationHistory() {
   const [isOpen, setIsOpen] = useState(false);
+  const axiosAuth = useAxiosAuth();
 
   // Get notification history
-  const { data: history, isLoading, refetch } = trpc.notifications.getNotificationHistory.useQuery(
-    undefined,
-    { enabled: isOpen }
-  );
+  const { data: history, isLoading, refetch } = useQuery({
+    queryKey: ["notificationsHistory"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/notifications/history");
+      return res.data.data;
+    },
+    enabled: isOpen,
+  });
 
   const handleRefresh = () => {
     refetch();

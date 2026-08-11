@@ -15,7 +15,8 @@ import {
 import { MultiSelectField } from "@/components/form-input/MultiSelectField";
 import { PhoneField } from "@/components/form-input/PhoneField";
 import { suburbs } from "@/utils/constants/suburb";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import BackButton from "@/components/buttons/BackButton";
@@ -38,27 +39,41 @@ import { ProfilePhotoInput } from "@/components/form-input/ProfilePhotoInput";
 export function MentorProfileForm() {
   const [editMode, setEditMode] = useState<"none" | "personal">("none");
   const [isImageUploading, setIsImageUploading] = useState(false);
-  const { data: mentorProfile, isLoading } =
-    trpc.mentorProfile.getMentorProfile.useQuery();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+  const { data: mentorProfile, isLoading } = useQuery({
+    queryKey: ["mentorProfile"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/mentor-profiles/me");
+      return res.data.data;
+    },
+  });
   const { data: session, update: updateSession } = useSession();
-  const utils = trpc.useUtils();
 
   const countryOptions = useMemo(() => countryList().getData(), []);
 
-  const mentorProfileUpdateMutation =
-    trpc.mentorProfile.updateMentorProfile.useMutation({
-      onSuccess: async () => {
-        await utils.mentorProfile.getMentorProfile.invalidate();
-        await updateSession();
-        toast.success("Mentor profile updated successfully!");
-        setEditMode("none");
-      },
-      onError: (error) => {
-        toast.error(error.message || "Failed to update profile");
-      },
-    });
+  const mentorProfileUpdateMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      const res = await axiosAuth.patch("/api/v1/mentor-profiles/me", payload);
+      return res.data.data;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["mentorProfile"] });
+      await updateSession();
+      toast.success("Mentor profile updated successfully!");
+      setEditMode("none");
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to update profile");
+    },
+  });
 
-  const createSkillMutation = trpc.skills.create.useMutation();
+  const createSkillMutation = useMutation({
+    mutationFn: async (payload: { name: string }) => {
+      const res = await axiosAuth.post("/api/v1/skills", payload);
+      return res.data.data;
+    },
+  });
 
   const form = useForm<MentorProfileUpdateData>({
     resolver: zodResolver(MentorProfileUpdateSchema),

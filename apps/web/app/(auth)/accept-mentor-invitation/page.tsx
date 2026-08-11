@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import {   useSearchParams } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import { useMutation } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,14 +18,19 @@ export default function AcceptMentorInvitationPage() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const axiosAuth = useAxiosAuth();
 
-  const acceptInvitation = trpc.mentors.acceptInvitation.useMutation({
+  const acceptInvitation = useMutation({
+    mutationFn: async (payload: { token: string; name: string; password: string }) => {
+      const res = await axiosAuth.post("/api/v1/organization-mentors/accept-invitation", payload);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Invitation accepted successfully! You can now log in.");
       signOut({ callbackUrl: "/login" })
      },
-    onError: (error) => {
-      toast.error(error.message || "Failed to accept invitation");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to accept invitation");
       setIsSubmitting(false);
     },
   });

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, User, Heart, AlertCircle } from "lucide-react";
@@ -10,7 +11,14 @@ const isPlaceholder = (val: string | undefined): boolean =>
     !val || val.trim() === "" || val.trim().toLowerCase() === "to be updated";
 
 export default function MentorDashboardSidebar() {
-    const { data: mentor, isLoading: isLoadingMentor } = trpc.mentorProfile.getMentorProfile.useQuery();
+    const axiosAuth = useAxiosAuth();
+    const { data: mentor, isLoading: isLoadingMentor } = useQuery({
+        queryKey: ["mentorProfile"],
+        queryFn: async () => {
+            const res = await axiosAuth.get("/api/v1/mentor-profiles/me");
+            return res.data.data;
+        },
+    });
 
     if (isLoadingMentor) {
         return (

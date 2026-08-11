@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 // import { Card } from "@/components/ui/card";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import VolunteerCarousel from "./VolunteerCarousel";
@@ -96,32 +97,38 @@ const OrganisationDashboard = () => {
     useState<Opportunity | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<'archive' | 'unarchive' | 'delete' | null>(null);
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
 
   // Fetch opportunities
-  const { data: opportunities, isLoading: isLoadingOpportunities } =
-    trpc.opportunities.getOrganizationOpportunities.useQuery(undefined, {
-      select: (data) => data as Opportunity[],
-    });
+  const { data: opportunities, isLoading: isLoadingOpportunities } = useQuery({
+    queryKey: ["organizationOpportunities"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/opportunities/my-org");
+      return res.data.data as Opportunity[];
+    },
+  });
   // Fetch recruited applicants for 'active' tab
-  const { data: recruitedApplicants } =
-    trpc.recruits.getRecruitedApplicants.useQuery(
-      { opportunityId: "" }, // Empty string to get all recruited applicants
-      {
-        enabled: !!opportunities?.length,
-        select: (data) => data as RecruitedApplicant[],
-      }
-    );
+  const { data: recruitedApplicants } = useQuery({
+    queryKey: ["recruitments"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/recruitments", {
+        params: { opportunityId: "" },
+      });
+      return res.data.data as RecruitedApplicant[];
+    },
+    enabled: !!opportunities?.length,
+  });
   // Fetch available volunteers
-  const { data: availableVolunteersData, isLoading: isLoadingVolunteers } =
-    trpc.users.getAvailableUsers.useQuery(
-      {
-        page: 1,
-        limit: 10, // Get fewer volunteers for dashboard
-      },
-      {
-        select: (data) => data.users as Volunteer[],
-      }
-    );
+  const { data: availableVolunteersData, isLoading: isLoadingVolunteers } = useQuery({
+    queryKey: ["availableUsers"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/users/available", {
+        params: { page: 1, limit: 10 },
+      });
+      return res.data.data.users as Volunteer[];
+    },
+  });
 
   const availableVolunteers = availableVolunteersData || [];
 
@@ -182,47 +189,58 @@ const OrganisationDashboard = () => {
       volunteer_profile: volunteer.volunteer_profile,
     })) || [];
 
-  const utils = trpc.useUtils();
-  const archiveMutation = trpc.opportunities.archiveOpportunity.useMutation({
+  const archiveMutation = useMutation({
+    mutationFn: async (opportunityId: string) => {
+      const res = await axiosAuth.patch(`/api/v1/opportunities/${opportunityId}/archive`);
+      return res.data.data;
+    },
     onSuccess: () => {
-      utils.opportunities.getOrganizationOpportunities.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["organizationOpportunities"] });
       setIsDeleteDialogOpen(false);
       setOpportunityToDelete(null);
       toast.success("Opportunity archived successfully");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Failed to archive opportunity:", error);
-      toast.error(error.message || "Failed to archive opportunity");
+      toast.error(error?.response?.data?.message || "Failed to archive opportunity");
       setIsDeleteDialogOpen(false);
       setOpportunityToDelete(null);
     },
   });
 
-  const deleteMutation = trpc.opportunities.deleteOpportunity.useMutation({
+  const deleteMutation = useMutation({
+    mutationFn: async (opportunityId: string) => {
+      const res = await axiosAuth.delete(`/api/v1/opportunities/${opportunityId}`);
+      return res.data.data;
+    },
     onSuccess: () => {
-      utils.opportunities.getOrganizationOpportunities.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["organizationOpportunities"] });
       setIsDeleteDialogOpen(false);
       setOpportunityToDelete(null);
       toast.success("Opportunity deleted successfully");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Failed to delete opportunity:", error);
-      toast.error(error.message || "Failed to delete opportunity");
+      toast.error(error?.response?.data?.message || "Failed to delete opportunity");
       setIsDeleteDialogOpen(false);
       setOpportunityToDelete(null);
     },
   });
 
-  const unarchiveMutation = trpc.opportunities.unarchiveOpportunity.useMutation({
+  const unarchiveMutation = useMutation({
+    mutationFn: async (opportunityId: string) => {
+      const res = await axiosAuth.patch(`/api/v1/opportunities/${opportunityId}/unarchive`);
+      return res.data.data;
+    },
     onSuccess: () => {
-      utils.opportunities.getOrganizationOpportunities.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["organizationOpportunities"] });
       setIsDeleteDialogOpen(false);
       setOpportunityToDelete(null);
       toast.success("Opportunity unarchived successfully");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Failed to unarchive opportunity:", error);
-      toast.error(error.message || "Failed to unarchive opportunity");
+      toast.error(error?.response?.data?.message || "Failed to unarchive opportunity");
       setIsDeleteDialogOpen(false);
       setOpportunityToDelete(null);
     },

@@ -7,7 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { trpc } from "@/utils/trpc";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 
 interface CreateGroupModalProps {
@@ -27,17 +28,22 @@ export function CreateGroupModal({
   opportunityTitle = "",
   opportunityId,
 }: CreateGroupModalProps) {
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
 
-  const createGroupMutation = trpc.messages.createGroup.useMutation({
+  const createGroupMutation = useMutation({
+    mutationFn: async (payload: { name: string; memberIds: string[]; description?: string; isOrganizationGroup: boolean; opportunityId?: string }) => {
+      const res = await axiosAuth.post("/api/v1/messages/groups", payload);
+      return res.data.data;
+    },
     onSuccess: (data) => {
       toast.success("Group created successfully!");
       onGroupCreated(data._id);
-      utils.messages.getGroups.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
       onClose();
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create group");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to create group");
     },
   });
 

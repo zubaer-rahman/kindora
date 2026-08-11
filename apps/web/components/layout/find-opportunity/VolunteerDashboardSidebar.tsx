@@ -1,6 +1,7 @@
 "use client";
 
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +12,22 @@ import Loading from "@/app/loading";
 
 export default function VolunteerDashboardSidebar() {
     const { data: session } = useSession();
-    const { data: volunteer, isLoading: isLoadingVolunteer } = trpc.volunteers.getVolunteerProfile.useQuery();
-    const { data: applicationsData, isLoading: isLoadingApplications } = trpc.applications.getCurrentUserApplications.useQuery({
-        page: 1,
-        limit: 5,
+    const axiosAuth = useAxiosAuth();
+    const { data: volunteer, isLoading: isLoadingVolunteer } = useQuery({
+        queryKey: ["volunteerProfile"],
+        queryFn: async () => {
+            const res = await axiosAuth.get("/api/v1/volunteer-profiles/me");
+            return res.data.data;
+        },
+    });
+    const { data: applicationsData, isLoading: isLoadingApplications } = useQuery({
+        queryKey: ["applications", "currentUser"],
+        queryFn: async () => {
+            const res = await axiosAuth.get("/api/v1/applications/me", {
+                params: { page: 1, limit: 5 },
+            });
+            return res.data.data;
+        },
     });
 
     if (isLoadingVolunteer || isLoadingApplications) {

@@ -21,7 +21,8 @@ import {
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FormField } from "@/components/form-input/FormField";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { ResetPasswordFormData, ResetPasswordSchema } from "@/utils/constants";
 
@@ -54,25 +55,41 @@ const ResetPasswordPage = () => {
     }
   }, [isLoading, isAuthenticated, session, router]);
 
-  const usersResetMutation = trpc.users.resetPassword.useMutation({
+  const usersResetMutation = useMutation({
+    mutationFn: async (payload: {
+      email: string;
+      password: string;
+      confirmPassword: string;
+    }) => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await axios.post(`${apiUrl}/api/v1/users/reset-password`, payload);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Password reset successfully!");
       router.push("/login?reset=success");
     },
-    onError: (error) => {
-      setFormError(error.message || "Failed to reset password");
-      toast.error(error.message || "Failed to reset password");
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to reset password";
+      setFormError(message);
+      toast.error(message);
     },
   });
 
-  const authResetMutation = trpc.auth.resetPassword.useMutation({
+  const authResetMutation = useMutation({
+    mutationFn: async (payload: { token: string; password: string }) => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await axios.post(`${apiUrl}/api/v1/auth/reset-password`, payload);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Password reset successfully!");
       router.push("/login?reset=success");
     },
-    onError: (error) => {
-      setFormError(error.message || "Failed to reset password");
-      toast.error(error.message || "Failed to reset password");
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || "Failed to reset password";
+      setFormError(message);
+      toast.error(message);
     },
   });
 
