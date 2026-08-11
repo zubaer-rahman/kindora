@@ -65,7 +65,7 @@ interface OpportunityData {
     start_date: string;
     end_date?: string;
   };
-  [key: string]: unknown; // Allow additional properties from tRPC response
+  [key: string]: unknown; // Allow additional properties from API response
 }
 
 export default function Categories() {

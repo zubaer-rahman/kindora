@@ -183,7 +183,7 @@ export default function VolunteerSignup() {
 
       const referral = searchParams?.get("referral");
 
-      // We don't check email here directly via tRPC anymore since the API login handles it,
+      // We don't check email here directly since the API login handles it,
       // but if we really want to, we should create a REST endpoint for it.
       // For now, let's just proceed to signup which will fail if email is taken.
 

@@ -15,7 +15,6 @@ import { useEffect, useRef, type RefObject } from "react";
 export function usePresence() {
     // No-op: heartbeat disabled to avoid Redis/server load on free tier
     // const { data: session, status } = useSession();
-    // const { mutate: sendHeartbeat } = trpc.users.sendHeartbeat.useMutation();
     // const intervalRef = useRef<NodeJS.Timeout | null>(null);
     // const isPageVisibleRef = useRef(true);
     // const lastHeartbeatRef = useRef<number>(0);

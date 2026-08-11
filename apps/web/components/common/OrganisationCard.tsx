@@ -18,7 +18,7 @@ import { useState } from "react";
 import Image from "next/image";
 
 interface OrganisationCardProps {
-    organisation: any; // Using any for now to handle the trpc joined result
+    organisation: any; // Using any for now
     onCardClick?: (organisation: any) => void;
 }
 
