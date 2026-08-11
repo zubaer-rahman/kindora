@@ -1,4 +1,5 @@
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useState, useEffect } from "react";
 
 import { useSession } from "next-auth/react";
@@ -9,15 +10,20 @@ interface FavoriteStatus {
 
 export const useFavorite = (opportunityId: string) => {
   const { data: session } = useSession();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const utils = trpc.useUtils();
 
   // Query to check if opportunity is favorited
-  const { data: favoriteStatus, isPending: isStatusPending } = trpc.volunteers.getFavoriteStatus.useQuery(
-    { opportunityId },
-    { enabled: !!session?.user }
-  );
+  const { data: favoriteStatus, isPending: isStatusPending } = useQuery({
+    queryKey: ["favoriteStatus", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/applications/favorite-status/${opportunityId}`);
+      return res.data.data;
+    },
+    enabled: !!session?.user,
+  });
 
   useEffect(() => {
     if (!session?.user) {
@@ -33,12 +39,16 @@ export const useFavorite = (opportunityId: string) => {
   }, [favoriteStatus, isStatusPending, session]);
 
   // Mutation to toggle favorite status
-  const toggleFavoriteMutation = trpc.volunteers.toggleFavorite.useMutation({
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async (payload: { opportunityId: string }) => {
+      const res = await axiosAuth.put(`/api/v1/applications/favorite/${payload.opportunityId}`);
+      return res.data.data as FavoriteStatus;
+    },
     onSuccess: (data: FavoriteStatus) => {
       // Invalidate both the opportunities list and count queries
-      utils.volunteers.getFavoriteOpportunities.invalidate();
-      utils.volunteers.getFavoriteOpportunitiesWithPagination.invalidate();
-      utils.volunteers.getFavoriteOpportunitiesCount.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["favoriteOpportunities"] });
+      queryClient.invalidateQueries({ queryKey: ["favoriteOpportunitiesWithPagination"] });
+      queryClient.invalidateQueries({ queryKey: ["favoriteOpportunitiesCount"] });
       setIsFavorite(data.isFavorite);
     },
   });

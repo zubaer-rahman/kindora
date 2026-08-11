@@ -1,22 +1,28 @@
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useState, useEffect, useMemo } from "react";
 
 import { useSession } from "next-auth/react";
 
 export const useVolunteerApplication = (opportunityId: string) => {
   const { data: session } = useSession();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
   const [isApplied, setIsApplied] = useState(false);
   const [applicationStatusValue, setApplicationStatusValue] = useState<
     string | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
-  const utils = trpc.useUtils();
 
   // Query to check if user has already applied
-  const { data: applicationStatus, isPending: isStatusPending } = trpc.applications.getApplicationStatus.useQuery(
-    { opportunityId },
-    { enabled: !!session?.user }
-  );
+  const { data: applicationStatus, isPending: isStatusPending } = useQuery({
+    queryKey: ["applicationStatus", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/applications/status/${opportunityId}`);
+      return res.data.data;
+    },
+    enabled: !!session?.user,
+  });
 
   // Memoize the application state to prevent unnecessary re-renders
   const applicationState = useMemo(() => {
@@ -47,18 +53,22 @@ export const useVolunteerApplication = (opportunityId: string) => {
   }, [applicationState]);
 
   // Mutation to apply for opportunity
-  const applyMutation = trpc.applications.applyToOpportunity.useMutation({
+  const applyMutation = useMutation({
+    mutationFn: async (payload: { opportunityId: string }) => {
+      const res = await axiosAuth.post("/api/v1/applications/apply", payload);
+      return res.data.data;
+    },
     onSuccess: () => {
       setIsApplied(true);
       // Invalidate all application-related queries to update dashboard tabs
-      utils.applications.getApplicationStatus.invalidate();
-      utils.applications.getCurrentUserActiveApplicationsCount.invalidate();
-      utils.applications.getCurrentUserRecentApplicationsCount.invalidate();
-      utils.applications.getCurrentUserActiveApplications.invalidate();
-      utils.applications.getCurrentUserRecentApplications.invalidate();
-      utils.applications.getCurrentUserApprovedApplications.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["applicationStatus"] });
+      queryClient.invalidateQueries({ queryKey: ["applicationsActiveCount"] });
+      queryClient.invalidateQueries({ queryKey: ["applicationsRecentCount"] });
+      queryClient.invalidateQueries({ queryKey: ["activeApplications"] });
+      queryClient.invalidateQueries({ queryKey: ["recentApplications"] });
+      queryClient.invalidateQueries({ queryKey: ["approvedApplications"] });
       // Invalidate opportunities to update recruit counts
-      utils.opportunities.getAllOpportunities.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["allOpportunities"] });
     },
   });
 

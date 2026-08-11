@@ -13,6 +13,8 @@ import {
 } from "@/utils/constants";
 import { SKILL_OPTIONS } from "@/utils/constants";
 import { organizationProfileSchema } from "@/server/validators/user.validator";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { PhoneField } from "@/components/form-input/PhoneField";
 import { useEffect, useState } from "react";
 import NextImage from "next/image";
@@ -63,24 +65,40 @@ const defaultValues: OrganizationProfileData = {
 export default function OrganizationProfile() {
   const [editMode, setEditMode] = useState<"none" | "organization">("none");
   const [isImageUploading, setIsImageUploading] = useState(false);
-  const { data: profileData, isLoading } = trpc.users.profileCheckup.useQuery();
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const { data: profileData, isLoading } = useQuery({
+    queryKey: ['profileCheckup'],
+    queryFn: async () => {
+      const res = await axiosAuth.get('/api/v1/users/me/profile-checkup');
+      return res.data.data;
+    },
+  });
 
   // Organization profile mutation
-  const createSkillMutation = trpc.skills.create.useMutation();
-  const organizationProfileUpdateMutation =
-    trpc.users.setupOrgProfile.useMutation({
-      onSuccess: (data, variables) => {
-        utils.users.profileCheckup.invalidate();
-        if (variables.title && variables.contact_email) {
-          toast.success("Organization profile updated successfully!");
-          setEditMode("none");
-        }
-      },
-      onError: (error: Error) => {
-        toast.error(error.message || "Failed to update profile");
-      },
-    });
+  const createSkillMutation = useMutation({
+    mutationFn: async (payload: { name: string }) => {
+      const res = await axiosAuth.post('/api/v1/skills', payload);
+      return res.data.data;
+    },
+  });
+  const organizationProfileUpdateMutation = useMutation({
+    mutationFn: async (data: OrganizationProfileData) => {
+      const res = await axiosAuth.post('/api/v1/users/me/organization-profile', data);
+      return res.data.data;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['profileCheckup'] });
+      if (variables.title && variables.contact_email) {
+        toast.success('Organization profile updated successfully!');
+        setEditMode('none');
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to update profile');
+    },
+  });
 
   const form = useForm<OrganizationProfileData>({
     resolver: zodResolver(organizationProfileSchema),

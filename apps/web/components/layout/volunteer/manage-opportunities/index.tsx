@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { VolunteerOpportunityCard } from "@/components/common";
 import { MentorOpportunityCard } from "@/components/layout/mentor/MentorOpportunityCard";
@@ -37,41 +38,59 @@ export default function ManageOpportunities() {
 
     const limit = 6;
 
+    const axiosAuth = useAxiosAuth();
+
     // 1. Active Applications
     const {
         data: activeData,
         isLoading: isLoadingActive
-    } = trpc.applications.getCurrentUserActiveApplications.useQuery(
-        { page: currentPage, limit },
-        { enabled: activeTab === "active" }
-    );
+    } = useQuery({
+        queryKey: ['applications', 'active', currentPage, limit],
+        queryFn: async () => {
+            const res = await axiosAuth.get('/api/v1/applications/me/active', { params: { page: currentPage, limit } });
+            return res.data.data;
+        },
+        enabled: activeTab === "active",
+    });
 
     // 2. Approved Applications
     const {
         data: approvedData,
         isLoading: isLoadingApproved
-    } = trpc.applications.getCurrentUserApprovedApplications.useQuery(
-        { page: currentPage, limit },
-        { enabled: activeTab === "approved" }
-    );
+    } = useQuery({
+        queryKey: ['applications', 'approved', currentPage, limit],
+        queryFn: async () => {
+            const res = await axiosAuth.get('/api/v1/applications/me/approved', { params: { page: currentPage, limit } });
+            return res.data.data;
+        },
+        enabled: activeTab === "approved",
+    });
 
     // 3. Recent/History
     const {
         data: recentData,
         isLoading: isLoadingRecent
-    } = trpc.applications.getCurrentUserRecentApplications.useQuery(
-        { page: currentPage, limit },
-        { enabled: activeTab === "recent" }
-    );
+    } = useQuery({
+        queryKey: ['applications', 'recent', currentPage, limit],
+        queryFn: async () => {
+            const res = await axiosAuth.get('/api/v1/applications/me/recent', { params: { page: currentPage, limit } });
+            return res.data.data;
+        },
+        enabled: activeTab === "recent",
+    });
 
     // 4. Mentor Opportunities
     const {
         data: mentorOpportunitiesData,
         isLoading: isLoadingMentorOpportunities
-    } = trpc.opportunities.getMentorOpportunities.useQuery(
-        { page: currentPage, limit },
-        { enabled: activeTab === "mentor" }
-    );
+    } = useQuery({
+        queryKey: ['mentorOpportunities', currentPage, limit],
+        queryFn: async () => {
+            const res = await axiosAuth.get('/api/v1/opportunities/mentor', { params: { page: currentPage, limit } });
+            return res.data.data;
+        },
+        enabled: activeTab === "mentor",
+    });
 
     const isLoading =
         activeTab === "active" ? isLoadingActive :

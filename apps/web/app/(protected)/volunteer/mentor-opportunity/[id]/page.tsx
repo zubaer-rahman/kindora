@@ -11,7 +11,8 @@ import {
 import { OpportunityDetail } from "@/components/layout/volunteer/home-page/OpportunityDetail";
 import { useParams, useRouter } from "next/navigation";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DynamicTabs, TabItem } from "@/components/layout/shared/DynamicTabs";
@@ -31,6 +32,7 @@ export default function MentorOpportunityDetailsPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const opportunityId = params.id as string;
+  const axiosAuth = useAxiosAuth();
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(
     null
@@ -42,28 +44,44 @@ export default function MentorOpportunityDetailsPage() {
     data: opportunity,
     isLoading,
     error,
-  } = trpc.opportunities.getOpportunity.useQuery(opportunityId, {
+  } = useQuery({
+    queryKey: ["opportunity", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/opportunities/${opportunityId}`);
+      return res.data.data;
+    },
     enabled: !!opportunityId,
   });
 
   // Check if current user is a mentor for this opportunity
-  const { data: opportunityMentors } =
-    trpc.mentors.getOpportunityMentors.useQuery(
-      { opportunityId },
-      { enabled: !!opportunityId }
-    );
+  const { data: opportunityMentors } = useQuery({
+    queryKey: ["opportunityMentors", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/organization-mentors/opportunity/${opportunityId}`);
+      return res.data.data;
+    },
+    enabled: !!opportunityId,
+  });
 
-  const { data: applicants, isLoading: isLoadingApplicants } =
-    trpc.applications.getOpportunityApplicants.useQuery(
-      { opportunityId },
-      { enabled: !!opportunityId }
-    );
+  const { data: applicants, isLoading: isLoadingApplicants } = useQuery({
+    queryKey: ["applicants", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/applications/applicants/${opportunityId}`);
+      return res.data.data;
+    },
+    enabled: !!opportunityId,
+  });
 
-  const { data: recruitedApplicants, isLoading: isLoadingRecruitedApplicants } =
-    trpc.recruits.getRecruitedApplicants.useQuery(
-      { opportunityId },
-      { enabled: !!opportunityId }
-    );
+  const { data: recruitedApplicants, isLoading: isLoadingRecruitedApplicants } = useQuery({
+    queryKey: ["recruitedApplicants", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/recruitments", {
+        params: { opportunityId },
+      });
+      return res.data.data;
+    },
+    enabled: !!opportunityId,
+  });
 
   // Check if current user is a mentor for this opportunity
   const isCurrentUserMentor = opportunityMentors?.some(

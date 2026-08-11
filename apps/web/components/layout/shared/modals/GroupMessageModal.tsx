@@ -9,7 +9,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { trpc } from "@/utils/trpc";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 
 interface GroupMessageModalProps {
@@ -26,17 +27,22 @@ export function GroupMessageModal({
   onMessageSent,
 }: GroupMessageModalProps) {
   const [groupMessage, setGroupMessage] = useState("");
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
 
-  const sendGroupMessageMutation = trpc.messages.sendGroupMessage.useMutation({
+  const sendGroupMessageMutation = useMutation({
+    mutationFn: async (payload: { groupId: string; content: string }) => {
+      const res = await axiosAuth.post(`/api/v1/messages/groups/${payload.groupId}/messages`, { content: payload.content });
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Message sent successfully!");
       setGroupMessage("");
-      utils.messages.getGroups.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
       onMessageSent();
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to send message");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to send message");
     },
   });
 

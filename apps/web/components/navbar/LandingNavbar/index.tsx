@@ -6,8 +6,9 @@ import { Menu, X, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
-import { trpc } from "@/utils/trpc";
 import { UserMenu } from "@/components/navbar/UserMenu";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { SessionUser } from "@/types/navigation";
@@ -27,6 +28,7 @@ export default function LandingNavbar() {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const { isAuthenticated } = useAuthCheck();
+  const axiosAuth = useAxiosAuth();
 
   const authPath = isAuthPath(pathname);
   const protectedPath = isProtectedPath(pathname);
@@ -35,19 +37,26 @@ export default function LandingNavbar() {
   const isSigninPath = pathname?.includes("login");
 
   // Fetch conversations to get total unread count with polling
-  const { data: conversations } = trpc.messages.getConversations.useQuery(
-    undefined,
-    {
-      enabled: isAuthenticated,
-      staleTime: 5 * 60 * 1000,
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      refetchInterval: 5000,
-    }
-  );
+  const { data: conversations } = useQuery({
+    queryKey: ["conversations"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/messages/conversations");
+      return res.data.data;
+    },
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchInterval: 5000,
+  });
 
   // Fetch groups to get total unread count with polling
-  const { data: groups } = trpc.messages.getGroups.useQuery(undefined, {
+  const { data: groups } = useQuery({
+    queryKey: ["groups"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/messages/groups");
+      return res.data.data;
+    },
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,

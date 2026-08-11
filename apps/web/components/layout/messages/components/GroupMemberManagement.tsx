@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import Avatar from "./Avatar";
 import type { Group } from "@/types/message";
@@ -26,18 +27,23 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const { data: session } = useSession();
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
 
   // Check if current user is an opportunity mentor for this specific opportunity
-  const { data: opportunityMentors } = trpc.mentors.getOpportunityMentors.useQuery(
-    { opportunityId: opportunityId || group.opportunityId || "" },
-    { enabled: !!(opportunityId || group.opportunityId) }
-  );
+  const { data: opportunityMentors } = useQuery({
+    queryKey: ["opportunityMentors", opportunityId || group.opportunityId || ""],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/organization-mentors/opportunity/${opportunityId || group.opportunityId || ""}`);
+      return res.data.data;
+    },
+    enabled: !!(opportunityId || group.opportunityId),
+  });
 
 
 
   const isCurrentUserOpportunityMentor = opportunityMentors?.some(
-    (mentor) => mentor.volunteer._id === session?.user?.id
+    (mentor: any) => mentor.volunteer._id === session?.user?.id
   ) || false;
 
 
@@ -48,12 +54,19 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
   }
 
   // Get available users for adding to group (volunteers and mentors)
-  const { data: availableUsersData } = trpc.users.getAvailableUsers.useQuery({
-    page: 1,
-    limit: 50,
-    search: searchQuery || undefined,
-    includeMentors: true,
-  }, {
+  const { data: availableUsersData } = useQuery({
+    queryKey: ["availableUsers", searchQuery],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/users/available", {
+        params: {
+          page: 1,
+          limit: 50,
+          search: searchQuery || undefined,
+          includeMentors: true,
+        },
+      });
+      return res.data.data;
+    },
     enabled: open,
   });
 
@@ -69,47 +82,63 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
   ) || [];
 
   // Mutations
-  const addMemberMutation = trpc.messages.addMember.useMutation({
+  const addMemberMutation = useMutation({
+    mutationFn: async (payload: { groupId: string; memberId: string }) => {
+      const res = await axiosAuth.post(`/api/v1/messages/groups/${payload.groupId}/members`, { memberId: payload.memberId });
+      return res.data.data;
+    },
     onSuccess: () => {
       setSelectedUsers([]);
       onGroupUpdated();
-      utils.messages.getGroups.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to add member");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to add member");
     },
   });
 
-  const removeMemberMutation = trpc.messages.removeMember.useMutation({
+  const removeMemberMutation = useMutation({
+    mutationFn: async (payload: { groupId: string; memberId: string }) => {
+      const res = await axiosAuth.delete(`/api/v1/messages/groups/${payload.groupId}/members/${payload.memberId}`);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Member removed successfully");
       onGroupUpdated();
-      utils.messages.getGroups.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to remove member");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to remove member");
     },
   });
 
-  const promoteToAdminMutation = trpc.messages.promoteToAdmin.useMutation({
+  const promoteToAdminMutation = useMutation({
+    mutationFn: async (payload: { groupId: string; memberId: string }) => {
+      const res = await axiosAuth.post(`/api/v1/messages/groups/${payload.groupId}/members/${payload.memberId}/promote`);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Member promoted to admin successfully");
       onGroupUpdated();
-      utils.messages.getGroups.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to promote member");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to promote member");
     },
   });
 
-  const demoteFromAdminMutation = trpc.messages.demoteFromAdmin.useMutation({
+  const demoteFromAdminMutation = useMutation({
+    mutationFn: async (payload: { groupId: string; memberId: string }) => {
+      const res = await axiosAuth.delete(`/api/v1/messages/groups/${payload.groupId}/members/${payload.memberId}/admin`);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Admin demoted successfully");
       onGroupUpdated();
-      utils.messages.getGroups.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to demote admin");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to demote admin");
     },
   });
 

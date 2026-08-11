@@ -3,7 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { trpc } from "@/utils/trpc";
+import { useMutation } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import { UserPlus, Loader2 } from "lucide-react";
 
@@ -16,16 +17,21 @@ export default function InviteMentorDialog({ organizationId }: InviteMentorDialo
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const axiosAuth = useAxiosAuth();
 
-  const inviteMentor = trpc.mentors.inviteMentor.useMutation({
+  const inviteMentor = useMutation({
+    mutationFn: async (payload: { email: string; name: string; organizationId: string }) => {
+      const res = await axiosAuth.post("/api/v1/organization-mentors/invite", payload);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Mentor invitation sent successfully!");
       setIsOpen(false);
       setEmail("");
       setName("");
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to send invitation");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to send invitation");
     },
     onSettled: () => {
       setIsSubmitting(false);

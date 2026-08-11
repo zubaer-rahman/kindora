@@ -13,8 +13,9 @@ import {
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
-import { trpc } from "@/utils/trpc";
 import { UserMenu } from "@/components/navbar/UserMenu";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { SessionUser } from "@/types/navigation";
@@ -33,41 +34,96 @@ export default function ProtectedNavbar() {
   const authPath = isAuthPath(pathname);
   const protectedPath = isProtectedPath(pathname);
 
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
 
-  // Global message subscription to update unread counts in real-time
-  trpc.messages.subscribeToMessages.useSubscription(
-    { isGroup: false },
-    {
-      enabled: isAuthenticated,
-      onData: (event) => {
-        if (event.type === 'new_message' || event.type === 'message_read' || event.type === 'mention') {
-          utils.messages.getConversations.invalidate();
-          utils.messages.getGroups.invalidate();
-          utils.notifications.getUnreadCount.invalidate();
-          
-          if (event.type === 'mention' && event.data.mentionData) {
-            toast(`${event.data.mentionData.senderName} mentioned you!`, { icon: '🔔' });
+  // Global message subscription to update unread counts in real-time via SSE
+  useEffect(() => {
+    if (!isAuthenticated || !(session?.user as any)?.api_token) return;
+
+    const controller = new AbortController();
+    let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+    let buffer = "";
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+    const handleEvent = (event: {
+      type: string;
+      data?: {
+        mentionData?: { senderName: string; roomId: string; isGroup: boolean };
+      };
+    }) => {
+      if (event.type === 'new_message' || event.type === 'message_read' || event.type === 'mention') {
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+        queryClient.invalidateQueries({ queryKey: ["groups"] });
+        queryClient.invalidateQueries({ queryKey: ["notificationsUnreadCount"] });
+
+        if (event.type === 'mention' && event.data?.mentionData) {
+          toast(`${event.data.mentionData.senderName} mentioned you!`, { icon: '🔔' });
+        }
+      }
+    };
+
+    const connect = async () => {
+      try {
+        const response = await fetch(`${baseURL}/api/v1/stream/messages`, {
+          headers: { Authorization: `Bearer ${(session?.user as any)?.api_token}` },
+          signal: controller.signal,
+        });
+        if (!response.ok || !response.body) return;
+        reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() || "";
+          for (const chunk of parts) {
+            const dataLines = chunk.split("\n").filter((l) => l.startsWith("data: "));
+            for (const line of dataLines) {
+              try {
+                handleEvent(JSON.parse(line.slice(6)));
+              } catch {
+                // ignore malformed events
+              }
+            }
           }
         }
-      },
-    }
-  );
+      } catch (error) {
+        if ((error as any)?.name === "AbortError") return;
+        // Connection dropped; effect cleanup re-runs will reconnect
+      }
+    };
+
+    connect();
+
+    return () => {
+      controller.abort();
+      reader?.cancel().catch(() => undefined);
+    };
+  }, [isAuthenticated, session, queryClient]);
 
   // Fetch conversations to get total unread count (relaxed polling as fallback)
-  const { data: conversations } = trpc.messages.getConversations.useQuery(
-    undefined,
-    {
-      enabled: isAuthenticated,
-      staleTime: 5 * 60 * 1000,
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      refetchInterval: 30000, // Poll every 30 seconds as fallback
-    }
-  );
+  const { data: conversations } = useQuery({
+    queryKey: ["conversations"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/messages/conversations");
+      return res.data.data;
+    },
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchInterval: 30000, // Poll every 30 seconds as fallback
+  });
 
   // Fetch groups to get total unread count (relaxed polling as fallback)
-  const { data: groups } = trpc.messages.getGroups.useQuery(undefined, {
+  const { data: groups } = useQuery({
+    queryKey: ["groups"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/messages/groups");
+      return res.data.data;
+    },
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,

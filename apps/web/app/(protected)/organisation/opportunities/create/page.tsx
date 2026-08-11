@@ -6,7 +6,8 @@ import toast from "react-hot-toast";
 import { OpportunityFormValues } from "./_components/types";
 import CreateFooter from "./_components/CreateFooter";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-import { trpc } from "@/utils/trpc";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +25,8 @@ export default function CreateOpportunityPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const { profileCheck } = useAuthCheck();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
   const role = session?.user?.role as string | undefined;
   const isOrgRole = role === "organization" || role === "organisation" || role === "admin";
 
@@ -32,7 +35,6 @@ export default function CreateOpportunityPage() {
       router.replace("/organisation/profile");
     }
   }, [session, role, profileCheck?.hasOrganizationProfile, router, isOrgRole]);
-  const utils = trpc.useUtils();
   const [isImageUploading, setIsImageUploading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 2;
@@ -42,27 +44,26 @@ export default function CreateOpportunityPage() {
     { title: "Logistics & Contact", description: "Schedule, requirements and contact info" },
   ];
 
-  const createSkillMutation = trpc.skills.create.useMutation();
-  const createOpportunity = trpc.opportunities.createOpportunity.useMutation({
+  const createSkillMutation = useMutation({
+    mutationFn: async (payload: { name: string }) => {
+      const res = await axiosAuth.post("/api/v1/skills", payload);
+      return res.data.data;
+    },
+  });
+  const createOpportunity = useMutation({
+    mutationFn: async (payload: OpportunityFormValues) => {
+      const res = await axiosAuth.post("/api/v1/opportunities", payload);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Opportunity created successfully!");
-      utils.opportunities.getOrganizationOpportunities.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["organizationOpportunities"] });
       const dashboardPath = role === "mentor" ? "/mentor/dashboard" : "/organisation/dashboard";
       router.push(dashboardPath);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       let msg = "Failed to create opportunity. Please check all required fields and try again.";
-      if (typeof error === "string") {
-        msg = error;
-      } else if (error && typeof error === "object") {
-        if ('message' in error && typeof error.message === 'string') {
-          msg = error.message;
-        } else if ('shape' in error && error.shape && typeof error.shape.message === 'string') {
-          msg = error.shape.message;
-        } else if ('data' in error && error.data && typeof error.data === 'object' && 'customMessage' in error.data && typeof error.data.customMessage === 'string') {
-          msg = error.data.customMessage;
-        }
-      }
+      msg = error?.response?.data?.message || msg;
       toast.error(msg);
     },
   });

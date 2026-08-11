@@ -15,7 +15,8 @@ import {
 import { MultiSelectField } from "@/components/form-input/MultiSelectField";
 import { PhoneField } from "@/components/form-input/PhoneField";
 import { suburbs } from "@/utils/constants/suburb";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import BackButton from "@/components/buttons/BackButton";
@@ -38,26 +39,41 @@ import { ProfilePhotoInput } from "@/components/form-input/ProfilePhotoInput";
 export function VolunteerProfileForm() {
   const [editMode, setEditMode] = useState<"none" | "personal">("none");
   const [isImageUploading, setIsImageUploading] = useState(false);
-  const { data: volunteerProfile, isLoading } =
-    trpc.volunteers.getVolunteerProfile.useQuery();
   const { data: session } = useSession();
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const { data: volunteerProfile, isLoading } = useQuery({
+    queryKey: ['volunteerProfile'],
+    queryFn: async () => {
+      const res = await axiosAuth.get('/api/v1/volunteer-profiles/me');
+      return res.data.data;
+    },
+  });
 
   const countryOptions = useMemo(() => countryList().getData(), []);
 
-  const volunteerProfileUpdateMutation =
-    trpc.volunteers.updateVolunteerProfile.useMutation({
-      onSuccess: () => {
-        utils.volunteers.getVolunteerProfile.invalidate();
-        toast.success("Volunteer profile updated successfully!");
-        setEditMode("none");
-      },
-      onError: (error) => {
-        toast.error(error.message || "Failed to update profile");
-      },
-    });
+  const volunteerProfileUpdateMutation = useMutation({
+    mutationFn: async (data: VolunteerProfileUpdateData) => {
+      const res = await axiosAuth.patch('/api/v1/volunteer-profiles/me', data);
+      return res.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['volunteerProfile'] });
+      toast.success("Volunteer profile updated successfully!");
+      setEditMode("none");
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to update profile");
+    },
+  });
 
-  const createSkillMutation = trpc.skills.create.useMutation();
+  const createSkillMutation = useMutation({
+    mutationFn: async (payload: { name: string }) => {
+      const res = await axiosAuth.post('/api/v1/skills', payload);
+      return res.data.data;
+    },
+  });
 
   const form = useForm<VolunteerProfileUpdateData>({
     resolver: zodResolver(VolunteerProfileUpdateSchema),

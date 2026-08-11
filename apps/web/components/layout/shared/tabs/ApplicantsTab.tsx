@@ -5,7 +5,8 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Applicant, ApplicantsCard } from "@/components/layout/organisation/opportunities/ApplicantsCard";
 import MessageApplicantModal from "@/components/layout/organisation/opportunities/MessageApplicantModal";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 
 interface ApplicantsTabProps {
   opportunityId: string;
@@ -27,11 +28,16 @@ export function ApplicantsTab({
   const [applicantsSearchQuery, setApplicantsSearchQuery] = useState("");
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
+  const axiosAuth = useAxiosAuth();
 
-  const { data: applicants, isLoading } = trpc.applications.getOpportunityApplicants.useQuery(
-    { opportunityId },
-    { enabled: !!opportunityId }
-  );
+  const { data: applicants, isLoading } = useQuery({
+    queryKey: ["applicants", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/applications/applicants/${opportunityId}`);
+      return res.data.data;
+    },
+    enabled: !!opportunityId
+  });
 
   // Filter applicants based on search query
   const filteredApplicants = applicants?.filter(

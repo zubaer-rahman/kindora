@@ -1,6 +1,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import { OpportunityFormValues } from "@/app/(protected)/organisation/opportunities/create/_components/types";
 import { formatDateForInput } from "@/utils/helpers/formatDateForInput";
@@ -10,40 +11,40 @@ export const useEditOpportunity = () => {
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
   const opportunityId = params.id as string;
   const role = session?.user?.role as string | undefined;
 
   // Fetch the opportunity data
-  const { data: opportunity, isLoading: isLoadingOpportunity } = trpc.opportunities.getOpportunity.useQuery(
-    opportunityId,
-    {
-      enabled: !!opportunityId,
-    }
-  );
+  const { data: opportunity, isLoading: isLoadingOpportunity } = useQuery({
+    queryKey: ["opportunity", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/opportunities/${opportunityId}`);
+      return res.data.data;
+    },
+    enabled: !!opportunityId,
+  });
 
   // Update opportunity mutation
-  const updateOpportunity = trpc.opportunities.updateOpportunity.useMutation({
+  const updateOpportunity = useMutation({
+    mutationFn: async (input: { id: string } & Partial<OpportunityFormValues>) => {
+      const res = await axiosAuth.put(`/api/v1/opportunities/${input.id}`, input);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Opportunity updated successfully!");
       // Invalidate necessary queries
-      utils.opportunities.getOrganizationOpportunities.invalidate();
-      utils.opportunities.getOpportunity.invalidate(opportunityId);
+      queryClient.invalidateQueries({ queryKey: ["organizationOpportunities"] });
+      queryClient.invalidateQueries({ queryKey: ["opportunity", opportunityId] });
       const dashboardPath = role === "mentor" ? "/mentor/dashboard" : "/organisation/dashboard";
       router.push(dashboardPath);
     },
-    onError: (error) => {
-      // Handle validation errors
-      if (error.data && 'zodError' in error.data) {
-        const fieldErrors = (error.data as { zodError: { fieldErrors: Record<string, string[]> } }).zodError.fieldErrors;
-        Object.entries(fieldErrors).forEach(([field, errors]) => {
-          if (errors?.[0]) {
-            toast.error(`${field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ')}: ${errors[0]}`);
-          }
-        });
-      } else {
-        toast.error(error.message || "Failed to update opportunity. Please check all required fields and try again.");
-      }
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to update opportunity. Please check all required fields and try again."
+      );
     },
   });
 
@@ -151,7 +152,7 @@ export const useEditOpportunity = () => {
       await updateOpportunity.mutateAsync({
         id: opportunityId,
         ...formattedData,
-      });
+      } as any);
     } catch (error) {
       // Error is already handled by the onError callback in useMutation
       console.error("Error updating opportunity:", error);

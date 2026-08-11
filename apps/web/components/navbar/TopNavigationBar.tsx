@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
-import { trpc } from "@/utils/trpc";
 import {
   AUTH_PATHS,
   PROTECTED_PATHS,
@@ -21,6 +22,7 @@ export default function TopNavigationBar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const { isAuthenticated } = useAuthCheck();
+  const axiosAuth = useAxiosAuth();
 
   const isAuthPath = AUTH_PATHS.some((path) => pathname?.includes(path));
   const isProtectedPath = PROTECTED_PATHS.some((path) =>
@@ -29,28 +31,32 @@ export default function TopNavigationBar() {
   const isResetPasswordPath = pathname?.endsWith("reset-password");
 
   // Fetch conversations to get total unread count with polling
-  const { data: conversations } = trpc.messages.getConversations.useQuery(
-    undefined,
-    {
-      enabled: isAuthenticated,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      refetchInterval: 5000, // Poll every 5 seconds for new conversations
-    }
-  );
+  const { data: conversations } = useQuery({
+    queryKey: ["conversations"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/messages/conversations");
+      return res.data.data;
+    },
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchInterval: 5000, // Poll every 5 seconds for new conversations
+  });
 
   // Fetch groups to get total unread count with polling
-  const { data: groups } = trpc.messages.getGroups.useQuery(
-    undefined,
-    {
-      enabled: isAuthenticated,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      refetchInterval: 5000, // Poll every 5 seconds for new groups
-    }
-  );
+  const { data: groups } = useQuery({
+    queryKey: ["groups"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/messages/groups");
+      return res.data.data;
+    },
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchInterval: 5000, // Poll every 5 seconds for new groups
+  });
 
   // Calculate total unread messages from both conversations and groups
   const conversationsUnreadCount = conversations?.reduce(

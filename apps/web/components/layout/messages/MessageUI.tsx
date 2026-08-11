@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import DeleteGroupModal from './DeleteGroupModal';
 import Sidebar from './components/Sidebar';
@@ -20,7 +21,8 @@ export const MessageUI: React.FC<MessageUIProps> = ({ initialUserId }) => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("conversations");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (initialUserId) {
@@ -51,11 +53,18 @@ export const MessageUI: React.FC<MessageUIProps> = ({ initialUserId }) => {
     updateTypingStatus
   } = useMessages(selectedUserId, isGroup);
 
-  const { data: availableUsersData, isLoading: isLoadingUsers } = trpc.users.getAvailableUsers.useQuery({
-    page: 1,
-    limit: 200,
-    includeMentors: true, // People tab: show both volunteers and mentors
-  }, {
+  const { data: availableUsersData, isLoading: isLoadingUsers } = useQuery({
+    queryKey: ["availableUsers"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/users/available", {
+        params: {
+          page: 1,
+          limit: 200,
+          includeMentors: true,
+        },
+      });
+      return res.data.data;
+    },
     enabled: !!session && session.user?.role !== "volunteer"
   });
 
@@ -68,40 +77,48 @@ export const MessageUI: React.FC<MessageUIProps> = ({ initialUserId }) => {
     if (!isGroup) {
       markAsReadMutation.mutate({ conversationId: userId });
     } else {
-      utils.messages.getGroupMessages.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["groupMessages"] });
     }
   };
 
   const handleGroupCreated = () => {
-    utils.messages.getGroups.invalidate();
+    queryClient.invalidateQueries({ queryKey: ["groups"] });
   };
 
   useEffect(() => {
     if (selectedUserId && isGroup) {
-      utils.messages.getGroupMessages.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["groupMessages"] });
     }
-  }, [selectedUserId, isGroup, utils.messages.getGroupMessages]);
+  }, [selectedUserId, isGroup]);
 
-  const deleteGroupMutation = trpc.messages.deleteGroup.useMutation({
+  const deleteGroupMutation = useMutation({
+    mutationFn: async (payload: { groupId: string }) => {
+      const res = await axiosAuth.delete(`/api/v1/messages/groups/${payload.groupId}`);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Group deleted successfully");
       setSelectedUserId(null);
       setShowDeleteModal(false);
-      utils.messages.getGroups.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to delete group");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to delete group");
     },
   });
 
-  const deleteConversationMutation = trpc.messages.deleteConversation.useMutation({
+  const deleteConversationMutation = useMutation({
+    mutationFn: async (payload: { conversationId: string }) => {
+      const res = await axiosAuth.delete(`/api/v1/messages/conversation/${payload.conversationId}`);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Conversation deleted successfully");
       setSelectedUserId(null);
-      utils.messages.getConversations.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to delete conversation");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to delete conversation");
     },
   });
 

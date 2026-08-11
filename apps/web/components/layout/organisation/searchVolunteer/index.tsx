@@ -1,8 +1,9 @@
 "use client";
 
-import { trpc } from "@/utils/trpc";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import FilterSidebar, { VolunteerFilters } from "@/components/common/FilterSidebar";
@@ -66,6 +67,7 @@ export default function SearchVolunteer() {
   const { searchQuery, setSearchQuery } = useSearch();
   const searchParams = useSearchParams();
   const [sortBy, setSortBy] = useState<"available" | "not_available" | "best_matches">("available");
+  const axiosAuth = useAxiosAuth();
 
   // Sync with URL search params
   useEffect(() => {
@@ -80,16 +82,23 @@ export default function SearchVolunteer() {
     setCurrentPage(1);
   }, [filters, searchQuery, sortBy]);
 
-  const { data: volunteersData, isLoading } =
-    trpc.users.getAvailableUsers.useQuery({
-      page: currentPage,
-      limit: 6,
-      search: searchQuery || undefined,
-      categories:
-        filters.categories.length > 0 ? filters.categories : undefined,
-      location: filters.locations.length > 0 ? filters.locations.join(", ") : undefined,
-      sortBy: sortBy === "best_matches" ? undefined : sortBy,
-    });
+  const { data: volunteersData, isLoading } = useQuery({
+    queryKey: ["availableUsers", currentPage, filters, searchQuery, sortBy],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/users/available", {
+        params: {
+          page: currentPage,
+          limit: 6,
+          search: searchQuery || undefined,
+          categories:
+            filters.categories.length > 0 ? filters.categories : undefined,
+          location: filters.locations.length > 0 ? filters.locations.join(", ") : undefined,
+          sortBy: sortBy === "best_matches" ? undefined : sortBy,
+        },
+      });
+      return res.data.data;
+    },
+  });
 
   const handleConnect = (volunteer: Volunteer) => {
     setSelectedVolunteer(volunteer);

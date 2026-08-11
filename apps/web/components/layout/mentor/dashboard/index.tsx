@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import MentorDashboardSidebar from "@/components/layout/find-organisation/MentorDashboardSidebar";
 import { MentorOpportunityCard } from "@/components/layout/mentor/MentorOpportunityCard";
 import { PaginationWrapper } from "@/components/PaginationWrapper";
@@ -10,10 +11,16 @@ import { Users } from "lucide-react";
 export default function MentorDashboard() {
     const [currentPage, setCurrentPage] = useState(1);
     const limit = 6;
+    const axiosAuth = useAxiosAuth();
 
-    const { data, isLoading } = trpc.opportunities.getMentorOpportunities.useQuery({
-        page: currentPage,
-        limit,
+    const { data, isLoading } = useQuery({
+        queryKey: ["mentorOpportunities", currentPage, limit],
+        queryFn: async () => {
+            const res = await axiosAuth.get("/api/v1/opportunities/mentor", {
+                params: { page: currentPage, limit },
+            });
+            return res.data.data;
+        },
     });
 
     const opportunities = data?.opportunities || [];

@@ -1,10 +1,17 @@
 import { useState } from "react";
-import { trpc } from "../utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "./useAxiosAuth";
 
 export function useHasProfile() {
   const [hasProfile, setHasProfile] = useState<boolean | null>(null); // null = not checked yet
+  const axiosAuth = useAxiosAuth();
 
-  const query = trpc.users.profileCheckup.useQuery(undefined, {
+  const query = useQuery({
+    queryKey: ["profileCheckup"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/users/me/profile-checkup");
+      return res.data.data;
+    },
     enabled: false,
   });
 
@@ -22,7 +29,7 @@ export function useHasProfile() {
   };
 
   return {
-    hasProfile,  
+    hasProfile,
     isLoading: query.isLoading || query.isRefetching,
     error: query.error,
     checkProfile,

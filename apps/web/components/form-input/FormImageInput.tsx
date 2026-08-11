@@ -3,7 +3,8 @@ import { UploadCloud, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Control, useController, Path, UseFormSetValue } from 'react-hook-form';
-import { trpc } from '@/utils/trpc';
+import { useMutation } from '@tanstack/react-query';
+import { useAxiosAuth } from '@/hooks/useAxiosAuth';
 import toast from 'react-hot-toast';
 
 type FormImageInputProps<T extends Record<string, unknown>> = {
@@ -31,18 +32,23 @@ export function FormImageInput<T extends Record<string, unknown>>({
 
   const [uploadedLink, setUploadedLink] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const axiosAuth = useAxiosAuth();
 
-  const uploadMutation = trpc.upload.uploadFile.useMutation({
-    onSuccess: (response) => {
-      const link = response.data.link;
+  const uploadMutation = useMutation({
+    mutationFn: async (payload: { base64File: string; fileName: string; fileType: string; folder: string }) => {
+      const res = await axiosAuth.post('/api/v1/upload', payload);
+      return res.data.data;
+    },
+    onSuccess: (data) => {
+      const link = data.link;
       setUploadedLink(link);
       field.onChange(link);
       onUploadStateChange?.(false);
       toast.success('Image uploaded successfully');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       onUploadStateChange?.(false);
-      toast.error(error.message || 'Failed to upload image');
+      toast.error(error?.response?.data?.message || 'Failed to upload image');
     },
   });
 

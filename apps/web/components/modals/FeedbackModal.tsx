@@ -10,7 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { trpc } from "@/utils/trpc";
+import { useMutation } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 
@@ -22,8 +23,13 @@ interface FeedbackModalProps {
 export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const axiosAuth = useAxiosAuth();
 
-  const createFeedbackMutation = trpc.feedback.createFeedback.useMutation({
+  const createFeedbackMutation = useMutation({
+    mutationFn: async (payload: { message: string }) => {
+      const res = await axiosAuth.post("/api/v1/feedback", payload);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Thank you for your feedback!");
       setMessage("");

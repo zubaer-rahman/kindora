@@ -10,6 +10,9 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { ApplicantActionsDropdown } from "./ApplicantActionsDropdown";
 import UserAvatar from "@/components/ui/UserAvatar";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
+import toast from "react-hot-toast";
 
 export interface Applicant {
   id: string;
@@ -47,7 +50,8 @@ export function ApplicantsCard({
   };
   isCurrentUserMentor?: boolean;
 }) {
-  const utils = trpc.useUtils();
+  const queryClient = useQueryClient();
+  const axiosAuth = useAxiosAuth();
   const { data: session } = useSession();
   const [isMentorForOpportunity, setIsMentorForOpportunity] = useState(false);
   const { isRecruited, refetchRecruitmentStatus } = useRecruitmentStatus(
@@ -55,24 +59,26 @@ export function ApplicantsCard({
     !hideRecruitButton
   );
 
-  const { data: opportunityMentors } =
-    trpc.mentors.getOpportunityMentors.useQuery(
-      { opportunityId: opportunityId || "" },
-      {
-        enabled: !!opportunityId && showMarkAsMentor,
-      }
-    );
+  const { data: opportunityMentors } = useQuery({
+    queryKey: ['opportunityMentors', opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/organization-mentors/opportunity/${opportunityId}`);
+      return res.data.data;
+    },
+    enabled: !!opportunityId && showMarkAsMentor,
+  });
 
   // Get dynamic completed opportunities count
-  const { data: dynamicCompletedCount } = trpc.applications.getDynamicCompletedOpportunities.useQuery(
-    {
-      volunteerId: applicant.id,
-      currentOpportunityId: opportunityId || "",
+  const { data: dynamicCompletedCount } = useQuery({
+    queryKey: ['dynamicCompletedCount', applicant.id, opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get('/api/v1/applications/completed/count', {
+        params: { volunteerId: applicant.id, currentOpportunityId: opportunityId || '' }
+      });
+      return res.data.data;
     },
-    {
-      enabled: !!opportunityId && !!applicant.id,
-    }
-  );
+    enabled: !!opportunityId && !!applicant.id,
+  });
 
   useEffect(() => {
     if (opportunityMentors) {
@@ -84,54 +90,59 @@ export function ApplicantsCard({
     }
   }, [opportunityMentors, applicant.id]);
 
-  const recruitMutation = trpc.recruits.recruitApplicant.useMutation({
+  const invalidateApplications = () => {
+    queryClient.invalidateQueries({ queryKey: ['recruitedApplicants'] });
+    queryClient.invalidateQueries({ queryKey: ['opportunityApplicants'] });
+    queryClient.invalidateQueries({ queryKey: ['applicationStatus'] });
+    queryClient.invalidateQueries({ queryKey: ['applications'] });
+    queryClient.invalidateQueries({ queryKey: ['organizationOpportunities'] });
+    queryClient.invalidateQueries({ queryKey: ['dynamicCompletedCount'] });
+  };
+
+  const recruitMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosAuth.post('/api/v1/recruitment', {
+        applicationId: applicant.applicationId,
+      });
+      return res.data.data;
+    },
     onSuccess: () => {
-      toast.success("Applicant has been recruited successfully.");
+      toast.success('Applicant has been recruited successfully.');
       setIsModalOpen?.(false);
       refetchRecruitmentStatus();
-      utils.recruits.getRecruitedApplicants.invalidate();
-      utils.applications.getOpportunityApplicants.invalidate();
-      utils.applications.getApplicationStatus.invalidate();
-      utils.applications.getCurrentUserActiveApplicationsCount.invalidate();
-      utils.applications.getCurrentUserRecentApplicationsCount.invalidate();
-      utils.applications.getCurrentUserActiveApplications.invalidate();
-      utils.applications.getCurrentUserRecentApplications.invalidate();
-      utils.applications.getCurrentUserApprovedApplications.invalidate();
-      utils.applications.getDynamicCompletedOpportunities.invalidate();
-      utils.opportunities.getOrganizationOpportunities.invalidate();
+      invalidateApplications();
     },
-    onError: (error: Error) => {
-      toast.error(error.message);
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || error.message);
     },
   });
 
-  const toggleMentorMutation = trpc.mentors.toggleMentor.useMutation({
+  const toggleMentorMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosAuth.patch('/api/v1/organization-mentors/toggle', {
+        volunteerId: applicant.id,
+        opportunityId: opportunityId,
+      });
+      return res.data.data;
+    },
     onSuccess: (data) => {
-      if (data.action === "added") {
-        toast.success(
-          "Volunteer has been marked as mentor for this opportunity successfully."
-        );
+      if (data.action === 'added') {
+        toast.success('Volunteer has been marked as mentor for this opportunity successfully.');
         setIsMentorForOpportunity(true);
       } else {
-        toast.success(
-          "Mentor has been removed from this opportunity successfully."
-        );
+        toast.success('Mentor has been removed from this opportunity successfully.');
         setIsMentorForOpportunity(false);
       }
-      utils.mentors.getOpportunityMentors.invalidate();
-      // Invalidate dashboard mentor opportunities queries
-      utils.opportunities.getMentorOpportunities.invalidate();
-      utils.opportunities.getMentorOpportunitiesCount.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['opportunityMentors', opportunityId] });
+      queryClient.invalidateQueries({ queryKey: ['mentorOpportunities'] });
     },
-    onError: (error: Error) => {
-      toast.error(error.message);
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || error.message);
     },
   });
 
   const handleRecruit = () => {
-    recruitMutation.mutate({
-      applicationId: applicant.applicationId,
-    });
+    recruitMutation.mutate();
   };
 
   const handleToggleMentor = () => {

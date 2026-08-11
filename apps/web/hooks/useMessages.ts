@@ -1,11 +1,13 @@
 import { Message } from "@/types/message";
-import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { useRef, useState, useEffect } from "react";
 
 export const useMessages = (selectedUserId: string | null, isGroup: boolean) => {
   const { data: session } = useSession();
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState("");
   const [isTargetTyping, setIsTargetTyping] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -13,87 +15,148 @@ export const useMessages = (selectedUserId: string | null, isGroup: boolean) => 
   const lastScrollToBottomRef = useRef<number>(0);
 
   // Get messages with real-time updates (no more polling)
-  const { data: messages, isLoading: isLoadingMessages, fetchNextPage, hasNextPage, isFetchingNextPage } = trpc.messages.getMessages.useInfiniteQuery(
-    {
-      userId: selectedUserId || "",
-      limit: 20
+  const { data: messages, isLoading: isLoadingMessages, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ["messages", selectedUserId],
+    queryFn: async ({ pageParam }) => {
+      const res = await axiosAuth.get(`/api/v1/messages/conversation/${selectedUserId}`, {
+        params: { limit: 20, cursor: pageParam ?? undefined },
+      });
+      return res.data.data;
     },
-    {
-      enabled: !!selectedUserId && !isGroup,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      refetchOnWindowFocus: true,
-      refetchOnMount: true,
-      staleTime: 5 * 1000,
-      refetchInterval: 30000, // Relaxed polling fallback
-    }
-  );
+    initialPageParam: undefined as string | undefined,
+    enabled: !!selectedUserId && !isGroup,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 5 * 1000,
+    refetchInterval: 30000, // Relaxed polling fallback
+  });
 
-  const { data: groupMessages, isLoading: isLoadingGroupMessages, fetchNextPage: fetchNextGroupPage, hasNextPage: hasNextGroupPage, isFetchingNextPage: isFetchingNextGroupNextPage } = trpc.messages.getGroupMessages.useInfiniteQuery(
-    {
-      groupId: selectedUserId || "",
-      limit: 20
+  const { data: groupMessages, isLoading: isLoadingGroupMessages, fetchNextPage: fetchNextGroupPage, hasNextPage: hasNextGroupPage, isFetchingNextPage: isFetchingNextGroupNextPage } = useInfiniteQuery({
+    queryKey: ["groupMessages", selectedUserId],
+    queryFn: async ({ pageParam }) => {
+      const res = await axiosAuth.get(`/api/v1/messages/groups/${selectedUserId}/messages`, {
+        params: { limit: 20, cursor: pageParam ?? undefined },
+      });
+      return res.data.data;
     },
-    {
-      enabled: !!selectedUserId && isGroup,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      refetchOnWindowFocus: true,
-      refetchOnMount: true,
-      staleTime: 5 * 1000,
-      refetchInterval: 30000, // Relaxed polling fallback
-    }
-  );
+    initialPageParam: undefined as string | undefined,
+    enabled: !!selectedUserId && isGroup,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 5 * 1000,
+    refetchInterval: 30000, // Relaxed polling fallback
+  });
 
   // Typing status mutation
-  const setTypingStatusMutation = trpc.messages.setTypingStatus.useMutation();
+  const setTypingStatusMutation = useMutation({
+    mutationFn: async (payload: { targetId: string; isTyping: boolean; isGroup: boolean }) => {
+      const res = await axiosAuth.post("/api/v1/messages/typing", payload);
+      return res.data.data;
+    },
+  });
 
-  // Subscribe to real-time events (including typing)
-  trpc.messages.subscribeToMessages.useSubscription(
-    { userId: selectedUserId || "", isGroup },
-    {
-      enabled: !!selectedUserId,
-      onData: (event) => {
-        if (event.type === 'typing') {
-          if (isGroup) {
-            if (event.data.groupId === selectedUserId) {
-              setIsTargetTyping(event.data.isTyping);
-            }
-          } else {
-            if (event.data.userId === selectedUserId) {
-              setIsTargetTyping(event.data.isTyping);
-            }
-          }
-        } else if (event.type === 'new_message') {
-          if (isGroup) {
-            utils.messages.getGroupMessages.invalidate({ groupId: selectedUserId || "" });
-          } else {
-            utils.messages.getMessages.invalidate({ userId: selectedUserId || "" });
-          }
-          utils.messages.getConversations.invalidate();
-          utils.messages.getGroups.invalidate();
-        } else if (event.type === 'mention') {
-          import("react-hot-toast").then((t) => {
-            const toast = t.default;
-            toast(`${event.data.mentionData?.senderName} mentioned you!`, {
-              icon: '🔔',
-              duration: 4000,
-              position: 'top-right',
-            });
-          });
-          // Also invalidate to show the new message and update the bell icon
-          utils.messages.getConversations.invalidate();
-          utils.messages.getGroups.invalidate();
-          utils.notifications.getUnreadCount.invalidate();
-          utils.notifications.getUserNotifications.invalidate();
+  // Subscribe to real-time events (including typing) via SSE
+  useEffect(() => {
+    if (!selectedUserId || !(session?.user as any)?.api_token) return;
 
-          if (isGroup) {
-            utils.messages.getGroupMessages.invalidate({ groupId: selectedUserId || "" });
-          } else {
-            utils.messages.getMessages.invalidate({ userId: selectedUserId || "" });
+    const controller = new AbortController();
+    let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+    let buffer = "";
+    const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+    const handleEvent = (event: {
+      type: string;
+      data?: {
+        message?: any;
+        userId?: string;
+        groupId?: string;
+        isTyping?: boolean;
+        mentionData?: { senderName: string; roomId: string; isGroup: boolean };
+      };
+    }) => {
+      if (event.type === "typing") {
+        if (isGroup) {
+          if (event.data?.groupId === selectedUserId && event.data.isTyping !== undefined) {
+            setIsTargetTyping(event.data.isTyping);
+          }
+        } else {
+          if (event.data?.userId === selectedUserId && event.data.isTyping !== undefined) {
+            setIsTargetTyping(event.data.isTyping);
           }
         }
-      },
-    }
-  );
+      } else if (event.type === "new_message") {
+        const msg = event.data?.message;
+        if (msg?.group) {
+          queryClient.invalidateQueries({ queryKey: ["groupMessages"] });
+        } else {
+          queryClient.invalidateQueries({ queryKey: ["messages"] });
+        }
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+        queryClient.invalidateQueries({ queryKey: ["groups"] });
+      } else if (event.type === "mention") {
+        import("react-hot-toast").then((t) => {
+          const toast = t.default;
+          toast(`${event.data?.mentionData?.senderName} mentioned you!`, {
+            icon: '🔔',
+            duration: 4000,
+            position: 'top-right',
+          });
+        });
+        // Also invalidate to show the new message and update the bell icon
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+        queryClient.invalidateQueries({ queryKey: ["groups"] });
+        queryClient.invalidateQueries({ queryKey: ["notificationsUnreadCount"] });
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
+
+        if (isGroup) {
+          queryClient.invalidateQueries({ queryKey: ["groupMessages"] });
+        } else {
+          queryClient.invalidateQueries({ queryKey: ["messages"] });
+        }
+      }
+    };
+
+    const connect = async () => {
+      try {
+        const response = await fetch(`${baseURL}/api/v1/stream/messages`, {
+          headers: { Authorization: `Bearer ${(session?.user as any)?.api_token}` },
+          signal: controller.signal,
+        });
+        if (!response.ok || !response.body) return;
+        reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() || "";
+          for (const chunk of parts) {
+            const dataLines = chunk.split("\n").filter((l) => l.startsWith("data: "));
+            for (const line of dataLines) {
+              try {
+                handleEvent(JSON.parse(line.slice(6)));
+              } catch {
+                // ignore malformed events
+              }
+            }
+          }
+        }
+      } catch (error) {
+        if ((error as any)?.name === "AbortError") return;
+        // Connection dropped; close handler re-run will reconnect on next effect cycle
+      }
+    };
+
+    connect();
+
+    return () => {
+      controller.abort();
+      reader?.cancel().catch(() => undefined);
+    };
+  }, [selectedUserId, isGroup, session, queryClient]);
 
   const updateTypingStatus = (isTyping: boolean) => {
     if (!selectedUserId) return;
@@ -104,16 +167,27 @@ export const useMessages = (selectedUserId: string | null, isGroup: boolean) => 
     });
   };
 
-  const sendMessageMutation = trpc.messages.sendMessage.useMutation({
+  const sendMessageMutation = useMutation({
+    mutationFn: async (payload: { receiverId: string; content?: string; attachments?: any[] }) => {
+      const res = await axiosAuth.post("/api/v1/messages", payload);
+      return res.data.data;
+    },
     onSuccess: () => {
-      utils.messages.getConversations.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
       setNewMessage("");
     },
   });
 
-  const sendGroupMessageMutation = trpc.messages.sendGroupMessage.useMutation({
+  const sendGroupMessageMutation = useMutation({
+    mutationFn: async (payload: { groupId: string; content?: string; attachments?: any[] }) => {
+      const res = await axiosAuth.post(
+        `/api/v1/messages/groups/${payload.groupId}/messages`,
+        { content: payload.content, attachments: payload.attachments }
+      );
+      return res.data.data;
+    },
     onSuccess: () => {
-      utils.messages.getGroups.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
       setNewMessage("");
     },
   });

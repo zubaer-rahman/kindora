@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { Opportunity } from "@/types/opportunities";
 import { DashboardLayout } from "./index";
 import { useSearch } from "@/contexts/SearchContext";
@@ -28,6 +29,7 @@ export default function OpportunityDashboardView({
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<"recently_added" | "start_date">("recently_added");
   const { filters } = useSearch();
+  const axiosAuth = useAxiosAuth();
 
   useEffect(() => {
     setCurrentPage(1);
@@ -39,17 +41,23 @@ export default function OpportunityDashboardView({
     sortBy,
   ]);
 
-  const { data: opportunitiesData, isLoading } =
-    trpc.opportunities.getAllOpportunities.useQuery({
-      page: currentPage,
-      limit: 6,
-      search: filters.searchQuery || undefined,
-      categories:
-        filters.categories.length > 0 ? filters.categories : undefined,
-      commitmentType: filters.commitmentType,
-      location: filters.location || undefined,
-      sortBy: sortBy,
-    });
+  const { data: opportunitiesData, isLoading } = useQuery({
+    queryKey: ["allOpportunities", currentPage, filters, sortBy],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/opportunities", {
+        params: {
+          page: currentPage,
+          limit: 6,
+          search: filters.searchQuery || undefined,
+          categories: filters.categories.length > 0 ? filters.categories : undefined,
+          commitmentType: filters.commitmentType,
+          location: filters.location || undefined,
+          sortBy,
+        },
+      });
+      return res.data.data;
+    },
+  });
 
   const opportunities = (opportunitiesData?.opportunities ||
     []) as unknown as Opportunity[];
