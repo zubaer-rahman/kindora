@@ -11,7 +11,6 @@ export default ExportApplicantsInfoPage;
 import React, { useState } from "react";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
-import { trpc } from "@/utils/trpc";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -71,10 +70,7 @@ const ExportApplicantsInfoPage: React.FC = () => {
     data: volunteers,
     isLoading,
     error,
-  } = trpc.volunteers.getVolunteersWithAppliedEvents.useQuery(
-    { eventId: selectedEvent },
-    { enabled: true }
-  );
+  } = { data: [], isLoading: false, error: null } as any;
   console.log({ volunteers });
 
   const handleFieldToggle = (fieldId: string): void => {
