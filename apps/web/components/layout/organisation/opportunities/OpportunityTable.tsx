@@ -1,9 +1,9 @@
 import React from "react";
 import {
-  useReactTable,
+  useLegacyTable,
   getCoreRowModel,
-  flexRender,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table/legacy";
+import { flexRender } from "@tanstack/react-table";
 import type { Opportunity } from "@/types/opportunities";
 import { createOpportunityTableColumns } from "./OpportunityTableColumns";
 
@@ -28,7 +28,7 @@ export default function OpportunityTable({
 }: OpportunityTableProps) {
   const columns = createOpportunityTableColumns({ activeTab, onTitleClick, actionsMode });
 
-  const table = useReactTable({
+  const table = useLegacyTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),

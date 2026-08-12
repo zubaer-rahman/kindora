@@ -151,10 +151,7 @@ export function ApplicantsCard({
       return;
     }
 
-    toggleMentorMutation.mutate({
-      volunteerId: applicant.id,
-      opportunityId: opportunityId,
-    });
+    toggleMentorMutation.mutate();
   };
 
   const canMarkAsMentor =

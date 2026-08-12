@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
-import TextAlign from "@tiptap/extension-text-align";
-import Color from "@tiptap/extension-color";
-import TextStyle from "@tiptap/extension-text-style";
-import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
+import { Underline } from "@tiptap/extension-underline";
+import { TextAlign } from "@tiptap/extension-text-align";
+import { Color } from "@tiptap/extension-color";
+import { TextStyle } from "@tiptap/extension-text-style";
+import { Link } from "@tiptap/extension-link";
+import { Image } from "@tiptap/extension-image";
 import { ControllerRenderProps, FieldValues, Path } from "react-hook-form";
 import { FontSize } from "./FontSize";
 import { TiptapToolbar } from "./TiptapToolbar";

@@ -27,8 +27,4 @@ export type SessionUser = {
     opportunity_types: string[];
     required_skills: string[];
   };
-};
-
-export type Session = {
-  user?: SessionUser;
 }; 

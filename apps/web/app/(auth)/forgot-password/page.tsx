@@ -36,8 +36,10 @@ export default function ForgotPasswordPage() {
 
   const forgotMutation = useMutation({
     mutationFn: async (payload: { email: string }) => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const res = await axios.post(`${apiUrl}/api/v1/auth/forgot-password`, payload);
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/forgot-password`,
+        payload
+      );
       return res.data.data;
     },
     onSuccess: () => {

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect } from "react";
 // import { useCallback } from "react"; // used by commented heartbeat code
 // import { useSession } from "next-auth/react";
 
@@ -58,34 +58,4 @@ export function useOnlineStatus(userIds: string[], enabled: boolean = true) {
         retry: 1, // Only retry once on failure
         retryDelay: 5000, // Wait 5s before retry
     });
-}
-
-/**
- * Hook for checking online status with intersection observer
- * Only fetches when component is visible in viewport
- * @param userIds - Array of user IDs
- * @param elementRef - Ref to the element to observe
- */
-export function useOnlineStatusVisible(
-    userIds: string[],
-    elementRef: RefObject<HTMLElement>
-) {
-    const isVisible = useRef(false);
-
-    useEffect(() => {
-        const element = elementRef.current;
-        if (!element) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                isVisible.current = entries[0].isIntersecting;
-            },
-            { threshold: 0.1 }
-        );
-
-        observer.observe(element);
-        return () => observer.disconnect();
-    }, [elementRef]);
-
-    return useOnlineStatus(userIds, isVisible.current);
 }

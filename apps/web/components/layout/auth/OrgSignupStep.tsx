@@ -130,14 +130,6 @@ export function OrgSignupStep({
               form.trigger("confirm_password");
             }}
           />
-          {form.getValues("password") &&
-            form.getValues("confirm_password") &&
-            form.getValues("password") !==
-            form.getValues("confirm_password") && (
-              <p className="text-sm text-red-600 mt-1">
-                Passwords do not match
-              </p>
-            )}
         </div>
 
         <div className="flex flex-col items-center sm:flex-row    sm:justify-between">

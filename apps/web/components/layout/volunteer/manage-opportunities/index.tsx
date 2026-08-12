@@ -12,7 +12,6 @@ import VolunteerDashboardSidebar from "../../find-opportunity/VolunteerDashboard
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PaginationWrapper } from "@/components/PaginationWrapper";
 import { Users } from "lucide-react";
-import { useEffect } from "react";
 
 interface Application {
     _id: string;

@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { UserMenu } from "@/components/navbar/UserMenu";
-import { SessionUser } from "@/types/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import KindoraLogo from "@/components/common/KindoraLogo";
@@ -17,15 +15,13 @@ export default function AuthNavbar() {
   const isSigninPath = pathname?.includes("login");
 
   return (
-    <nav className="flex justify-center py-3 px-4 sm:px-6 lg:px-8 h-[100px] relative">
+    <nav className="flex justify-center py-3 px-4 sm:px-6 lg:px-8 h-[100px] sticky top-0 z-50 bg-white/40 backdrop-blur-md">
       <div className="max-w-[1280px] w-full flex items-center justify-between relative z-10">
-        {/* Logo */}
-        <Link href="/" className="flex items-center">
+         <Link href="/" className="flex items-center">
           <KindoraLogo className="ml-6" />
         </Link>
 
-        {/* Right Side Actions - Auth specific */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
+         <div className="flex items-center space-x-2 sm:space-x-4">
 
                   <div className="flex items-center space-x-2 sm:space-x-6 text-foreground">
                     {roleParam !== "mentor" && (
@@ -56,7 +52,7 @@ export default function AuthNavbar() {
                         ) : (
                           <Button
                             asChild
-                            className="bg-primary hover:bg-primary/90 h-[49px] rounded-full px-8 text-white cursor-pointer shadow-lg shadow-primary/20"
+                            className="bg-primary hover:bg-primary/90 h-10 rounded-full px-6 text-white cursor-pointer shadow-lg shadow-primary/20"
                           >
                             <Link href="/signup">Sign up</Link>
                           </Button>
