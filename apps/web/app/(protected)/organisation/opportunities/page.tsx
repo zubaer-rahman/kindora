@@ -3,21 +3,34 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { CreateOpportunityButton } from "@/components/buttons/CreateOpportunityButton";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 import OpportunityTabs from "@/components/layout/organisation/opportunities/OpportunityTabs";
 import OpportunityList from "@/components/layout/organisation/opportunities/OpportunityList";
 import { PaginationWrapper } from "@/components/PaginationWrapper";
 import { usePagination } from "@/hooks/usePagination";
+import type { Opportunity } from "@/types/opportunities";
 
 export default function OpportunitiesPage() {
   const [activeTab, setActiveTab] = useState("open");
+  const axiosAuth = useAxiosAuth();
 
-  const { data: opportunities, isLoading, refetch } =
-    trpc.opportunities.getOrganizationOpportunities.useQuery();
+  const { data: opportunities, isLoading, refetch } = useQuery<Opportunity[]>({
+    queryKey: ["organizationOpportunities"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/opportunities/my-org");
+      return res.data.data;
+    },
+  });
 
   // Listen for notification changes and refetch opportunities
-  const { data: unreadCount } = trpc.notifications.getUnreadCount.useQuery(undefined, {
+  const { data: unreadCount } = useQuery({
+    queryKey: ["notificationsUnreadCount"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/notifications/unread-count");
+      return res.data.data;
+    },
     refetchInterval: 30000,
   });
 

@@ -7,7 +7,8 @@ import { ApplyButton } from "@/components/buttons/ApplyButton";
 import { FavoriteButton } from "@/components/buttons/FavoriteButton";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import fileIcon from "../../../../public/icons/file-icon.svg";
 import mapPinIcon from "../../../../public/icons/map-pin-icon.svg";
 import { useState } from "react";
@@ -64,7 +65,7 @@ interface OpportunityData {
     start_date: string;
     end_date?: string;
   };
-  [key: string]: unknown; // Allow additional properties from tRPC response
+  [key: string]: unknown; // Allow additional properties from API response
 }
 
 export default function Categories() {
@@ -72,21 +73,37 @@ export default function Categories() {
   const [activeTab, setActiveTab] = useState("all");
   const { data: session } = useSession();
   const volunteerId = session?.user?.id;
+  const axiosAuth = useAxiosAuth();
 
   // Fetch all opportunities
-  const { data: opportunitiesData } = trpc.opportunities.getAllOpportunities.useQuery({
-    page: 1,
-    limit: 50,
+  const { data: opportunitiesData } = useQuery({
+    queryKey: ["allOpportunities"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/opportunities", {
+        params: { page: 1, limit: 50 },
+      });
+      return res.data.data;
+    },
   });
 
   // Fetch all applications to calculate available spots
-  const { data: applications } = trpc.applications.getVolunteerApplications.useQuery(
-    volunteerId!,
-    { enabled: !!volunteerId }
-  );
+  const { data: applications } = useQuery({
+    queryKey: ["volunteerApplications", volunteerId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/applications/volunteer/${volunteerId}`);
+      return res.data.data;
+    },
+    enabled: !!volunteerId
+  });
 
   // Fetch user's favorite opportunities
-  const { data: favoriteOpportunities } = trpc.volunteers.getFavoriteOpportunities.useQuery();
+  const { data: favoriteOpportunities } = useQuery({
+    queryKey: ["favoriteOpportunities"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/volunteer-profiles/favorites");
+      return res.data.data;
+    },
+  });
 
   // Calculate available spots for each opportunity
   const opportunitiesWithSpots = opportunitiesData?.opportunities?.map((opportunity) => {

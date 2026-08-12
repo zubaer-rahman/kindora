@@ -2,7 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import Loading from "@/app/loading";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +17,14 @@ export default function VerifyEmailPage() {
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
-  const verifyMutation = trpc.auth.verifyEmail.useMutation({
+  const verifyMutation = useMutation({
+    mutationFn: async (payload: { token: string }) => {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/verify-email`,
+        payload
+      );
+      return res.data.data;
+    },
     onSuccess: (data) => {
       setStatus("success");
       if (data.alreadyVerified) {
@@ -26,9 +34,9 @@ export default function VerifyEmailPage() {
       }
       setTimeout(() => router.push("/login?verified=1"), 2000);
     },
-    onError: (err) => {
+    onError: (err: any) => {
       setStatus("error");
-      toast.error(err.message || "Verification failed.");
+      toast.error(err?.response?.data?.message || "Verification failed.");
     },
   });
 

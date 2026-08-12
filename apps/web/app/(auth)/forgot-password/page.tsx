@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/card";
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 const schema = z.object({
@@ -33,13 +34,20 @@ export default function ForgotPasswordPage() {
     mode: "onChange",
   });
 
-  const forgotMutation = trpc.auth.forgotPassword.useMutation({
+  const forgotMutation = useMutation({
+    mutationFn: async (payload: { email: string }) => {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/forgot-password`,
+        payload
+      );
+      return res.data.data;
+    },
     onSuccess: () => {
       setSent(true);
       toast.success("Check your email for the reset link.");
     },
-    onError: (err) => {
-      toast.error(err.message || "Something went wrong.");
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || "Something went wrong.");
     },
   });
 

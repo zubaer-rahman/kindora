@@ -10,7 +10,8 @@ import { CATEGORIES_OPTIONS } from "@/utils/constants";
 import { OpportunityFormValues } from "./types";
 
 import { FormSelect } from "@/components/form-input/FormSelect";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export default function StepOne({
     form,
@@ -22,7 +23,12 @@ export default function StepOne({
     userRole?: string;
 }) {
     const isMentor = userRole === "mentor";
-    const { data: organisations, isLoading: isLoadingOrgs } = trpc.organizationProfile.getOrganizationNames.useQuery(undefined, {
+    const { data: organisations, isLoading: isLoadingOrgs } = useQuery({
+        queryKey: ['organizationNames'],
+        queryFn: async () => {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/organization-profiles/names`);
+            return res.data.data;
+        },
         enabled: isMentor,
     });
     return (

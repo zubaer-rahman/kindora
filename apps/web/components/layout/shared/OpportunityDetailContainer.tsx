@@ -6,7 +6,8 @@ import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { DynamicTabs, TabItem } from "@/components/layout/shared/DynamicTabs";
 import BackButton from "@/components/buttons/BackButton";
 import { OpportunityDetail } from "@/components/layout/volunteer/home-page/OpportunityDetail";
@@ -44,102 +45,144 @@ export default function OpportunityDetailContainer({
   // Roster state (local for instant UI feedback; synced from DB)
   const [rosterShifts, setRosterShifts] = useState<Shift[]>([]);
 
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
   // Queries
   const {
     data: opportunity,
     isLoading,
     error,
-  } = trpc.opportunities.getOpportunity.useQuery(opportunityId, {
+  } = useQuery({
+    queryKey: ["opportunity", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/opportunities/${opportunityId}`);
+      return res.data.data;
+    },
     enabled: !!opportunityId,
   });
 
-  const { data: opportunityMentors } =
-    trpc.mentors.getOpportunityMentors.useQuery(
-      { opportunityId },
-      { enabled: !!opportunityId }
-    );
+  const { data: opportunityMentors } = useQuery({
+    queryKey: ["opportunityMentors", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/organization-mentors/opportunity/${opportunityId}`);
+      return res.data.data;
+    },
+    enabled: !!opportunityId,
+  });
 
-  const { data: applicants } =
-    trpc.applications.getOpportunityApplicants.useQuery(
-      { opportunityId },
-      { enabled: !!opportunityId }
-    );
+  const { data: applicants } = useQuery({
+    queryKey: ["applicants", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/applications/applicants/${opportunityId}`);
+      return res.data.data;
+    },
+    enabled: !!opportunityId,
+  });
 
-  const { data: recruitedApplicants } =
-    trpc.recruits.getRecruitedApplicants.useQuery(
-      { opportunityId },
-      { enabled: !!opportunityId }
-    );
+  const { data: recruitedApplicants } = useQuery({
+    queryKey: ["recruitments", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/recruitments", {
+        params: { opportunityId },
+      });
+      return res.data.data;
+    },
+    enabled: !!opportunityId,
+  });
 
-  const { data: myApplicationStatus } =
-    trpc.applications.getApplicationStatus.useQuery(
-      { opportunityId },
-      { enabled: !!opportunityId && !!session?.user }
-    );
+  const { data: myApplicationStatus } = useQuery({
+    queryKey: ["applicationStatus", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/applications/status/${opportunityId}`);
+      return res.data.data;
+    },
+    enabled: !!opportunityId && !!session?.user,
+  });
 
-  const utils = trpc.useUtils();
-
-  const deleteMutation = trpc.opportunities.deleteOpportunity.useMutation({
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await axiosAuth.delete(`/api/v1/opportunities/${id}`);
+      return res.data.data;
+    },
     onSuccess: () => {
-      utils.opportunities.getOrganizationOpportunities.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["organizationOpportunities"] });
       setIsDeleteDialogOpen(false);
       toast.success("Opportunity deleted successfully");
       router.push("/organisation/opportunities");
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to delete opportunity");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to delete opportunity");
       setIsDeleteDialogOpen(false);
     },
   });
 
-  const createShiftMutation = trpc.rosters.createShift.useMutation({
-    onSuccess: () => {
-      utils.rosters.getRosterShifts.invalidate({ opportunityId });
+  const invalidateRoster = () => {
+    queryClient.invalidateQueries({ queryKey: ["rosterShifts", opportunityId] });
+  };
+
+  const createShiftMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      const res = await axiosAuth.post("/api/v1/rosters/shifts", payload);
+      return res.data.data;
     },
+    onSuccess: invalidateRoster,
   });
 
-  const updateShiftMutation = trpc.rosters.updateShift.useMutation({
-    onSuccess: () => {
-      utils.rosters.getRosterShifts.invalidate({ opportunityId });
+  const updateShiftMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      const res = await axiosAuth.patch(`/api/v1/rosters/shifts/${payload.shiftId}`, payload);
+      return res.data.data;
     },
+    onSuccess: invalidateRoster,
   });
 
-  const deleteShiftMutation = trpc.rosters.deleteShift.useMutation({
-    onSuccess: () => {
-      utils.rosters.getRosterShifts.invalidate({ opportunityId });
+  const deleteShiftMutation = useMutation({
+    mutationFn: async (payload: { shiftId: string }) => {
+      const res = await axiosAuth.delete(`/api/v1/rosters/shifts/${payload.shiftId}`);
+      return res.data.data;
     },
+    onSuccess: invalidateRoster,
   });
 
-  const assignVolunteerMutation = trpc.rosters.assignVolunteer.useMutation({
-    onSuccess: () => {
-      utils.rosters.getRosterShifts.invalidate({ opportunityId });
+  const assignVolunteerMutation = useMutation({
+    mutationFn: async (payload: { shiftId: string; volunteerId: string }) => {
+      const res = await axiosAuth.post(`/api/v1/rosters/shifts/${payload.shiftId}/assign`, { volunteerId: payload.volunteerId });
+      return res.data.data;
     },
+    onSuccess: invalidateRoster,
   });
 
-  const unassignVolunteerMutation =
-    trpc.rosters.unassignVolunteer.useMutation({
-      onSuccess: () => {
-        utils.rosters.getRosterShifts.invalidate({ opportunityId });
-      },
-    });
-
-  const updateVolunteerStatusMutation =
-    trpc.rosters.updateVolunteerStatus.useMutation({
-      onSuccess: () => {
-        utils.rosters.getRosterShifts.invalidate({ opportunityId });
-      },
-    });
-
-  const signupForShiftMutation = trpc.rosters.signupForShift.useMutation({
-    onSuccess: () => {
-      utils.rosters.getRosterShifts.invalidate({ opportunityId });
+  const unassignVolunteerMutation = useMutation({
+    mutationFn: async (payload: { shiftId: string; volunteerId: string }) => {
+      const res = await axiosAuth.delete(`/api/v1/rosters/shifts/${payload.shiftId}/assign`, { data: { volunteerId: payload.volunteerId } });
+      return res.data.data;
     },
+    onSuccess: invalidateRoster,
   });
 
-  const withdrawFromShiftMutation = trpc.rosters.withdrawFromShift.useMutation({
-    onSuccess: () => {
-      utils.rosters.getRosterShifts.invalidate({ opportunityId });
+  const updateVolunteerStatusMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      const res = await axiosAuth.patch(`/api/v1/rosters/shifts/${payload.shiftId}/status`, payload);
+      return res.data.data;
     },
+    onSuccess: invalidateRoster,
+  });
+
+  const signupForShiftMutation = useMutation({
+    mutationFn: async (payload: { shiftId: string }) => {
+      const res = await axiosAuth.post(`/api/v1/rosters/shifts/${payload.shiftId}/signup`);
+      return res.data.data;
+    },
+    onSuccess: invalidateRoster,
+  });
+
+  const withdrawFromShiftMutation = useMutation({
+    mutationFn: async (payload: { shiftId: string }) => {
+      const res = await axiosAuth.post(`/api/v1/rosters/shifts/${payload.shiftId}/withdraw`);
+      return res.data.data;
+    },
+    onSuccess: invalidateRoster,
   });
 
   // Check if current user is a mentor for this opportunity
@@ -165,13 +208,14 @@ export default function OpportunityDetailContainer({
   const canAccessRoster =
     hasManagementAccess || isCurrentUserRecruited || isCurrentUserApproved;
 
-  const { data: rosterShiftsFromDb } =
-    trpc.rosters.getRosterShifts.useQuery(
-      { opportunityId },
-      {
-        enabled: !!opportunityId && !!canAccessRoster,
-      }
-    );
+  const { data: rosterShiftsFromDb } = useQuery({
+    queryKey: ["rosterShifts", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/rosters/opportunity/${opportunityId}/shifts`);
+      return res.data.data;
+    },
+    enabled: !!opportunityId && !!canAccessRoster,
+  });
 
   useEffect(() => {
     if (rosterShiftsFromDb) {

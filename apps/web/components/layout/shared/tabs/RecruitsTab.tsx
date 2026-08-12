@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Applicant, ApplicantsCard } from "@/components/layout/organisation/opportunities/ApplicantsCard";
 import MessageApplicantModal from "@/components/layout/organisation/opportunities/MessageApplicantModal";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 
 interface RecruitsTabProps {
@@ -32,11 +33,18 @@ export function RecruitsTab({
   const [recruitsSearchQuery, setRecruitsSearchQuery] = useState("");
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
+  const axiosAuth = useAxiosAuth();
 
-  const { data: recruitedApplicants, isLoading } = trpc.recruits.getRecruitedApplicants.useQuery(
-    { opportunityId },
-    { enabled: !!opportunityId }
-  );
+  const { data: recruitedApplicants, isLoading } = useQuery({
+    queryKey: ["recruitments", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/recruitments", {
+        params: { opportunityId },
+      });
+      return res.data.data;
+    },
+    enabled: !!opportunityId
+  });
 
   // Filter recruited applicants based on search query
   const filteredRecruitedApplicants = recruitedApplicants?.filter(

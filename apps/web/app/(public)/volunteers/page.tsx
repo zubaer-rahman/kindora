@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import SignupModal from "@/components/layout/opportunities/SignupModal";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
@@ -31,16 +32,21 @@ export default function PublicVolunteersPage() {
         setTimeout(() => setIsRefreshing(false), 1000);
     };
 
-    const { data: volunteersData, isLoading } =
-        trpc.users.getPublicVolunteers.useQuery(
-            {
-                page: currentPage,
-                limit: 9, // Standardized with opportunities
-                sortBy: "recently_added",
-                search: searchQuery,
-                location: location,
-            }
-        );
+    const { data: volunteersData, isLoading } = useQuery({
+        queryKey: ['publicVolunteers', currentPage, searchQuery, location],
+        queryFn: async () => {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/users/public/volunteers`, {
+                params: {
+                    page: currentPage,
+                    limit: 9, // Standardized with opportunities
+                    sortBy: "recently_added",
+                    search: searchQuery,
+                    location: location,
+                }
+            });
+            return res.data.data;
+        }
+    });
 
     const volunteers = (volunteersData?.users || []) as any[];
 

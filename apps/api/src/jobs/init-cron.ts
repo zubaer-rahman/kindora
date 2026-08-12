@@ -4,11 +4,4 @@
  */
 export function initializeCronJobs(): void {
   // No cron jobs currently configured
-}
-
-/**
- * Cleanup cron jobs when the server shuts down
- */
-export function cleanupCronJobs(): void {
-  // No cron jobs to clean up
 } 

@@ -2,7 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   MapPin,
@@ -25,11 +26,15 @@ export default function PublicOpportunityDetailPage() {
   const router = useRouter();
   const id = params.id as string;
 
-  const { data: opportunity, isLoading, isError } =
-    trpc.opportunities.getPublicOpportunity.useQuery(id, {
-      enabled: !!id,
-      retry: false,
-    });
+  const { data: opportunity, isLoading, isError } = useQuery({
+    queryKey: ['publicOpportunity', id],
+    queryFn: async () => {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/opportunities/public/${id}`);
+      return res.data.data;
+    },
+    enabled: !!id,
+    retry: false,
+  });
 
   if (isLoading) {
     return (

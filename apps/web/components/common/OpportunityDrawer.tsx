@@ -4,7 +4,8 @@ import { useEffect, useMemo } from "react";
 import { MapPin, Calendar, Users, Target, ExternalLink, Mail, Phone, Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import Loading from "@/app/loading";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
@@ -30,6 +31,7 @@ export default function OpportunityDrawer({
   const router = useRouter();
   const pathname = usePathname();
   const isOrganisation = session?.user?.role === "admin";
+  const axiosAuth = useAxiosAuth();
 
   // Favorite functionality for sidebar button
   const { isFavorite, isLoading: isFavoriteLoading, isToggling, toggleFavorite } = useFavorite(opportunityId || "");
@@ -39,7 +41,12 @@ export default function OpportunityDrawer({
     data: opportunity,
     isLoading,
     error,
-  } = trpc.opportunities.getOpportunity.useQuery(opportunityId || "", {
+  } = useQuery({
+    queryKey: ["opportunity", opportunityId],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/opportunities/${opportunityId}`);
+      return res.data.data;
+    },
     enabled: !!opportunityId && isOpen,
   });
 

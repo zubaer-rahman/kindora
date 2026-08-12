@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { Opportunity } from "@/types/opportunities";
 import { FilterSidebar, SearchBar, VolunteerOpportunityCard } from "@/components/common";
@@ -54,19 +55,24 @@ export default function SearchOpportunity() {
 
 
   // Fetch opportunities with filters
-  const { data: opportunitiesData, isLoading: isLoadingOpportunities } =
-    trpc.opportunities.getAllOpportunities.useQuery(
-      {
-        page: currentPage,
-        limit: 6,
-        search: filters.searchQuery || undefined,
-        categories:
-          filters.categories.length > 0 ? filters.categories : undefined,
-        commitmentType: filters.commitmentType,
-        location: filters.location || undefined,
-        sortBy: sortBy === "most_recent" ? "recently_added" : "best_matches",
-      }
-    );
+  const axiosAuth = useAxiosAuth();
+  const { data: opportunitiesData, isLoading: isLoadingOpportunities } = useQuery({
+    queryKey: ['opportunities', 'search', currentPage, filters, sortBy],
+    queryFn: async () => {
+      const res = await axiosAuth.get('/api/v1/opportunities', {
+        params: {
+          page: currentPage,
+          limit: 6,
+          search: filters.searchQuery || undefined,
+          categories: filters.categories.length > 0 ? filters.categories : undefined,
+          commitmentType: filters.commitmentType,
+          location: filters.location || undefined,
+          sortBy: sortBy === "most_recent" ? "recently_added" : "best_matches",
+        }
+      });
+      return res.data.data;
+    },
+  });
 
 
   const isLoading = isLoadingOpportunities;

@@ -8,27 +8,45 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { formatDistanceToNow } from "date-fns";
 // import { NotificationHistory } from "./notification-history";
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
-  const utils = trpc.useUtils();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
 
   // Get unread notification count
-  const { data: unreadCount } = trpc.notifications.getUnreadCount.useQuery(undefined, {
+  const { data: unreadCount } = useQuery({
+    queryKey: ["notificationsUnreadCount"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/notifications/unread-count");
+      return res.data.data;
+    },
     refetchInterval: 60000, // Refetch every 60 seconds (relaxed since global subscription handles it)
   });
 
   // Get notifications when popover is open
-  const { data: notificationsData } = trpc.notifications.getUserNotifications.useQuery(
-    { page: 1, limit: 10, unreadOnly: false },
-    { enabled: isOpen }
-  );
+  const { data: notificationsData } = useQuery({
+    queryKey: ["notifications", { page: 1, limit: 10, unreadOnly: false }],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/notifications", {
+        params: { page: 1, limit: 10, unreadOnly: false },
+      });
+      return res.data.data;
+    },
+    enabled: isOpen,
+  });
 
   // Get notification history for debugging
-  // const { data: notificationHistory, refetch: refetchHistory } = trpc.notifications.getNotificationHistory.useQuery(undefined, {
+  // const { data: notificationHistory, refetch: refetchHistory } = useQuery({
+  //   queryKey: ["notificationsHistory"],
+  //   queryFn: async () => {
+  //     const res = await axiosAuth.get("/api/v1/notifications/history");
+  //     return res.data.data;
+  //   },
   //   enabled: false // Only fetch when needed
   // });
 
@@ -40,18 +58,26 @@ export function NotificationBell() {
   // Debug logging removed
 
   // Mark notification as read mutation
-  const markAsReadMutation = trpc.notifications.markAsRead.useMutation({
+  const markAsReadMutation = useMutation({
+    mutationFn: async (notificationId: string) => {
+      const res = await axiosAuth.patch(`/api/v1/notifications/read/${notificationId}`);
+      return res.data.data;
+    },
     onSuccess: () => {
-      utils.notifications.getUnreadCount.invalidate();
-      utils.notifications.getUserNotifications.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["notificationsUnreadCount"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 
   // Mark all as read mutation
-  const markAllAsReadMutation = trpc.notifications.markAllAsRead.useMutation({
+  const markAllAsReadMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosAuth.post("/api/v1/notifications/read-all");
+      return res.data.data;
+    },
     onSuccess: () => {
-      utils.notifications.getUnreadCount.invalidate();
-      utils.notifications.getUserNotifications.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["notificationsUnreadCount"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 

@@ -3,7 +3,8 @@
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   MapPin,
@@ -61,17 +62,24 @@ export default function PublicMentorProfilePage() {
   const router = useRouter();
   const id = params.id as string;
 
-  const { data: profile, isLoading, isError } =
-    trpc.mentorProfile.getPublicMentorProfile.useQuery(
-      { userId: id },
-      { enabled: !!id, retry: false }
-    );
+  const { data: profile, isLoading, isError } = useQuery({
+    queryKey: ['publicMentorProfile', id],
+    queryFn: async () => {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/mentor-profiles/public/${id}`);
+      return res.data.data;
+    },
+    enabled: !!id,
+    retry: false
+  });
 
-  const { data: opportunities = [] } =
-    trpc.opportunities.getPublicOpportunitiesByMentor.useQuery(
-      { userId: id },
-      { enabled: !!id && !!profile }
-    );
+  const { data: opportunities = [] } = useQuery({
+    queryKey: ['publicOpportunitiesByMentor', id],
+    queryFn: async () => {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/opportunities/public/by-mentor/${id}`);
+      return res.data.data;
+    },
+    enabled: !!id && !!profile
+  });
 
   if (isLoading) {
     return (

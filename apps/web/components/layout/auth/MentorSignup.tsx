@@ -3,59 +3,63 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { signIn, useSession } from "next-auth/react";
 import { SignupStep } from "@/components/layout/auth/SignupStep";
 import { MentorSignupForm, mentorSignupSchema } from "@/types/auth";
 import { useSearchParams, useRouter } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
+import { useEmailUniqueness } from "@/hooks/useEmailUniqueness";
+import {
+  registerUser,
+  SIGNUP_SUCCESS_UNVERIFIED,
+  EMAIL_ALREADY_REGISTERED,
+  getApiError,
+} from "@/lib/auth-api";
 import toast from "react-hot-toast";
 import { Form } from "@/components/ui/form";
-import { UserRole } from "@/server/db/interfaces/user";
 import { Loader2 } from "lucide-react";
 
+const EMAIL_TAKEN_MESSAGE =
+  "This email is already registered. Please use a different email or log in.";
 
 export default function MentorSignup() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const utils = trpc.useUtils();
+    const queryClient = useQueryClient();
+    const axiosAuth = useAxiosAuth();
     const { isLoading, isAuthenticated, session, updateSession } = useAuthCheck();
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [termsError, setTermsError] = useState<string | null>(null);
     const [isSignupLoading, setIsSignupLoading] = useState(false);
     const [isProfileSetupComplete, setIsProfileSetupComplete] = useState(false);
     const redirectAfterProfileRef = useRef<"profile" | "dashboard">("dashboard");
 
-    const updateUser = trpc.users.updateUser.useMutation();
-    const setupMentorProfile = trpc.users.setupMentorProfile.useMutation({
+    const updateUser = useMutation({
+        mutationFn: async (payload: { mentor_profile: string }) => {
+            const res = await axiosAuth.patch("/api/v1/users/me", payload);
+            return res.data;
+        },
+    });
+
+    const setupMentorProfile = useMutation({
+        mutationFn: async (payload: any) => {
+            const res = await axiosAuth.post("/api/v1/users/me/mentor-profile", payload);
+            return res.data.data;
+        },
         onSuccess: async (data) => {
             try {
-                await updateUser.mutateAsync({
-                    mentor_profile: data._id,
-                });
-
-                await utils.users.profileCheckup.invalidate();
-                await utils.users.profileCheckup.refetch();
-
-                // Update session to pick up new role and profile
-                if (typeof updateSession === 'function') {
-                    await updateSession();
-                }
-
+                await updateUser.mutateAsync({ mentor_profile: data._id });
+                await queryClient.invalidateQueries({ queryKey: ["profileCheckup"] });
+                if (typeof updateSession === "function") await updateSession();
                 const goToProfile = redirectAfterProfileRef.current === "profile";
                 toast.success(goToProfile ? "Profile created. Add your details below." : "Profile completed! Taking you to the app…");
                 setIsProfileSetupComplete(true);
                 setIsLoggedIn(true);
-
                 setTimeout(() => {
-                    if (goToProfile) {
-                        router.push("/mentor/profile");
-                    } else {
-                        router.push("/mentor/dashboard");
-                    }
+                    router.push(goToProfile ? "/mentor/profile" : "/mentor/dashboard");
                 }, 800);
             } catch (error) {
                 console.error("Error updating user with profile:", error);
@@ -63,8 +67,8 @@ export default function MentorSignup() {
                 setIsSignupLoading(false);
             }
         },
-        onError: (error) => {
-            setError(error.message || "Failed to create mentor account");
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || error.message || "Failed to create mentor account");
             setIsSignupLoading(false);
         },
     });
@@ -79,16 +83,21 @@ export default function MentorSignup() {
         },
     });
 
+    const email = form.watch("email");
+    const { isTaken } = useEmailUniqueness(email);
+
+    useEffect(() => {
+        if (isTaken) {
+            form.setError("email", {
+                type: "manual",
+                message: EMAIL_TAKEN_MESSAGE,
+            });
+        }
+    }, [isTaken, form]);
+
     const handleSignup = async () => {
         if (!termsAccepted) {
             setTermsError("You must accept the terms and conditions");
-            return;
-        }
-
-        const password = form.getValues("password");
-        const confirmPassword = form.getValues("confirm_password");
-        if (password !== confirmPassword) {
-            setError("Please confirm your password");
             return;
         }
 
@@ -144,26 +153,24 @@ export default function MentorSignup() {
     };
 
     const handleCompleteProfileOnly = async () => {
-        setError(null);
         redirectAfterProfileRef.current = "profile";
         setIsSignupLoading(true);
         try {
             await setupMentorProfile.mutateAsync(defaultMentorProfilePayload);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to complete profile");
+            toast.error(err instanceof Error ? err.message : "Failed to complete profile");
         } finally {
             setIsSignupLoading(false);
         }
     };
 
     const handleSkipToDashboard = async () => {
-        setError(null);
         redirectAfterProfileRef.current = "dashboard";
         setIsSignupLoading(true);
         try {
             await setupMentorProfile.mutateAsync(defaultMentorProfilePayload);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to complete profile");
+            toast.error(err instanceof Error ? err.message : "Failed to complete profile");
         } finally {
             setIsSignupLoading(false);
         }
@@ -171,64 +178,55 @@ export default function MentorSignup() {
 
     const onSubmit = async (data: MentorSignupForm) => {
         if (form.formState.isSubmitting) return;
+
+        if (isTaken) {
+            form.setError("email", {
+                type: "manual",
+                message: EMAIL_TAKEN_MESSAGE,
+            });
+            return;
+        }
+
         try {
-            setError(null);
             setIsSignupLoading(true);
 
             const referral = searchParams?.get("referral");
 
-            // Check if email is already taken
-            const emailCheck = await utils.auth.checkEmail.fetch({ email: data.email });
-            if (emailCheck.exists) {
-                toast.error("This email is already registered. Please use a different email or log in.");
-                setIsSignupLoading(false);
-                return;
-            }
-
-            const signInResult = await signIn("credentials", {
+            const response = await registerUser({
+                name: data.name,
                 email: data.email,
                 password: data.password,
-                name: data.name,
-                role: UserRole.MENTOR,
-                redirect: false,
-                action: "signup",
+                role: "mentor",
                 referred_by: referral || undefined,
             });
 
-            if (signInResult?.error) {
-                const msg = signInResult.error;
-                if (msg.includes("check your email") || msg.includes("Registration successful")) {
-                    toast.success(msg);
-                    router.push("/login");
-                    setIsSignupLoading(false);
-                    return;
-                }
-                toast.error(msg || "Account with this email already exists. Please provide the correct password.");
-                setIsSignupLoading(false);
+            if (response.data?.code === SIGNUP_SUCCESS_UNVERIFIED) {
+                toast.success(
+                    "Account created! Please check your email to verify your account."
+                );
+                router.push("/login");
                 return;
             }
 
             await setupMentorProfile.mutateAsync(defaultMentorProfilePayload);
-
-            setIsSignupLoading(false);
-        } catch (err: unknown) {
+        } catch (err) {
             console.error("Error during signup:", err);
-            setError(
-                err instanceof Error ? err.message : "An error occurred during signup"
-            );
+            const apiError = getApiError(err);
+            if (apiError.code === EMAIL_ALREADY_REGISTERED) {
+                form.setError("email", {
+                    type: "manual",
+                    message: EMAIL_TAKEN_MESSAGE,
+                });
+                return;
+            }
+            toast.error(apiError.message || "An error occurred during signup");
         } finally {
             setIsSignupLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8 pb-24">
-            {error && (
-                <div className="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg mx-auto max-w-xl">
-                    {error}
-                </div>
-            )}
-
+        <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8 pb-32">
             {isLoggedIn && !isAuthenticated && !isProfileSetupComplete && (
                 <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl space-y-6">
                     <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg">

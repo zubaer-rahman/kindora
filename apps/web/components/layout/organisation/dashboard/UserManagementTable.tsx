@@ -1,12 +1,12 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import {
-  useReactTable,
+  useLegacyTable,
   getCoreRowModel,
   getPaginationRowModel,
-  flexRender,
-  createColumnHelper,
-} from "@tanstack/react-table";
+  legacyCreateColumnHelper,
+} from "@tanstack/react-table/legacy";
+import { flexRender } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,8 @@ import {
   Crown,
   Shield,
 } from "lucide-react";
-import { trpc } from "@/utils/trpc";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -37,43 +38,56 @@ interface User {
   avatar?: string;
 }
 
-const columnHelper = createColumnHelper<User>();
+const columnHelper = legacyCreateColumnHelper<User>();
 
 function useUserMutations() {
-  const utils = trpc.useUtils();
   const { data: session } = useSession();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const updateRoleMutation = trpc.users.updateUserRole.useMutation({
+  const updateRoleMutation = useMutation({
+    mutationFn: async (payload: { userId: string; role: "admin" | "mentor" }) => {
+      const res = await axiosAuth.patch(`/api/v1/users/${payload.userId}/role`, { role: payload.role });
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("User role updated successfully");
-      utils.users.getOrganizationUsers.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["organizationUsers"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to update user role");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to update user role");
     },
   });
 
-  const demoteMentorMutation = trpc.users.demoteMentor.useMutation({
+  const demoteMentorMutation = useMutation({
+    mutationFn: async (payload: { userId: string }) => {
+      const res = await axiosAuth.post(`/api/v1/users/${payload.userId}/demote`);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Mentor role removed successfully");
-      utils.users.getOrganizationUsers.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["organizationUsers"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to remove mentor role");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to remove mentor role");
     },
   });
 
-  const deleteUserMutation = trpc.users.deleteUser.useMutation({
+  const deleteUserMutation = useMutation({
+    mutationFn: async (payload: { userId: string }) => {
+      const res = await axiosAuth.delete(`/api/v1/users/${payload.userId}`);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("User deleted successfully");
-      utils.users.getOrganizationUsers.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["organizationUsers"] });
       setIsDeleteDialogOpen(false);
       setUserToDelete(null);
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to delete user");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to delete user");
       setIsDeleteDialogOpen(false);
       setUserToDelete(null);
     },
@@ -123,10 +137,15 @@ export default function UserManagementTable({
 }: {
   organizationId: string;
 }) {
-  const { data: users, isLoading } = trpc.users.getOrganizationUsers.useQuery(
-    { organizationId },
-    { enabled: !!organizationId }
-  );
+  const axiosAuth = useAxiosAuth();
+  const { data: users, isLoading } = useQuery({
+    queryKey: ["organizationUsers"],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/users/organization/${organizationId}`);
+      return res.data.data;
+    },
+    enabled: !!organizationId
+  });
 
   const {
     updateRoleMutation,
@@ -324,13 +343,14 @@ export default function UserManagementTable({
     ]
   );
 
-  const table = useReactTable({
+  const table = useLegacyTable({
     data: filteredUsers,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
+        pageIndex: 0,
         pageSize: 10,
       },
     },

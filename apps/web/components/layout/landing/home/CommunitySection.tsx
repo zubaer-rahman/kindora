@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import "swiper/css";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 const CARD_BG_COLORS = [
   "bg-[#8FB8F2]",
@@ -26,10 +27,15 @@ const FALLBACK_PLACEHOLDERS = [
 const DEFAULT_AVATAR = "/images/new-landing-hero/slide-images/people_1.png";
 
 export default function CommunitySection() {
-  const { data: mentors, isLoading, error } = trpc.mentorProfile.getPublicMentors.useQuery(
-    undefined,
-    { staleTime: 60 * 1000 }
-  );
+  const { data: mentors, isLoading, error } = useQuery({
+    queryKey: ['publicMentors'],
+    queryFn: async () => {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/mentor-profiles/public`, {
+        params: { limit: 3 }
+      });
+      return res.data.data;
+    }
+  });
 
   if (error) {
     console.error("CommunitySection Query Error:", error);

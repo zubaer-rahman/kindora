@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { OrganisationCard, SearchBar, CustomTabs } from "@/components/common";
 import MentorDashboardSidebar from "./MentorDashboardSidebar";
@@ -15,6 +17,7 @@ export default function FindOrganisation() {
     const { filters } = useSearch();
     const [currentPage, setCurrentPage] = useState(1);
     const [sortBy, setSortBy] = useState<"name" | "updated">("updated");
+    const axiosAuth = useAxiosAuth();
     const params = useParams();
     const slug = params.slug as string[];
     const activeTab = slug?.[0] || "best-matches";
@@ -30,27 +33,37 @@ export default function FindOrganisation() {
     ]);
 
     // Fetch organisations with filters
-    const { data: orgsData, isLoading: isLoadingOrgs } =
-        trpc.organizationProfile.getAllOrganizations.useQuery(
-            {
-                page: (activeTab === "best-matches") ? currentPage : 1,
-                limit: (activeTab === "best-matches") ? 6 : 1,
-                search: filters.searchQuery || undefined,
-                category: filters.categories.length > 0 ? filters.categories[0] : undefined,
-                sortBy: sortBy,
-            },
-            { enabled: activeTab === "best-matches" }
-        );
+    const { data: orgsData, isLoading: isLoadingOrgs } = useQuery({
+        queryKey: ['allOrganizations', (activeTab === "best-matches") ? currentPage : 1, filters, sortBy],
+        queryFn: async () => {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/organization-profiles`, {
+                params: {
+                    page: (activeTab === "best-matches") ? currentPage : 1,
+                    limit: (activeTab === "best-matches") ? 6 : 1,
+                    search: filters.searchQuery || undefined,
+                    category: filters.categories.length > 0 ? filters.categories[0] : undefined,
+                    sortBy: sortBy,
+                }
+            });
+            return res.data.data;
+        },
+        enabled: activeTab === "best-matches"
+    });
 
     // Fetch user's saved organisations
-    const { data: savedOrgsData, isLoading: isLoadingSaved } =
-        trpc.organizationProfile.getFavoriteOrganizationsWithPagination.useQuery(
-            {
-                page: activeTab === "saved" ? currentPage : 1,
-                limit: activeTab === "saved" ? 6 : 1,
-            },
-            { enabled: activeTab === "saved" }
-        );
+    const { data: savedOrgsData, isLoading: isLoadingSaved } = useQuery({
+        queryKey: ['favoriteOrganizations', activeTab === "saved" ? currentPage : 1],
+        queryFn: async () => {
+            const res = await axiosAuth.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/organization-profiles/favorites`, {
+                params: {
+                    page: activeTab === "saved" ? currentPage : 1,
+                    limit: activeTab === "saved" ? 6 : 1,
+                }
+            });
+            return res.data.data;
+        },
+        enabled: activeTab === "saved"
+    });
 
     const isLoading = activeTab === "best-matches" ? isLoadingOrgs : isLoadingSaved;
 

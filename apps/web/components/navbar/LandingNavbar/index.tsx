@@ -6,8 +6,9 @@ import { Menu, X, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
-import { trpc } from "@/utils/trpc";
 import { UserMenu } from "@/components/navbar/UserMenu";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { SessionUser } from "@/types/navigation";
@@ -27,6 +28,7 @@ export default function LandingNavbar() {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const { isAuthenticated } = useAuthCheck();
+  const axiosAuth = useAxiosAuth();
 
   const authPath = isAuthPath(pathname);
   const protectedPath = isProtectedPath(pathname);
@@ -35,19 +37,26 @@ export default function LandingNavbar() {
   const isSigninPath = pathname?.includes("login");
 
   // Fetch conversations to get total unread count with polling
-  const { data: conversations } = trpc.messages.getConversations.useQuery(
-    undefined,
-    {
-      enabled: isAuthenticated,
-      staleTime: 5 * 60 * 1000,
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      refetchInterval: 5000,
-    }
-  );
+  const { data: conversations } = useQuery({
+    queryKey: ["conversations"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/messages/conversations");
+      return res.data.data;
+    },
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchInterval: 5000,
+  });
 
   // Fetch groups to get total unread count with polling
-  const { data: groups } = trpc.messages.getGroups.useQuery(undefined, {
+  const { data: groups } = useQuery({
+    queryKey: ["groups"],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/messages/groups");
+      return res.data.data;
+    },
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -119,7 +128,7 @@ export default function LandingNavbar() {
 
   return (
     <>
-      <nav className="flex justify-center py-3 px-4 sm:px-6 lg:px-8 h-[100px] absolute top-0 left-0 w-full z-50">
+      <nav className="flex justify-center py-3 px-4 sm:px-6 lg:px-8 h-[100px] fixed top-0 left-0 w-full z-50">
         <div
           className="max-w-[1170px] flex items-center justify-between relative z-[60] bg-white border border-gray-200 w-full rounded-full shadow-lg h-20"
         >
@@ -176,7 +185,7 @@ export default function LandingNavbar() {
                         )}
                         <Button
                           asChild
-                          className="bg-primary hover:bg-primary/95 text-white rounded-full h-10 px-6 text-sm font-bold shadow-md shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+                          className="bg-primary hover:bg-primary/95 text-white rounded-full h-10  px-6 text-sm font-bold shadow-md shadow-primary/20 transition-all hover:scale-105 active:scale-95"
                         >
                           <Link
                             href={

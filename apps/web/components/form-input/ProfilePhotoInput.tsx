@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Camera, Loader2, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { trpc } from '@/utils/trpc';
+import { useMutation } from '@tanstack/react-query';
+import { useAxiosAuth } from '@/hooks/useAxiosAuth';
 import toast from 'react-hot-toast';
-
 import { UseFormSetValue } from 'react-hook-form';
 
 type ProfilePhotoInputProps<Ev extends Record<string, any>> = {
@@ -25,18 +25,23 @@ export function ProfilePhotoInput<Ev extends Record<string, any>>({
 }: ProfilePhotoInputProps<Ev>) {
   const [uploadedLink, setUploadedLink] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const axiosAuth = useAxiosAuth();
 
-  const uploadMutation = trpc.upload.uploadFile.useMutation({
-    onSuccess: (response) => {
-      const link = response.data.link;
+  const uploadMutation = useMutation({
+    mutationFn: async (payload: { base64File: string; fileName: string; fileType: string; folder: string }) => {
+      const res = await axiosAuth.post('/api/v1/upload', payload);
+      return res.data.data;
+    },
+    onSuccess: (data) => {
+      const link = data.link;
       setUploadedLink(link);
       setValue(name, link as any);
       onUploadStateChange?.(false);
       toast.success('Photo uploaded successfully');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       onUploadStateChange?.(false);
-      toast.error(error.message || 'Failed to upload photo');
+      toast.error(error?.response?.data?.message || 'Failed to upload photo');
     },
   });
 

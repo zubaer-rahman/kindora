@@ -7,7 +7,12 @@ import * as authService from "../services/auth.service.js";
 export const register = catchAsync(async (req, res: Response) => {
   const body = registerSchema.parse(req.body);
   const result = await authService.register(body);
-  sendResponse(res, 201, result, "Account created successfully.");
+  sendResponse(
+    res,
+    201,
+    result,
+    result?.message || "Account created successfully.",
+  );
 });
 
 export const login = catchAsync(async (req, res: Response) => {
@@ -19,4 +24,13 @@ export const login = catchAsync(async (req, res: Response) => {
 export const getMe = catchAsync(async (req: AuthRequest, res: Response) => {
   const user = await authService.getMe(req.user!.id);
   sendResponse(res, 200, user);
+});
+
+import { z } from "zod";
+const checkEmailSchema = z.object({ email: z.string().email() });
+
+export const checkEmail = catchAsync(async (req, res: Response) => {
+  const { email } = checkEmailSchema.parse(req.body);
+  const result = await authService.checkEmail(email);
+  sendResponse(res, 200, result);
 });

@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import {
     Heart,
     MapPin,
@@ -17,7 +18,7 @@ import { useState } from "react";
 import Image from "next/image";
 
 interface OrganisationCardProps {
-    organisation: any; // Using any for now to handle the trpc joined result
+    organisation: any; // Using any for now
     onCardClick?: (organisation: any) => void;
 }
 
@@ -28,17 +29,26 @@ export default function OrganisationCard({
     const router = useRouter();
     const { data: session } = useSession();
     const [isExpanded, setIsExpanded] = useState(false);
+    const axiosAuth = useAxiosAuth();
+    const queryClient = useQueryClient();
 
-    const utils = trpc.useUtils();
-    const { data: favoriteData } = trpc.organizationProfile.getFavoriteStatus.useQuery(
-        { organizationId: organisation._id },
-        { enabled: !!session?.user && !!organisation._id }
-    );
+    const { data: favoriteData } = useQuery({
+        queryKey: ["organizationFavoriteStatus", organisation._id],
+        queryFn: async () => {
+            const res = await axiosAuth.get(`/api/v1/organization-profiles/favorites/status/${organisation._id}`);
+            return res.data.data;
+        },
+        enabled: !!session?.user && !!organisation._id,
+    });
 
-    const toggleFavoriteMutation = trpc.organizationProfile.toggleFavorite.useMutation({
+    const toggleFavoriteMutation = useMutation({
+        mutationFn: async (payload: { organizationId: string }) => {
+            const res = await axiosAuth.put(`/api/v1/organization-profiles/favorites/${payload.organizationId}`);
+            return res.data.data;
+        },
         onSuccess: () => {
-            utils.organizationProfile.getFavoriteStatus.invalidate({ organizationId: organisation._id });
-            utils.organizationProfile.getFavoriteOrganizationsWithPagination.invalidate();
+            queryClient.invalidateQueries({ queryKey: ["organizationFavoriteStatus", organisation._id] });
+            queryClient.invalidateQueries({ queryKey: ["favoriteOrganizations"] });
         },
     });
 

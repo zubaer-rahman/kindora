@@ -7,7 +7,8 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { trpc } from "@/utils/trpc";
+import { useMutation } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 
 interface Volunteer {
@@ -39,15 +40,20 @@ export default function MessageDialog({
   volunteer,
 }: MessageDialogProps) {
   const [message, setMessage] = useState("");
+  const axiosAuth = useAxiosAuth();
 
-  const sendMessageMutation = trpc.messages.sendMessage.useMutation({
+  const sendMessageMutation = useMutation({
+    mutationFn: async (payload: { receiverId: string; content: string }) => {
+      const res = await axiosAuth.post("/api/v1/messages", payload);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Message sent successfully!");
       onOpenChange(false);
       setMessage("");
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to send message");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to send message");
     },
   });
 

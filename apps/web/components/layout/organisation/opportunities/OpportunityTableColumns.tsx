@@ -1,11 +1,11 @@
 import React from "react";
-import { createColumnHelper } from "@tanstack/react-table";
+import { legacyCreateColumnHelper } from "@tanstack/react-table/legacy";
 import type { Opportunity } from "@/types/opportunities";
 import OrganizationAvatar from "@/components/ui/OrganizationAvatar";
 import OpportunityActionsDropdown from "./OpportunityActionsDropdown";
 import { formatTimeToAMPM } from "@/utils/helpers/formatTime";
 
-const columnHelper = createColumnHelper<Opportunity>();
+const columnHelper = legacyCreateColumnHelper<Opportunity>();
 
 interface OpportunityTableColumnsProps {
   activeTab: string;

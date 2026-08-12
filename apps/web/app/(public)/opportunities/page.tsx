@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { trpc } from "@/utils/trpc";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import { Opportunity } from "@/types/opportunities";
 import { OpportunityCard } from "@/components/common";
 import SignupModal from "@/components/layout/opportunities/SignupModal";
@@ -33,16 +34,21 @@ export default function PublicOpportunitiesPage() {
     };
 
     // Fetch public opportunities
-    const { data: opportunitiesData, isLoading } =
-        trpc.opportunities.getPublicOpportunities.useQuery(
-            {
-                page: currentPage,
-                limit: 9,
-                sortBy: "recently_added",
-                search: searchQuery,
-                location: location,
-            }
-        );
+    const { data: opportunitiesData, isLoading } = useQuery({
+        queryKey: ['publicOpportunities', currentPage, searchQuery, location],
+        queryFn: async () => {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/opportunities/public`, {
+                params: {
+                    page: currentPage,
+                    limit: 9,
+                    sortBy: "recently_added",
+                    search: searchQuery,
+                    location: location,
+                }
+            });
+            return res.data.data;
+        }
+    });
 
     const opportunities = (opportunitiesData?.opportunities || []) as unknown as Opportunity[];
 

@@ -1,5 +1,4 @@
-export { ProfileCard, ProfilePictureCard } from './ProfileCard';
-export { OrganizationImagesCard } from './OrganizationImagesCard';
+export { ProfileCard } from './ProfileCard';
 export { 
   InformationCard, 
   InfoField, 

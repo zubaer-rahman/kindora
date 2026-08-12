@@ -4,7 +4,8 @@ import { FavoriteButton } from "@/components/buttons/FavoriteButton";
 import { useSession } from "next-auth/react";
 import { formatTimeToAMPM } from "@/utils/helpers/formatTime";
 import { MapPin, Users, Calendar, Clock, ExternalLink, Target, Mail, Phone } from "lucide-react";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { toast } from "react-hot-toast";
 import ConfirmationDialog from "@/components/modals/ConfirmationDialog";
 import { useState, useMemo } from "react";
@@ -54,6 +55,8 @@ interface PostContentProps {
 
 export function PostContent({ opportunity, }: PostContentProps) {
   const { data: session } = useSession();
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
   const isOrganisation = session?.user?.role === "admin";
   const isCreator = session?.user?.id === opportunity.created_by?._id;
 
@@ -67,22 +70,29 @@ export function PostContent({ opportunity, }: PostContentProps) {
     location: opportunity.location,
   };
 
-  const { data: applicationStatus, refetch: refetchStatus, isLoading: isStatusLoading } = trpc.applications.getApplicationStatus.useQuery(
-    { opportunityId: opportunity._id },
-    { enabled: !!session?.user?.id }
-  );
-  const utils = trpc.useUtils();
-  const revokeMutation = trpc.applications.revokeApplication.useMutation({
+  const { data: applicationStatus, refetch: refetchStatus, isLoading: isStatusLoading } = useQuery({
+    queryKey: ["applicationStatus", opportunity._id],
+    queryFn: async () => {
+      const res = await axiosAuth.get(`/api/v1/applications/status/${opportunity._id}`);
+      return res.data.data;
+    },
+    enabled: !!session?.user?.id
+  });
+  const revokeMutation = useMutation({
+    mutationFn: async (payload: { opportunityId: string }) => {
+      const res = await axiosAuth.delete(`/api/v1/applications/${payload.opportunityId}`);
+      return res.data.data;
+    },
     onSuccess: () => {
       toast.success("Application withdrawn successfully");
-      utils.applications.getCurrentUserActiveApplications.invalidate();
-      utils.applications.getCurrentUserActiveApplicationsCount.invalidate();
-      utils.applications.getCurrentUserRecentApplications.invalidate();
-      utils.applications.getCurrentUserRecentApplicationsCount.invalidate();
+      queryClient.invalidateQueries({ queryKey: ["activeApplications"] });
+      queryClient.invalidateQueries({ queryKey: ["applicationsActiveCount"] });
+      queryClient.invalidateQueries({ queryKey: ["applicationsRecent"] });
+      queryClient.invalidateQueries({ queryKey: ["applicationsRecentCount"] });
       refetchStatus();
     },
-    onError: (err) => {
-      toast.error(err.message || "Failed to withdraw application");
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || "Failed to withdraw application");
     },
   });
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);

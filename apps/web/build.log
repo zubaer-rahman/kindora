@@ -1,0 +1,821 @@
+
+> web@0.1.0 build /media/zubaer-sumon/OmniumGatherum3/projects/personal/kindora/apps/web
+> next build
+
+▲ Next.js 16.3.0 (Turbopack)
+⚠ turbopack.root should be absolute, using: /media/zubaer-sumon/OmniumGatherum3/projects/personal/kindora
+✓ Running next.config.ts took 17ms
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 25 errors:
+./apps/api/src/validators/auth.validator.ts:2:1
+Error: Module not found: Can't resolve '../db/interfaces/user.js'
+  [90m1 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { [33mUserRole[0m } [36mfrom[0m [32m"../db/interfaces/user.js"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m
+  [90m4 |[0m [36mexport[0m [36mconst[0m registerSchema = z.object({
+  [90m5 |[0m   name: z.string().min([35m1[0m),
+
+
+
+Import traces:
+  Client Component Browser:
+    ./apps/api/src/validators/auth.validator.ts [Client Component Browser]
+    ./apps/web/utils/constants/index.ts [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/api/src/validators/auth.validator.ts [Client Component SSR]
+    ./apps/web/utils/constants/index.ts [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./apps/api/src/config/mongoose.ts:2:1
+Error: Module not found: Can't resolve './env.js'
+  [90m1 |[0m [36mimport[0m mongoose [36mfrom[0m [32m'mongoose'[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m env [36mfrom[0m [32m'./env.js'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m
+  [90m4 |[0m [36mconst[0m connectToDatabase = [36masync[0m () => {
+  [90m5 |[0m   [36mif[0m (mongoose.connection.readyState >= [35m1[0m) [36mreturn[0m;
+
+
+
+Import traces:
+  App Route:
+    ./apps/api/src/config/mongoose.ts
+    ./apps/web/auth/options.ts
+    ./apps/web/app/api/auth/[...nextauth]/route.ts
+
+  Server Component:
+    ./apps/api/src/config/mongoose.ts
+    ./apps/web/auth/options.ts
+    ./apps/web/auth/index.ts
+    ./apps/web/app/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./apps/web/components/layout/organisation/OrganizationProfile.tsx:15:1
+Error: Module not found: Can't resolve '@/server/modules/users/users.validation'
+  [90m13 |[0m } [36mfrom[0m [32m"@/utils/constants"[0m;
+  [90m14 |[0m [36mimport[0m { [33mSKILL_OPTIONS[0m } [36mfrom[0m [32m"@/utils/constants"[0m;
+[31m[1m>[0m [90m15 |[0m [36mimport[0m { userValidation } [36mfrom[0m [32m"@/server/modules/users/users.validation"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m16 |[0m [36mimport[0m { [33mPhoneField[0m } [36mfrom[0m [32m"@/components/form-input/PhoneField"[0m;
+  [90m17 |[0m [36mimport[0m { useEffect, useState } [36mfrom[0m [32m"react"[0m;
+  [90m18 |[0m [36mimport[0m [33mNextImage[0m [36mfrom[0m [32m"next/image"[0m;
+
+Import map: aliased to relative '../api/src/modules/users/users.validation' inside of [project]/apps/web
+
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/OrganizationProfile.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/profile/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/profile/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/OrganizationProfile.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/profile/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/profile/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./apps/web/utils/constants/index.ts:1:1
+Error: Export authValidation doesn't exist in target module
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { authValidation } [36mfrom[0m [32m"@/server/validators/auth.validator"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { userValidation } [36mfrom[0m [32m"@/server/validators/user.validator"[0m;
+  [90m3 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+  [90m4 |[0m [36mimport[0m { volunteerValidation } [36mfrom[0m [32m"@/server/validators/volunteer-profile.validator"[0m;
+
+The export authValidation was not found in module [project]/apps/api/src/validators/auth.validator.ts [app-client] (ecmascript).
+Did you mean to import loginSchema?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/utils/constants/index.ts [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/utils/constants/index.ts [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+
+./apps/web/utils/constants/index.ts:1:1
+Error: Export authValidation doesn't exist in target module
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { authValidation } [36mfrom[0m [32m"@/server/validators/auth.validator"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { userValidation } [36mfrom[0m [32m"@/server/validators/user.validator"[0m;
+  [90m3 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+  [90m4 |[0m [36mimport[0m { volunteerValidation } [36mfrom[0m [32m"@/server/validators/volunteer-profile.validator"[0m;
+
+The export authValidation was not found in module [project]/apps/api/src/validators/auth.validator.ts [app-ssr] (ecmascript).
+Did you mean to import loginSchema?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/utils/constants/index.ts [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/utils/constants/index.ts [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+
+./apps/web/components/form-input/rich-text-editor/TiptapEditor.tsx:7:1
+Error: Export default doesn't exist in target module
+  [90m 5 |[0m [36mimport[0m [33mTextAlign[0m [36mfrom[0m [32m"@tiptap/extension-text-align"[0m;
+  [90m 6 |[0m [36mimport[0m [33mColor[0m [36mfrom[0m [32m"@tiptap/extension-color"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m [33mTextStyle[0m [36mfrom[0m [32m"@tiptap/extension-text-style"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"@tiptap/extension-link"[0m;
+  [90m 9 |[0m [36mimport[0m [33mImage[0m [36mfrom[0m [32m"@tiptap/extension-image"[0m;
+  [90m10 |[0m [36mimport[0m { [33mControllerRenderProps[0m, [33mFieldValues[0m, [33mPath[0m } [36mfrom[0m [32m"react-hook-form"[0m;
+
+The export default was not found in module [project]/node_modules/.pnpm/@tiptap+extension-text-style@3.29.2_@tiptap+core@3.29.2_@tiptap+pm@3.29.2_/node_modules/@tiptap/extension-text-style/dist/index.js [app-client] (ecmascript).
+Did you mean to import LineHeight?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/form-input/rich-text-editor/TiptapEditor.tsx [Client Component Browser]
+    ./apps/web/components/form-input/FormRichTextEditor.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/form-input/rich-text-editor/TiptapEditor.tsx [Client Component SSR]
+    ./apps/web/components/form-input/FormRichTextEditor.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/page.tsx [Server Component]
+
+
+./apps/web/components/form-input/rich-text-editor/TiptapEditor.tsx:7:1
+Error: Export default doesn't exist in target module
+  [90m 5 |[0m [36mimport[0m [33mTextAlign[0m [36mfrom[0m [32m"@tiptap/extension-text-align"[0m;
+  [90m 6 |[0m [36mimport[0m [33mColor[0m [36mfrom[0m [32m"@tiptap/extension-color"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m [33mTextStyle[0m [36mfrom[0m [32m"@tiptap/extension-text-style"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"@tiptap/extension-link"[0m;
+  [90m 9 |[0m [36mimport[0m [33mImage[0m [36mfrom[0m [32m"@tiptap/extension-image"[0m;
+  [90m10 |[0m [36mimport[0m { [33mControllerRenderProps[0m, [33mFieldValues[0m, [33mPath[0m } [36mfrom[0m [32m"react-hook-form"[0m;
+
+The export default was not found in module [project]/node_modules/.pnpm/@tiptap+extension-text-style@3.29.2_@tiptap+core@3.29.2_@tiptap+pm@3.29.2_/node_modules/@tiptap/extension-text-style/dist/index.js [app-ssr] (ecmascript).
+Did you mean to import LineHeight?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/form-input/rich-text-editor/TiptapEditor.tsx [Client Component Browser]
+    ./apps/web/components/form-input/FormRichTextEditor.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/form-input/rich-text-editor/TiptapEditor.tsx [Client Component SSR]
+    ./apps/web/components/form-input/FormRichTextEditor.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/page.tsx [Server Component]
+
+
+./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1
+Error: Export getCoreRowModel doesn't exist in target module
+  [90m 1 |[0m [32m"use client"[0m;
+  [90m 2 |[0m [36mimport[0m [33mReact[0m, { useMemo, useState } [36mfrom[0m [32m"react"[0m;
+[31m[1m>[0m [90m 3 |[0m [36mimport[0m {
+  [90m   |[0m [31m[1m^^^^^^^[0m
+[31m[1m>[0m [90m 4 |[0m   useReactTable,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   getCoreRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   getPaginationRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   flexRender,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   createColumnHelper,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m } [36mfrom[0m [32m"@tanstack/react-table"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mimport[0m {
+  [90m11 |[0m   [33mDropdownMenu[0m,
+  [90m12 |[0m   [33mDropdownMenuContent[0m,
+
+The export getCoreRowModel was not found in module [project]/node_modules/.pnpm/@tanstack+react-table@9.1.2_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/@tanstack/react-table/dist/index.js [app-client] (ecmascript).
+Did you mean to import createCoreRowModel?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+
+./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1
+Error: Export getCoreRowModel doesn't exist in target module
+  [90m 1 |[0m [32m"use client"[0m;
+  [90m 2 |[0m [36mimport[0m [33mReact[0m, { useMemo, useState } [36mfrom[0m [32m"react"[0m;
+[31m[1m>[0m [90m 3 |[0m [36mimport[0m {
+  [90m   |[0m [31m[1m^^^^^^^[0m
+[31m[1m>[0m [90m 4 |[0m   useReactTable,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   getCoreRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   getPaginationRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   flexRender,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   createColumnHelper,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m } [36mfrom[0m [32m"@tanstack/react-table"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mimport[0m {
+  [90m11 |[0m   [33mDropdownMenu[0m,
+  [90m12 |[0m   [33mDropdownMenuContent[0m,
+
+The export getCoreRowModel was not found in module [project]/node_modules/.pnpm/@tanstack+react-table@9.1.2_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/@tanstack/react-table/dist/index.js [app-ssr] (ecmascript).
+Did you mean to import createCoreRowModel?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+
+./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx:2:1
+Error: Export getCoreRowModel doesn't exist in target module
+  [90m1 |[0m [36mimport[0m [33mReact[0m [36mfrom[0m [32m"react"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m {
+  [90m  |[0m [31m[1m^^^^^^^[0m
+[31m[1m>[0m [90m3 |[0m   useReactTable,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m4 |[0m   getCoreRowModel,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m5 |[0m   flexRender,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m6 |[0m } [36mfrom[0m [32m"@tanstack/react-table"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m [36mimport[0m [36mtype[0m { [33mOpportunity[0m } [36mfrom[0m [32m"@/types/opportunities"[0m;
+  [90m8 |[0m [36mimport[0m { createOpportunityTableColumns } [36mfrom[0m [32m"./OpportunityTableColumns"[0m;
+  [90m9 |[0m
+
+The export getCoreRowModel was not found in module [project]/node_modules/.pnpm/@tanstack+react-table@9.1.2_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/@tanstack/react-table/dist/index.js [app-client] (ecmascript).
+Did you mean to import createCoreRowModel?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx [Client Component Browser]
+    ./apps/web/components/layout/organisation/opportunities/OpportunityList.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx [Client Component SSR]
+    ./apps/web/components/layout/organisation/opportunities/OpportunityList.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Server Component]
+
+
+./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx:2:1
+Error: Export getCoreRowModel doesn't exist in target module
+  [90m1 |[0m [36mimport[0m [33mReact[0m [36mfrom[0m [32m"react"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m {
+  [90m  |[0m [31m[1m^^^^^^^[0m
+[31m[1m>[0m [90m3 |[0m   useReactTable,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m4 |[0m   getCoreRowModel,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m5 |[0m   flexRender,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m6 |[0m } [36mfrom[0m [32m"@tanstack/react-table"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m [36mimport[0m [36mtype[0m { [33mOpportunity[0m } [36mfrom[0m [32m"@/types/opportunities"[0m;
+  [90m8 |[0m [36mimport[0m { createOpportunityTableColumns } [36mfrom[0m [32m"./OpportunityTableColumns"[0m;
+  [90m9 |[0m
+
+The export getCoreRowModel was not found in module [project]/node_modules/.pnpm/@tanstack+react-table@9.1.2_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/@tanstack/react-table/dist/index.js [app-ssr] (ecmascript).
+Did you mean to import createCoreRowModel?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx [Client Component Browser]
+    ./apps/web/components/layout/organisation/opportunities/OpportunityList.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx [Client Component SSR]
+    ./apps/web/components/layout/organisation/opportunities/OpportunityList.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Server Component]
+
+
+./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1
+Error: Export getPaginationRowModel doesn't exist in target module
+  [90m 1 |[0m [32m"use client"[0m;
+  [90m 2 |[0m [36mimport[0m [33mReact[0m, { useMemo, useState } [36mfrom[0m [32m"react"[0m;
+[31m[1m>[0m [90m 3 |[0m [36mimport[0m {
+  [90m   |[0m [31m[1m^^^^^^^[0m
+[31m[1m>[0m [90m 4 |[0m   useReactTable,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   getCoreRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   getPaginationRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   flexRender,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   createColumnHelper,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m } [36mfrom[0m [32m"@tanstack/react-table"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mimport[0m {
+  [90m11 |[0m   [33mDropdownMenu[0m,
+  [90m12 |[0m   [33mDropdownMenuContent[0m,
+
+The export getPaginationRowModel was not found in module [project]/node_modules/.pnpm/@tanstack+react-table@9.1.2_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/@tanstack/react-table/dist/index.js [app-client] (ecmascript).
+Did you mean to import createPaginatedRowModel?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+
+./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1
+Error: Export getPaginationRowModel doesn't exist in target module
+  [90m 1 |[0m [32m"use client"[0m;
+  [90m 2 |[0m [36mimport[0m [33mReact[0m, { useMemo, useState } [36mfrom[0m [32m"react"[0m;
+[31m[1m>[0m [90m 3 |[0m [36mimport[0m {
+  [90m   |[0m [31m[1m^^^^^^^[0m
+[31m[1m>[0m [90m 4 |[0m   useReactTable,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   getCoreRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   getPaginationRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   flexRender,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   createColumnHelper,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m } [36mfrom[0m [32m"@tanstack/react-table"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mimport[0m {
+  [90m11 |[0m   [33mDropdownMenu[0m,
+  [90m12 |[0m   [33mDropdownMenuContent[0m,
+
+The export getPaginationRowModel was not found in module [project]/node_modules/.pnpm/@tanstack+react-table@9.1.2_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/@tanstack/react-table/dist/index.js [app-ssr] (ecmascript).
+Did you mean to import createPaginatedRowModel?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+
+./apps/web/utils/constants/index.ts:5:1
+Error: Export mentorProfileValidation doesn't exist in target module
+  [90m3 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+  [90m4 |[0m [36mimport[0m { volunteerValidation } [36mfrom[0m [32m"@/server/validators/volunteer-profile.validator"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { mentorProfileValidation } [36mfrom[0m [32m"@/server/validators/mentor-profile.validator"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m { [33mSKILL_OPTIONS[0m, [33mCATEGORIES_OPTIONS[0m, [33mSTATES_OPTIONS[0m, [33mORGANIZATION_TYPES[0m } [36mfrom[0m [32m"./se...[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mconst[0m [33mSignupFormSchema[0m = authValidation.signupSchema;
+
+The export mentorProfileValidation was not found in module [project]/apps/api/src/validators/mentor-profile.validator.ts [app-client] (ecmascript).
+Did you mean to import updateMentorProfileSchema?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/utils/constants/index.ts [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/utils/constants/index.ts [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+
+./apps/web/utils/constants/index.ts:5:1
+Error: Export mentorProfileValidation doesn't exist in target module
+  [90m3 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+  [90m4 |[0m [36mimport[0m { volunteerValidation } [36mfrom[0m [32m"@/server/validators/volunteer-profile.validator"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { mentorProfileValidation } [36mfrom[0m [32m"@/server/validators/mentor-profile.validator"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m { [33mSKILL_OPTIONS[0m, [33mCATEGORIES_OPTIONS[0m, [33mSTATES_OPTIONS[0m, [33mORGANIZATION_TYPES[0m } [36mfrom[0m [32m"./se...[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mconst[0m [33mSignupFormSchema[0m = authValidation.signupSchema;
+
+The export mentorProfileValidation was not found in module [project]/apps/api/src/validators/mentor-profile.validator.ts [app-ssr] (ecmascript).
+Did you mean to import updateMentorProfileSchema?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/utils/constants/index.ts [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/utils/constants/index.ts [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+
+./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1
+Error: Export useReactTable doesn't exist in target module
+  [90m 1 |[0m [32m"use client"[0m;
+  [90m 2 |[0m [36mimport[0m [33mReact[0m, { useMemo, useState } [36mfrom[0m [32m"react"[0m;
+[31m[1m>[0m [90m 3 |[0m [36mimport[0m {
+  [90m   |[0m [31m[1m^^^^^^^[0m
+[31m[1m>[0m [90m 4 |[0m   useReactTable,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   getCoreRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   getPaginationRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   flexRender,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   createColumnHelper,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m } [36mfrom[0m [32m"@tanstack/react-table"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mimport[0m {
+  [90m11 |[0m   [33mDropdownMenu[0m,
+  [90m12 |[0m   [33mDropdownMenuContent[0m,
+
+The export useReactTable was not found in module [project]/node_modules/.pnpm/@tanstack+react-table@9.1.2_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/@tanstack/react-table/dist/index.js [app-client] (ecmascript).
+Did you mean to import useTable?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+
+./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1
+Error: Export useReactTable doesn't exist in target module
+  [90m 1 |[0m [32m"use client"[0m;
+  [90m 2 |[0m [36mimport[0m [33mReact[0m, { useMemo, useState } [36mfrom[0m [32m"react"[0m;
+[31m[1m>[0m [90m 3 |[0m [36mimport[0m {
+  [90m   |[0m [31m[1m^^^^^^^[0m
+[31m[1m>[0m [90m 4 |[0m   useReactTable,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   getCoreRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   getPaginationRowModel,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   flexRender,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   createColumnHelper,
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m } [36mfrom[0m [32m"@tanstack/react-table"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mimport[0m {
+  [90m11 |[0m   [33mDropdownMenu[0m,
+  [90m12 |[0m   [33mDropdownMenuContent[0m,
+
+The export useReactTable was not found in module [project]/node_modules/.pnpm/@tanstack+react-table@9.1.2_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/@tanstack/react-table/dist/index.js [app-ssr] (ecmascript).
+Did you mean to import useTable?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/[role]/settings/page.tsx [Server Component]
+
+
+./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx:2:1
+Error: Export useReactTable doesn't exist in target module
+  [90m1 |[0m [36mimport[0m [33mReact[0m [36mfrom[0m [32m"react"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m {
+  [90m  |[0m [31m[1m^^^^^^^[0m
+[31m[1m>[0m [90m3 |[0m   useReactTable,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m4 |[0m   getCoreRowModel,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m5 |[0m   flexRender,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m6 |[0m } [36mfrom[0m [32m"@tanstack/react-table"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m [36mimport[0m [36mtype[0m { [33mOpportunity[0m } [36mfrom[0m [32m"@/types/opportunities"[0m;
+  [90m8 |[0m [36mimport[0m { createOpportunityTableColumns } [36mfrom[0m [32m"./OpportunityTableColumns"[0m;
+  [90m9 |[0m
+
+The export useReactTable was not found in module [project]/node_modules/.pnpm/@tanstack+react-table@9.1.2_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/@tanstack/react-table/dist/index.js [app-client] (ecmascript).
+Did you mean to import useTable?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx [Client Component Browser]
+    ./apps/web/components/layout/organisation/opportunities/OpportunityList.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx [Client Component SSR]
+    ./apps/web/components/layout/organisation/opportunities/OpportunityList.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Server Component]
+
+
+./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx:2:1
+Error: Export useReactTable doesn't exist in target module
+  [90m1 |[0m [36mimport[0m [33mReact[0m [36mfrom[0m [32m"react"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m {
+  [90m  |[0m [31m[1m^^^^^^^[0m
+[31m[1m>[0m [90m3 |[0m   useReactTable,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m4 |[0m   getCoreRowModel,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m5 |[0m   flexRender,
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m6 |[0m } [36mfrom[0m [32m"@tanstack/react-table"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m [36mimport[0m [36mtype[0m { [33mOpportunity[0m } [36mfrom[0m [32m"@/types/opportunities"[0m;
+  [90m8 |[0m [36mimport[0m { createOpportunityTableColumns } [36mfrom[0m [32m"./OpportunityTableColumns"[0m;
+  [90m9 |[0m
+
+The export useReactTable was not found in module [project]/node_modules/.pnpm/@tanstack+react-table@9.1.2_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/@tanstack/react-table/dist/index.js [app-ssr] (ecmascript).
+Did you mean to import useTable?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx [Client Component Browser]
+    ./apps/web/components/layout/organisation/opportunities/OpportunityList.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx [Client Component SSR]
+    ./apps/web/components/layout/organisation/opportunities/OpportunityList.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/page.tsx [Server Component]
+
+
+./apps/web/types/auth.ts:1:1
+Error: Export userValidation doesn't exist in target module
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { userValidation } [36mfrom[0m [32m"@/server/validators/user.validator"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+  [90m3 |[0m
+  [90m4 |[0m [36mexport[0m [36mconst[0m signupBaseSchema = userValidation.userSchema.pick({
+
+The export userValidation was not found in module [project]/apps/api/src/validators/user.validator.ts [app-client] (ecmascript).
+Did you mean to import organizationProfileSchema?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/types/auth.ts [Client Component Browser]
+    ./apps/web/components/layout/auth/MentorSignup.tsx [Client Component Browser]
+    ./apps/web/app/(auth)/signup/page.tsx [Client Component Browser]
+    ./apps/web/app/(auth)/signup/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/types/auth.ts [Client Component SSR]
+    ./apps/web/components/layout/auth/MentorSignup.tsx [Client Component SSR]
+    ./apps/web/app/(auth)/signup/page.tsx [Client Component SSR]
+    ./apps/web/app/(auth)/signup/page.tsx [Server Component]
+
+
+./apps/web/types/auth.ts:1:1
+Error: Export userValidation doesn't exist in target module
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { userValidation } [36mfrom[0m [32m"@/server/validators/user.validator"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+  [90m3 |[0m
+  [90m4 |[0m [36mexport[0m [36mconst[0m signupBaseSchema = userValidation.userSchema.pick({
+
+The export userValidation was not found in module [project]/apps/api/src/validators/user.validator.ts [app-ssr] (ecmascript).
+Did you mean to import organizationProfileSchema?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/types/auth.ts [Client Component Browser]
+    ./apps/web/components/layout/auth/MentorSignup.tsx [Client Component Browser]
+    ./apps/web/app/(auth)/signup/page.tsx [Client Component Browser]
+    ./apps/web/app/(auth)/signup/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/types/auth.ts [Client Component SSR]
+    ./apps/web/components/layout/auth/MentorSignup.tsx [Client Component SSR]
+    ./apps/web/app/(auth)/signup/page.tsx [Client Component SSR]
+    ./apps/web/app/(auth)/signup/page.tsx [Server Component]
+
+
+./apps/web/utils/constants/index.ts:2:1
+Error: Export userValidation doesn't exist in target module
+  [90m1 |[0m [36mimport[0m { authValidation } [36mfrom[0m [32m"@/server/validators/auth.validator"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { userValidation } [36mfrom[0m [32m"@/server/validators/user.validator"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+  [90m4 |[0m [36mimport[0m { volunteerValidation } [36mfrom[0m [32m"@/server/validators/volunteer-profile.validator"[0m;
+  [90m5 |[0m [36mimport[0m { mentorProfileValidation } [36mfrom[0m [32m"@/server/validators/mentor-profile.validator"[0m;
+
+The export userValidation was not found in module [project]/apps/api/src/validators/user.validator.ts [app-client] (ecmascript).
+Did you mean to import organizationProfileSchema?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/utils/constants/index.ts [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/utils/constants/index.ts [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+
+./apps/web/utils/constants/index.ts:2:1
+Error: Export userValidation doesn't exist in target module
+  [90m1 |[0m [36mimport[0m { authValidation } [36mfrom[0m [32m"@/server/validators/auth.validator"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { userValidation } [36mfrom[0m [32m"@/server/validators/user.validator"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+  [90m4 |[0m [36mimport[0m { volunteerValidation } [36mfrom[0m [32m"@/server/validators/volunteer-profile.validator"[0m;
+  [90m5 |[0m [36mimport[0m { mentorProfileValidation } [36mfrom[0m [32m"@/server/validators/mentor-profile.validator"[0m;
+
+The export userValidation was not found in module [project]/apps/api/src/validators/user.validator.ts [app-ssr] (ecmascript).
+Did you mean to import organizationProfileSchema?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/utils/constants/index.ts [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/utils/constants/index.ts [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+
+./apps/web/utils/constants/index.ts:4:1
+Error: Export volunteerValidation doesn't exist in target module
+  [90m2 |[0m [36mimport[0m { userValidation } [36mfrom[0m [32m"@/server/validators/user.validator"[0m;
+  [90m3 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m { volunteerValidation } [36mfrom[0m [32m"@/server/validators/volunteer-profile.validator"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m { mentorProfileValidation } [36mfrom[0m [32m"@/server/validators/mentor-profile.validator"[0m;
+  [90m6 |[0m [36mimport[0m { [33mSKILL_OPTIONS[0m, [33mCATEGORIES_OPTIONS[0m, [33mSTATES_OPTIONS[0m, [33mORGANIZATION_TYPES[0m } [36mfrom[0m [32m"./se...[0m
+  [90m7 |[0m
+
+The export volunteerValidation was not found in module [project]/apps/api/src/validators/volunteer-profile.validator.ts [app-client] (ecmascript).
+Did you mean to import volunteerIdParamSchema?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/utils/constants/index.ts [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/utils/constants/index.ts [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+
+./apps/web/utils/constants/index.ts:4:1
+Error: Export volunteerValidation doesn't exist in target module
+  [90m2 |[0m [36mimport[0m { userValidation } [36mfrom[0m [32m"@/server/validators/user.validator"[0m;
+  [90m3 |[0m [36mimport[0m { z } [36mfrom[0m [32m"zod"[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m { volunteerValidation } [36mfrom[0m [32m"@/server/validators/volunteer-profile.validator"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m { mentorProfileValidation } [36mfrom[0m [32m"@/server/validators/mentor-profile.validator"[0m;
+  [90m6 |[0m [36mimport[0m { [33mSKILL_OPTIONS[0m, [33mCATEGORIES_OPTIONS[0m, [33mSTATES_OPTIONS[0m, [33mORGANIZATION_TYPES[0m } [36mfrom[0m [32m"./se...[0m
+  [90m7 |[0m
+
+The export volunteerValidation was not found in module [project]/apps/api/src/validators/volunteer-profile.validator.ts [app-ssr] (ecmascript).
+Did you mean to import volunteerIdParamSchema?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./apps/web/utils/constants/index.ts [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component Browser]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./apps/web/utils/constants/index.ts [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/create/_components/StepOne.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Client Component SSR]
+    ./apps/web/app/(protected)/organisation/opportunities/[id]/edit/page.tsx [Server Component]
+
+
+    at <unknown> (./apps/api/src/validators/auth.validator.ts:2:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./apps/api/src/config/mongoose.ts:2:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./apps/web/components/layout/organisation/OrganizationProfile.tsx:15:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./apps/web/utils/constants/index.ts:1:1)
+    at <unknown> (./apps/web/utils/constants/index.ts:1:1)
+    at <unknown> (./apps/web/components/form-input/rich-text-editor/TiptapEditor.tsx:7:1)
+    at <unknown> (./apps/web/components/form-input/rich-text-editor/TiptapEditor.tsx:7:1)
+    at <unknown> (./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1)
+    at <unknown> (./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1)
+    at <unknown> (./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx:2:1)
+    at <unknown> (./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx:2:1)
+    at <unknown> (./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1)
+    at <unknown> (./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1)
+    at <unknown> (./apps/web/utils/constants/index.ts:5:1)
+    at <unknown> (./apps/web/utils/constants/index.ts:5:1)
+    at <unknown> (./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1)
+    at <unknown> (./apps/web/components/layout/organisation/dashboard/UserManagementTable.tsx:3:1)
+    at <unknown> (./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx:2:1)
+    at <unknown> (./apps/web/components/layout/organisation/opportunities/OpportunityTable.tsx:2:1)
+    at <unknown> (./apps/web/types/auth.ts:1:1)
+    at <unknown> (./apps/web/types/auth.ts:1:1)
+    at <unknown> (./apps/web/utils/constants/index.ts:2:1)
+    at <unknown> (./apps/web/utils/constants/index.ts:2:1)
+    at <unknown> (./apps/web/utils/constants/index.ts:4:1)
+    at <unknown> (./apps/web/utils/constants/index.ts:4:1)
+ ELIFECYCLE  Command failed with exit code 1.

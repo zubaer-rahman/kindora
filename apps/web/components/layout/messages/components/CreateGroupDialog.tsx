@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import Avatar from "./Avatar";
 import type { Group } from "@/types/message";
@@ -19,13 +20,21 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   const [name, setName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const utils = trpc.useUtils();
-  const { data: availableUsersData } = trpc.users.getAvailableUsers.useQuery({
-    page: 1,
-    limit: 50, // Get more users for group creation
-    search: searchQuery || undefined,
-    includeMentors: true, // Show both volunteers and mentors when adding members
-  }, {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+  const { data: availableUsersData } = useQuery({
+    queryKey: ["availableUsers", searchQuery],
+    queryFn: async () => {
+      const res = await axiosAuth.get("/api/v1/users/available", {
+        params: {
+          page: 1,
+          limit: 50,
+          search: searchQuery || undefined,
+          includeMentors: true,
+        },
+      });
+      return res.data.data;
+    },
     enabled: open,
   });
 
@@ -38,20 +47,24 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
     selectedUsers.includes(user._id)
   ) || [];
 
-  const createGroupMutation = trpc.messages.createGroup.useMutation({
+  const createGroupMutation = useMutation({
+    mutationFn: async (payload: { name: string; memberIds: string[]; isOrganizationGroup: boolean }) => {
+      const res = await axiosAuth.post("/api/v1/messages/groups", payload);
+      return res.data.data;
+    },
     onSuccess: (newGroup) => {
       setOpen(false);
       setName("");
       setSearchQuery("");
       setSelectedUsers([]);
-      utils.messages.getGroups.setData(undefined, (oldGroups: Group[] | undefined) => {
+      queryClient.setQueryData(["groups"], (oldGroups: Group[] | undefined) => {
         if (!oldGroups) return [newGroup];
         return [newGroup, ...oldGroups];
       });
       onGroupCreated();
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create group");
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Failed to create group");
     },
   });
 
