@@ -19,8 +19,10 @@ export default function VerifyEmailPage() {
 
   const verifyMutation = useMutation({
     mutationFn: async (payload: { token: string }) => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const res = await axios.post(`${apiUrl}/api/v1/auth/verify-email`, payload);
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/verify-email`,
+        payload
+      );
       return res.data.data;
     },
     onSuccess: (data) => {

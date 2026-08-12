@@ -29,7 +29,7 @@ const KindoraLogo: React.FC<KindoraLogoProps> = ({
           alt="Kindora Logo"
           width={180}
           height={60}
-          className="h-8 md:h-10 w-auto object-contain"
+          className="h-8  w-auto object-contain"
           priority
         />
       </div>

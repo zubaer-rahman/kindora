@@ -1,12 +1,12 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import {
-  useReactTable,
+  useLegacyTable,
   getCoreRowModel,
   getPaginationRowModel,
-  flexRender,
-  createColumnHelper,
-} from "@tanstack/react-table";
+  legacyCreateColumnHelper,
+} from "@tanstack/react-table/legacy";
+import { flexRender } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +38,7 @@ interface User {
   avatar?: string;
 }
 
-const columnHelper = createColumnHelper<User>();
+const columnHelper = legacyCreateColumnHelper<User>();
 
 function useUserMutations() {
   const { data: session } = useSession();
@@ -343,13 +343,14 @@ export default function UserManagementTable({
     ]
   );
 
-  const table = useReactTable({
+  const table = useLegacyTable({
     data: filteredUsers,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
+        pageIndex: 0,
         pageSize: 10,
       },
     },

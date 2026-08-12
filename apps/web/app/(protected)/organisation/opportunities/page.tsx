@@ -10,12 +10,13 @@ import OpportunityTabs from "@/components/layout/organisation/opportunities/Oppo
 import OpportunityList from "@/components/layout/organisation/opportunities/OpportunityList";
 import { PaginationWrapper } from "@/components/PaginationWrapper";
 import { usePagination } from "@/hooks/usePagination";
+import type { Opportunity } from "@/types/opportunities";
 
 export default function OpportunitiesPage() {
   const [activeTab, setActiveTab] = useState("open");
   const axiosAuth = useAxiosAuth();
 
-  const { data: opportunities, isLoading, refetch } = useQuery({
+  const { data: opportunities, isLoading, refetch } = useQuery<Opportunity[]>({
     queryKey: ["organizationOpportunities"],
     queryFn: async () => {
       const res = await axiosAuth.get("/api/v1/opportunities/my-org");

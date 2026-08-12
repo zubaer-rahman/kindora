@@ -128,7 +128,7 @@ export default function LandingNavbar() {
 
   return (
     <>
-      <nav className="flex justify-center py-3 px-4 sm:px-6 lg:px-8 h-[100px] absolute top-0 left-0 w-full z-50">
+      <nav className="flex justify-center py-3 px-4 sm:px-6 lg:px-8 h-[100px] fixed top-0 left-0 w-full z-50">
         <div
           className="max-w-[1170px] flex items-center justify-between relative z-[60] bg-white border border-gray-200 w-full rounded-full shadow-lg h-20"
         >
@@ -185,7 +185,7 @@ export default function LandingNavbar() {
                         )}
                         <Button
                           asChild
-                          className="bg-primary hover:bg-primary/95 text-white rounded-full h-10 px-6 text-sm font-bold shadow-md shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+                          className="bg-primary hover:bg-primary/95 text-white rounded-full h-10  px-6 text-sm font-bold shadow-md shadow-primary/20 transition-all hover:scale-105 active:scale-95"
                         >
                           <Link
                             href={

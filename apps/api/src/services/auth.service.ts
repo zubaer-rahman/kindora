@@ -16,11 +16,20 @@ const generateToken = (
   expiresIn = "7d",
 ) => jwt.sign(payload, getJwtSecret(), { expiresIn } as jwt.SignOptions);
 
+export async function checkEmail(email: string) {
+  const existingUser = await User.findOne({ email });
+  return { isTaken: !!existingUser };
+}
+
+export const EMAIL_ALREADY_REGISTERED = "EMAIL_ALREADY_REGISTERED";
+export const SIGNUP_SUCCESS_UNVERIFIED = "SIGNUP_SUCCESS_UNVERIFIED";
+
 export async function register(body: RegisterInput) {
   const existingUser = await User.findOne({ email: body.email });
   if (existingUser) {
     const err: any = new Error("Email already registered.");
     err.statusCode = 409;
+    err.code = EMAIL_ALREADY_REGISTERED;
     throw err;
   }
 
@@ -73,11 +82,11 @@ export async function register(body: RegisterInput) {
     console.error("[Auth] Verification email failed:", err);
   }
 
-  const err: any = new Error(
-    "Registration successful. Please check your email to verify your account. You can sign in after verifying."
-  );
-  err.statusCode = 200;
-  throw err;
+  return {
+    code: SIGNUP_SUCCESS_UNVERIFIED,
+    message:
+      "Registration successful. Please check your email to verify your account. You can sign in after verifying.",
+  };
 }
 
 export async function login(body: LoginInput) {

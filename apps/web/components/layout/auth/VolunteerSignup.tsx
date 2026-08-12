@@ -3,17 +3,26 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { signIn } from "next-auth/react";
 import { SignupStep } from "@/components/layout/auth/SignupStep";
 import { VolunteerSignupForm, volunteerSignupSchema } from "@/types/auth";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
+import { useEmailUniqueness } from "@/hooks/useEmailUniqueness";
+import {
+  registerUser,
+  SIGNUP_SUCCESS_UNVERIFIED,
+  EMAIL_ALREADY_REGISTERED,
+  getApiError,
+} from "@/lib/auth-api";
 import toast from "react-hot-toast";
 import { Form } from "@/components/ui/form";
 
 import { Loader2 } from "lucide-react";
+
+const EMAIL_TAKEN_MESSAGE =
+  "This email is already registered. Please use a different email or log in.";
 
 export default function VolunteerSignup() {
   const searchParams = useSearchParams();
@@ -23,7 +32,6 @@ export default function VolunteerSignup() {
   const { isLoading, isAuthenticated, session, updateSession } = useAuthCheck();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState<string | null>(null);
   const [isSignupLoading, setIsSignupLoading] = useState(false);
@@ -74,7 +82,7 @@ export default function VolunteerSignup() {
       }
     },
     onError: (error: any) => {
-      setError(error?.response?.data?.message || error.message || "Failed to create account");
+      toast.error(error?.response?.data?.message || error.message || "Failed to create account");
       setIsSignupLoading(false);
     },
   });
@@ -89,16 +97,21 @@ export default function VolunteerSignup() {
     },
   });
 
+  const email = form.watch("email");
+  const { isTaken } = useEmailUniqueness(email);
+
+  useEffect(() => {
+    if (isTaken) {
+      form.setError("email", {
+        type: "manual",
+        message: EMAIL_TAKEN_MESSAGE,
+      });
+    }
+  }, [isTaken, form]);
+
   const handleSignup = async () => {
     if (!termsAccepted) {
       setTermsError("You must accept the terms and conditions");
-      return;
-    }
-
-    const password = form.getValues("password");
-    const confirmPassword = form.getValues("confirm_password");
-    if (password !== confirmPassword) {
-      setError("Please confirm your password");
       return;
     }
 
@@ -150,26 +163,24 @@ export default function VolunteerSignup() {
   };
 
   const handleCompleteProfileOnly = async () => {
-    setError(null);
     redirectAfterProfileRef.current = "profile";
     setIsSignupLoading(true);
     try {
       await setupVolunteerProfile.mutateAsync(defaultProfilePayload);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to complete profile");
+      toast.error(err instanceof Error ? err.message : "Failed to complete profile");
     } finally {
       setIsSignupLoading(false);
     }
   };
 
   const handleSkipToDashboard = async () => {
-    setError(null);
     redirectAfterProfileRef.current = "dashboard";
     setIsSignupLoading(true);
     try {
       await setupVolunteerProfile.mutateAsync(defaultProfilePayload);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to complete profile");
+      toast.error(err instanceof Error ? err.message : "Failed to complete profile");
     } finally {
       setIsSignupLoading(false);
     }
@@ -177,62 +188,56 @@ export default function VolunteerSignup() {
 
   const onSubmit = async (data: VolunteerSignupForm) => {
     if (form.formState.isSubmitting) return;
+
+    if (isTaken) {
+      form.setError("email", {
+        type: "manual",
+        message: EMAIL_TAKEN_MESSAGE,
+      });
+      return;
+    }
+
     try {
-      setError(null);
       setIsSignupLoading(true);
 
       const referral = searchParams?.get("referral");
 
-      // We don't check email here directly since the API login handles it,
-      // but if we really want to, we should create a REST endpoint for it.
-      // For now, let's just proceed to signup which will fail if email is taken.
-
-      const signInResult = await signIn("credentials", {
+      const response = await registerUser({
+        name: data.name,
         email: data.email,
         password: data.password,
-        name: data.name,
         role: "volunteer",
-        redirect: false,
-        action: "signup",
         referred_by: referral || undefined,
       });
 
-      if (signInResult?.error) {
-        const msg = signInResult.error;
-        // Signup succeeded but email verification required (no session created)
-        if (msg.includes("check your email") || msg.includes("Registration successful")) {
-          toast.success(msg);
-          router.push("/login");
-          setIsSignupLoading(false);
-          return;
-        }
-        toast.error(msg || "Account with this email already exists. Please provide the correct password.");
-        setIsSignupLoading(false);
+      if (response.data?.code === SIGNUP_SUCCESS_UNVERIFIED) {
+        toast.success(
+          "Account created! Please check your email to verify your account."
+        );
+        router.push("/login");
         return;
       }
 
       // After successful signup, automatically create volunteer profile with valid default values
       await setupVolunteerProfile.mutateAsync(defaultProfilePayload);
-
-      setIsSignupLoading(false);
-    } catch (err: unknown) {
+    } catch (err) {
       console.error("Error during signup:", err);
-      setError(
-        err instanceof Error ? err.message : "An error occurred during signup"
-      );
+      const apiError = getApiError(err);
+      if (apiError.code === EMAIL_ALREADY_REGISTERED) {
+        form.setError("email", {
+          type: "manual",
+          message: EMAIL_TAKEN_MESSAGE,
+        });
+        return;
+      }
+      toast.error(apiError.message || "An error occurred during signup");
     } finally {
       setIsSignupLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8 pb-24">
-      {error && (
-        <div className="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg mx-auto max-w-xl">
-          {error}
-        </div>
-      )}
-
+    <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8 pb-32">
       {/* Already logged in but no volunteer profile: show only "Complete profile" (no name/email/password) */}
       {isLoggedIn && !isAuthenticated && !isProfileSetupComplete && (
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl space-y-6">

@@ -1,7 +1,7 @@
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const fetchJson = async (path: string, body: Record<string, unknown>): Promise<any> => {
   const res = await fetch(`${API_BASE_URL}${path}`, {
@@ -11,7 +11,9 @@ const fetchJson = async (path: string, body: Record<string, unknown>): Promise<a
   });
   const data = await res.json();
   if (!res.ok || !data?.success) {
-    throw new Error(data?.message || "Request failed. Please try again.");
+    const error: any = new Error(data?.message || "Request failed. Please try again.");
+    error.code = data?.code;
+    throw error;
   }
   return data;
 };
@@ -39,28 +41,31 @@ export const CredentialsProvider = Credentials({
     }
 
     if (credentials?.action === "signup") {
-      try {
-        const result = await fetchJson("/api/v1/auth/register", {
-          name: credentials.name,
-          email: credentials.email,
-          password: credentials.password,
-          role: credentials.role,
-          referred_by: credentials.referred_by,
-        });
-        // We technically shouldn't return here if registration doesn't auto-login,
-        // but if the API did return a user and token, we could pass it.
-        // However, the backend explicitly throws a "Please check your email" error 
-        // in auth.service.ts on successful registration, so this line is rarely reached.
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Registration failed. Please try again.";
-        throw new Error(message);
+      const result = await fetchJson("/api/v1/auth/register", {
+        name: credentials.name,
+        email: credentials.email,
+        password: credentials.password,
+        role: credentials.role,
+        referred_by: credentials.referred_by,
+      });
+
+      // Registration succeeded but the account still needs email verification,
+      // so no session is created. Signal success via a structured error code.
+      if (result?.data?.code === "SIGNUP_SUCCESS_UNVERIFIED") {
+        const error: any = new Error(
+          result.data.message ||
+            "Registration successful. Please check your email to verify your account. You can sign in after verifying."
+        );
+        error.code = result.data.code;
+        throw error;
       }
-      // Registration succeeded but no session is created — the API signals this
-      // by throwing a "Registration successful, please verify" error.
-      throw new Error(
-        "Registration successful. Please check your email to verify your account. You can sign in after verifying."
-      );
+
+      // Registration returned credentials directly (auto-login signup)
+      if (result?.data?.user && result?.data?.token) {
+        return { ...result.data.user, api_token: result.data.token };
+      }
+
+      throw new Error("Account created. Please verify your email to continue.");
     }
 
     throw new Error("Invalid action specified");
