@@ -89,8 +89,10 @@ kindora/
 
 ## 📄 Documentation
 
-For more detailed information about the platform's usage, check out the `docs/` folder:
-- [User Guide (Volunteers & Organizations)](./docs/user-guide/00_INDEX.md)
+For more detailed information, check out the `docs/` folder:
+- [User Guide](./docs/USER_GUIDE.md) - Platform navigation for end-users.
+- [Development Guide](./docs/DEVELOPMENT.md) - Deep dive into architecture and conventions.
+- [API Integration Guide](./docs/API_INTEGRATION.md) - Workflows for fetching data and building new endpoints.
 
 ---
 <div align="center">
