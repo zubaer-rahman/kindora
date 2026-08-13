@@ -15,8 +15,12 @@ export default function SignupPage() {
   const hasRedirected = useRef(false);
 
   useEffect(() => {
-    // Only redirect once when authenticated and not already redirecting
-    if (!isLoading && isAuthenticated && session?.user?.role && !hasRedirected.current) {
+    if (
+      !isLoading &&
+      isAuthenticated &&
+      session?.user?.role &&
+      !hasRedirected.current
+    ) {
       hasRedirected.current = true;
       const role = session.user.role.toLowerCase();
       let destination = "/organisation/dashboard";
@@ -40,10 +44,6 @@ export default function SignupPage() {
 
   if (isAuthenticated) return null;
 
-  // Priority: 
-  // 1. URL parameter (for new signups)
-  // 2. Session role (for users who just verified or have partial session)
-  // 3. Default to volunteer
   let role = paramRole || session?.user?.role?.toLowerCase() || "volunteer";
 
   if (role === "admin" || role === "organization") {

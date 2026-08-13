@@ -2,7 +2,9 @@
 import { transporter } from './mailConfig';
 import type { SendMailOptions } from 'nodemailer';
 
- interface MailOptions extends SendMailOptions {
+import env from '../../config/env.js';
+
+interface MailOptions extends SendMailOptions {
   template: string;
   context: any;
 }
@@ -18,8 +20,9 @@ const sendEmail = async (
   template: string
 ): Promise<boolean> => {
   try {
+    const senderEmail = env.gmail_user || env.smtp_user || 'noreply@kindora.com';
     const mailOptions: MailOptions = {
-      from: 'Email Verification',
+      from: `"Kindora" <${senderEmail}>`,
       to: receiverEmail,
       subject: context.subject,
       template: template,  

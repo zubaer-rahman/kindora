@@ -5,10 +5,10 @@
   <p><strong>A Modern Platform Connecting Volunteers, Mentors, and Organizations</strong></p>
 
   <p>
-    <a href="#features">Features</a> •
+    <a href="#overview">Overview</a> •
     <a href="#tech-stack">Tech Stack</a> •
     <a href="#getting-started">Getting Started</a> •
-    <a href="#project-structure">Project Structure</a>
+    <a href="#documentation">Documentation</a>
   </p>
 </div>
 
@@ -16,44 +16,40 @@
 
 ## 🌟 Overview
 
-**Kindora** is a comprehensive, full-stack web application designed to bridge the gap between passionate volunteers and impactful organizations. It streamlines the recruitment process, manages volunteer rosters, enables seamless messaging, and tracks community opportunities all in one unified ecosystem. 
+**Kindora** is a comprehensive, full-stack web application designed to bridge the gap between passionate volunteers, experienced mentors, and impactful organizations. It streamlines the recruitment process, manages volunteer rosters, enables seamless messaging, and tracks community opportunities all in one unified ecosystem. 
 
-Whether you're an organization looking for dedicated mentors or a volunteer seeking meaningful shifts, Kindora provides the tools needed to make an impact.
-
-## ✨ Features
+## ✨ Key Features
 
 - 🏢 **Organization Dashboard**: Manage opportunities, review applications, and organize volunteer rosters.
-- 🤝 **Volunteer & Mentor Profiles**: Highlight skills, track completed opportunities, and set availability.
-- 💬 **Real-time Messaging & Notifications**: Integrated chat system and push notifications to keep everyone in sync.
-- 📅 **Shift & Roster Management**: Advanced scheduling tools for seamless event coordination.
-- 🔍 **Advanced Search & Discovery**: Quickly find relevant roles, organizations, and volunteers.
-- 📱 **Mobile-First Experience**: Fully responsive design for seamless use on any device.
+- 🤝 **Role-Based Profiles**: Dedicated workflows and profiles for Volunteers, Mentors, and Organizations.
+- 💬 **Messaging & Notifications**: Stay in sync with integrated communications.
+- 📅 **Shift Management**: Advanced scheduling tools for seamless event coordination.
+- 📱 **Responsive Design**: Fully responsive, mobile-first experience using Tailwind CSS v4.
 
 ## 🛠 Tech Stack
 
-**Frontend:**
-- [Next.js (App Router)](https://nextjs.org/)
+Kindora is a monorepo built with modern, scalable technologies.
+
+**Frontend (`apps/web`):**
+- Next.js 16 (App Router)
 - React 19
-- Tailwind CSS (v4)
-- Radix UI & Lucide Icons
-- Framer Motion
+- Tailwind CSS v4 + Radix UI (shadcn/ui)
+- React Query for data fetching
 
-**Backend & Data:**
-- tRPC for type-safe API endpoints
+**Backend (`apps/api`):**
+- Express.js 5 REST API
 - MongoDB & Mongoose
-- Supabase (Storage & Real-time features)
-- NextAuth.js (Authentication)
+- Zod for validation
 
-**Infrastructure:**
-- Vercel (Deployment)
-- Upstash Redis
+**Tooling & Infrastructure:**
+- `pnpm` Workspaces
+- NextAuth v4 / JWT Authentication
+- Upstash Redis (for cron/caching)
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
-Ensure you have the following installed on your local machine:
-- Node.js (v18+)
+- Node.js (v20+ recommended)
 - [pnpm](https://pnpm.io/installation) (v9+)
 - MongoDB instance
 
@@ -71,39 +67,38 @@ Ensure you have the following installed on your local machine:
    ```
 
 3. **Environment Setup:**
-   Create a `.env` file in the root directory and add the necessary environment variables (refer to `.env.example` if available).
-   ```env
-   DATABASE_URL=mongodb+srv://...
-   NEXTAUTH_SECRET=your-secret
-   # Add your Supabase, Cloudinary, and other keys here
+   You will need to configure environment variables for both the Web and API apps.
+   Copy the example files and fill in the required values (like `MONGODB_URI` and `NEXTAUTH_SECRET`).
+   
+   ```bash
+   cp apps/web/.env.example apps/web/.env
+   cp apps/api/.env.example apps/api/.env
    ```
 
-4. **Run the development server:**
+4. **Start the Development Servers:**
+   From the root of the project, run:
    ```bash
    pnpm dev
    ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+   This command concurrently starts the frontend on `http://localhost:3000` and the backend API on `http://localhost:8000`.
 
 ## 📁 Project Structure
 
 ```text
 kindora/
-├── app/            # Next.js App Router (Pages & Layouts)
-├── auth/           # NextAuth configuration and providers
-├── components/     # Reusable UI components & Layouts
+├── apps/
+│   ├── web/        # Next.js Frontend Application
+│   └── api/        # Express.js REST API
 ├── docs/           # Technical documentation and user guides
-├── hooks/          # Custom React hooks
-├── server/         # Backend: tRPC routers, Mongoose models & Services
-├── supabase/       # Supabase configurations and migrations
-├── types/          # TypeScript definitions
-└── utils/          # Helper functions and constants
+└── package.json    # Monorepo root configuration
 ```
 
 ## 📄 Documentation
 
-For more detailed information about the platform's usage, check out the `docs/` folder:
-- [User Guide (Volunteers & Organizations)](./docs/user-guide/00_INDEX.md)
-- [Mobile Setup](./docs/MOBILE_SETUP.md)
+For more detailed information, check out the `docs/` folder:
+- [User Guide](./docs/USER_GUIDE.md) - Platform navigation for end-users.
+- [Development Guide](./docs/DEVELOPMENT.md) - Deep dive into architecture and conventions.
+- [API Integration Guide](./docs/API_INTEGRATION.md) - Workflows for fetching data and building new endpoints.
 
 ---
 <div align="center">
