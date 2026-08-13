@@ -90,7 +90,10 @@ export async function register(body: RegisterInput) {
 }
 
 export async function login(body: LoginInput) {
-  const user = await User.findOne({ email: body.email }).select("+password");
+  const user = await User.findOne({ email: body.email })
+    .select("+password")
+    .populate("organization_profile")
+    .populate("volunteer_profile");
   if (!user || !user.password) {
     const err: any = new Error("Invalid email or password.");
     err.statusCode = 401;
@@ -124,6 +127,8 @@ export async function login(body: LoginInput) {
       email: user.email,
       role: user.role,
       image: user.image,
+      organization_profile: user.organization_profile,
+      volunteer_profile: user.volunteer_profile,
     },
   };
 }

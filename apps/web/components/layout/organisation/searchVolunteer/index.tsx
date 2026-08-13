@@ -14,7 +14,7 @@ import { useSearch } from "@/contexts/SearchContext";
 
 import { PaginationWrapper } from "@/components/PaginationWrapper";
 import { Button } from "@/components/ui/button";
-import { Filter, Heart } from "lucide-react";
+import { Filter } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/dialog";
 import EmptyState from "@/components/layout/shared/EmptyState";
 import { Users } from "lucide-react";
-import Link from "next/link";
 import {
   Select,
   SelectContent,
@@ -60,23 +59,19 @@ export default function SearchVolunteer() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
-  const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(
-    null
-  );
+  const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const { searchQuery, setSearchQuery } = useSearch();
   const searchParams = useSearchParams();
   const [sortBy, setSortBy] = useState<"available" | "not_available" | "best_matches">("available");
   const axiosAuth = useAxiosAuth();
 
-  // Sync with URL search params
   useEffect(() => {
     const q = searchParams.get("q");
     if (q) {
       setSearchQuery(q);
     }
   }, [searchParams, setSearchQuery]);
-
 
   useEffect(() => {
     setCurrentPage(1);
@@ -90,8 +85,7 @@ export default function SearchVolunteer() {
           page: currentPage,
           limit: 6,
           search: searchQuery || undefined,
-          categories:
-            filters.categories.length > 0 ? filters.categories : undefined,
+          categories: filters.categories.length > 0 ? filters.categories : undefined,
           location: filters.locations.length > 0 ? filters.locations.join(", ") : undefined,
           sortBy: sortBy === "best_matches" ? undefined : sortBy,
         },
@@ -119,10 +113,11 @@ export default function SearchVolunteer() {
   const totalPages = volunteersData?.totalPages || 0;
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container max-w-[1280px] mx-auto px-4 py-6 md:py-8">
-        {/* Top Search Bar Row */}
-        <div className="flex items-center gap-4 mb-8">
+    <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-background">
+      <div className="container max-w-[1280px] mx-auto px-4 pt-6 md:pt-8 flex flex-col h-full">
+
+        {/* Top Search Bar Row — stays fixed */}
+        <div className="flex items-center gap-4 mb-6 flex-shrink-0">
           <div className="flex-1 max-w-2xl">
             <SearchBar
               onSearch={(q) => handleSearch(q)}
@@ -134,7 +129,6 @@ export default function SearchVolunteer() {
               preventRedirect={true}
             />
           </div>
-          {/* Mobile Filter Button */}
           <Button
             variant="outline"
             onClick={() => setIsFilterModalOpen(true)}
@@ -145,33 +139,34 @@ export default function SearchVolunteer() {
           </Button>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left Sidebar - Filter */}
-          <aside className="hidden lg:block w-[280px] flex-shrink-0">
+        {/* Body row — fills remaining height, no overflow on this level */}
+        <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+
+          {/* Left Sidebar — fixed, scrolls internally if needed */}
+          <aside className="hidden lg:block w-[280px] flex-shrink-0 overflow-y-auto">
             <FilterSidebar variant="volunteer" onFilterChange={setFilters} currentFilters={filters} />
           </aside>
 
-          {/* Main Content Area */}
-          <main className="flex-1 min-w-0">
-            {/* Controls Row */}
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#E9EAEB]">
+          {/* Main Content — fixed controls + scrollable cards */}
+          <main className="flex-1 min-w-0 flex flex-col min-h-0">
+
+            {/* Controls Row — stays fixed */}
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-border flex-shrink-0">
               <div className="flex items-center gap-6">
-                {/* Left side empty or for future use */}
                 {!isLoading && volunteers.length > 0 && (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     Showing {volunteers.length} of {totalItems} volunteers
                   </p>
                 )}
               </div>
-
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-[#667085]">Sort by:</span>
+                  <span className="text-sm text-muted-foreground">Sort by:</span>
                   <Select
                     value={sortBy}
                     onValueChange={(value: "available" | "not_available" | "best_matches") => setSortBy(value)}
                   >
-                    <SelectTrigger className="w-[140px] h-9 border-[#D0D5DD] rounded-lg text-sm font-medium text-[#344054] focus:ring-0 focus:ring-offset-0">
+                    <SelectTrigger className="w-[140px] h-9 border-input rounded-lg text-sm font-medium text-foreground focus:ring-0 focus:ring-offset-0">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent align="end">
@@ -183,12 +178,12 @@ export default function SearchVolunteer() {
               </div>
             </div>
 
-            {/* Volunteers List */}
-            <div className="space-y-4">
+            {/* Volunteer Cards — ONLY this area scrolls */}
+            <div className="flex-1 overflow-y-auto pr-1 space-y-4 pb-8">
               {isLoading ? (
                 Array.from({ length: 3 }).map((_, index) => (
                   <div key={index} className="w-full">
-                    <div className="border border-gray-100 rounded-xl p-6 bg-white">
+                    <div className="border border-border rounded-xl p-6 bg-card">
                       <div className="flex flex-col md:flex-row gap-6">
                         <Skeleton className="h-16 w-16 rounded-full" />
                         <div className="flex-1 space-y-4">
@@ -223,19 +218,19 @@ export default function SearchVolunteer() {
                   />
                 ))
               )}
-            </div>
 
-            {/* Pagination */}
-            {!isLoading && volunteers.length > 0 && totalPages > 1 && (
-              <div className="mt-8 flex justify-center">
-                <PaginationWrapper
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  maxVisiblePages={5}
-                />
-              </div>
-            )}
+              {/* Pagination inside scroll area */}
+              {!isLoading && volunteers.length > 0 && totalPages > 1 && (
+                <div className="pt-4 flex justify-center">
+                  <PaginationWrapper
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    maxVisiblePages={5}
+                  />
+                </div>
+              )}
+            </div>
           </main>
         </div>
       </div>
@@ -257,10 +252,7 @@ export default function SearchVolunteer() {
             />
           </div>
           <div className="px-4 pb-2 flex justify-center">
-            <Button
-              onClick={() => setIsFilterModalOpen(false)}
-              className="px-6"
-            >
+            <Button onClick={() => setIsFilterModalOpen(false)} className="px-6">
               Show Results
             </Button>
           </div>

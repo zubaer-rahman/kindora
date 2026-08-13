@@ -20,7 +20,7 @@ export default function PublicPageHero({
   children 
 }: PublicPageHeroProps) {
   return (
-    <section className="relative pt-44 pb-0 md:pt-56 md:pb-0 overflow-hidden bg-white">
+    <section className="relative pt-44 pb-0 md:pt-56 md:pb-0 overflow-hidden bg-background">
       {/* Dynamic Background Mesh */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <motion.div 
@@ -57,7 +57,7 @@ export default function PublicPageHero({
               <motion.h1 
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-8 tracking-[-0.03em] leading-[1.05]"
+                className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-8 tracking-[-0.03em] leading-[1.05]"
               >
                 {title.split(" ").map((word, i) => (
                   <span key={i} className={i === title.split(" ").length - 1 ? "text-primary italic" : ""}>
@@ -69,7 +69,7 @@ export default function PublicPageHero({
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-xl md:text-2xl text-slate-500 leading-relaxed max-w-2xl font-medium opacity-90"
+                className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-2xl font-medium opacity-90"
               >
                 {description}
               </motion.p>
@@ -86,7 +86,7 @@ export default function PublicPageHero({
                   variant="ghost"
                   onClick={onRefresh}
                   disabled={isRefreshing}
-                  className="group flex cursor-pointer items-center gap-3 text-slate-400 hover:text-primary bg-slate-50 hover:bg-primary/5 border border-slate-100 hover:border-primary/20 rounded-full px-6 h-11 transition-all font-bold shadow-sm"
+                  className="group flex cursor-pointer items-center gap-3 text-muted-foreground hover:text-primary bg-muted/50 hover:bg-primary/5 border border-border hover:border-primary/20 rounded-full px-6 h-11 transition-all font-bold shadow-sm"
                 >
                   <RotateCcw className={`h-5 w-5 transition-transform duration-500 group-hover:rotate-180 ${isRefreshing ? "animate-spin" : ""}`} />
                   <span>Refresh</span>
@@ -111,7 +111,7 @@ export default function PublicPageHero({
         </div>
         
         {/* Divider line that fades out */}
-        <div className="h-px bg-slate-100 w-full mt-24 opacity-60" />
+        <div className="h-px bg-border w-full mt-24 opacity-60" />
       </div>
     </section>
   );

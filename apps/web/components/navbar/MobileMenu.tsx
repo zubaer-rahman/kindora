@@ -37,7 +37,7 @@ export function MobileMenu({
   return (
     <div
       id="mobile-menu"
-      className={`fixed top-0 left-0 h-full w-72 bg-[#141414] text-white transform transition-transform duration-300 ease-in-out z-50 shadow-2xl ${isMenuOpen ? "translate-x-0" : "-translate-x-full"
+      className={`fixed top-0 left-0 h-full w-72 bg-foreground text-background transform transition-transform duration-300 ease-in-out z-50 shadow-2xl ${isMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       role="dialog"
       aria-modal="true"
@@ -48,7 +48,7 @@ export function MobileMenu({
           <KindoraLogo variant="light" />
           <button
             onClick={handleCloseMenu}
-            className="p-2 hover:bg-gray-800 rounded-full transition-colors duration-200"
+            className="p-2 hover:bg-muted rounded-full transition-colors duration-200"
             aria-label="Close menu"
           >
             <X className="h-6 w-6" />
@@ -60,13 +60,13 @@ export function MobileMenu({
             // Auth path menu items
             session ? (
               <div className="space-y-6">
-                <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-lg font-semibold">
+                <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-lg font-semibold text-primary-foreground">
                     {session.user?.name?.[0]?.toUpperCase()}
                   </div>
                   <div>
                     <p className="font-medium">{session.user?.name}</p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       {session.user?.role}
                     </p>
                   </div>
@@ -204,8 +204,8 @@ export function MobileMenu({
                   badgeCount={totalUnreadCount}
                   onClick={handleCloseMenu}
                 />
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors duration-200">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-800 transition-colors relative">
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors duration-200">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-muted transition-colors relative">
                     <NotificationBell />
                   </div>
                   <span>Notifications</span>
@@ -247,18 +247,18 @@ export function MobileMenu({
                   />
                 ))}
               </div>
-              {session && (
-                <div className="space-y-6 pt-6 border-t border-gray-800">
-                  <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-lg font-semibold">
+               {session && (
+                <div className="space-y-6 pt-6 border-t border-border">
+                  <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-lg font-semibold text-primary-foreground">
                       {session.user?.name?.[0]?.toUpperCase()}
                     </div>
-                    <div>
-                      <p className="font-medium text-white">{session.user?.name}</p>
-                      <p className="text-sm text-gray-400 capitalize">
-                        {session.user?.role}
-                      </p>
-                    </div>
+                  <div>
+                    <p className="font-medium text-background">{session.user?.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {session.user?.role}
+                    </p>
+                  </div>
                   </div>
                   <div className="space-y-1">
                     <NavLink
@@ -287,7 +287,7 @@ export function MobileMenu({
                 </div>
               )}
               {!session && (
-                <div className="pt-4 border-t border-gray-800 space-y-1">
+                <div className="pt-4 border-t border-border space-y-1">
                   {PUBLIC_NAV_OPTIONS.map((option, index) => (
                     <NavLink
                       key={index}

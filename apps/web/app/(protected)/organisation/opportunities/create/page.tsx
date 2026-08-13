@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import toast from "react-hot-toast";
 import { OpportunityFormValues } from "./_components/types";
@@ -96,7 +96,7 @@ export default function CreateOpportunityPage() {
       requirements: [],
     },
     mode: "onChange",
-    resolver: zodResolver(opportunityValidationSchema),
+    resolver: zodResolver(opportunityValidationSchema) as Resolver<OpportunityFormValues>,
   });
 
   const nextStep = async () => {
@@ -167,13 +167,13 @@ export default function CreateOpportunityPage() {
 
   return (
     <ProtectedLayout>
-      <div className="min-h-screen bg-gray-50/30">
-        <div className="max-w-[1240px] mx-auto pt-6 px-4">
+      <div className="min-h-screen ">
+        <div className="max-w-[1280px] mx-auto pt-6 px-4">
           <BackButton />
         </div>
 
-        <div className="max-w-[1240px] mx-auto px-2 sm:px-4 pb-12">
-          <Card className="p-4 sm:p-8 border-none shadow-sm bg-white">
+        <div className="max-w-[1280px] mx-auto px-2 sm:px-4 pb-12">
+          <Card className="p-4 sm:p-8 border-none shadow-sm bg-card">
             <StepIndicator
               currentStep={currentStep}
               totalSteps={totalSteps}

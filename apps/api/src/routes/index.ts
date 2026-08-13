@@ -15,6 +15,7 @@ import rosterRoutes from './roster.routes';
 import feedbackRoutes from './feedback.routes';
 import messageRoutes from './message.routes';
 import sseRoutes from './sse.routes';
+import systemAdminRoutes from './system-admin.routes';
 
 const router = Router();
 
@@ -34,5 +35,6 @@ router.use('/rosters', rosterRoutes);
 router.use('/feedback', feedbackRoutes);
 router.use('/messages', messageRoutes);
 router.use('/stream', sseRoutes);
+router.use('/admin', systemAdminRoutes);
 
 export default router;

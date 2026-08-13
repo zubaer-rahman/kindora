@@ -33,7 +33,7 @@ export default function VolunteerProfileBanner({
             <div className="absolute top-4 right-4 md:top-6 md:right-6 z-30 flex justify-end items-center">
                 <Badge
                     variant="secondary"
-                    className="bg-[#F2F4F7]/90 backdrop-blur-md text-[#344054] hover:bg-[#F2F4F7] px-4 py-1.5 rounded-full text-sm font-medium border-none whitespace-nowrap shadow-sm"
+                    className="bg-secondary/90 backdrop-blur-md text-secondary-foreground hover:bg-secondary px-4 py-1.5 rounded-full text-sm font-medium border-none whitespace-nowrap shadow-sm"
                 >
                     {getStudentStatusDisplay()}
                 </Badge>
@@ -52,13 +52,13 @@ export default function VolunteerProfileBanner({
 
                 {/* Info Section - SAME TYPOGRAPHY AS ORGANISATION */}
                 <div className="flex-1 flex flex-col justify-center min-w-0">
-                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-[#101828] mb-1 sm:mb-2 break-words">
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-1 sm:mb-2 break-words">
                         {volunteer.name}
                     </h1>
 
                     <div className="flex flex-col gap-4">
-                        <div className="flex items-start text-[#475467] gap-2">
-                            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0 text-[#667085]" />
+                        <div className="flex items-start text-muted-foreground gap-2">
+                            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 flex-shrink-0 text-muted-foreground" />
                             <span className="text-xs sm:text-sm md:text-base leading-tight break-words font-medium">
                                 {volunteer.area && volunteer.state
                                     ? formatText(volunteer.area, volunteer.state)

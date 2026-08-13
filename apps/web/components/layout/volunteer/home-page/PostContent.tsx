@@ -110,17 +110,17 @@ export function PostContent({ opportunity, }: PostContentProps) {
         <div className="flex items-center gap-3">
           <MapPin className="w-5 h-5 text-blue-600 flex-shrink-0" />
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Location</p>
-            <p className="text-sm font-medium text-gray-900">{opportunity.location}</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Location</p>
+            <p className="text-sm font-medium text-foreground">{opportunity.location}</p>
           </div>
         </div>
 
         {/* Start Date & Time (together) */}
         <div className="flex items-center gap-3">
-          <Calendar className="w-5 h-5 text-gray-600 flex-shrink-0" />
+          <Calendar className="w-5 h-5 text-muted-foreground flex-shrink-0" />
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Start</p>
-            <p className="text-sm font-medium text-gray-900">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Start</p>
+            <p className="text-sm font-medium text-foreground">
               {opportunity.date.start_date && (
                 <span>{new Date(opportunity.date.start_date).toLocaleDateString("en-US", {
                   weekday: "short",
@@ -141,10 +141,10 @@ export function PostContent({ opportunity, }: PostContentProps) {
         {/* End Date & Time (if present) */}
         {(opportunity.date.end_date || opportunity.time.end_time) && (
           <div className="flex items-center gap-3">
-            <Clock className="w-5 h-5 text-gray-600 flex-shrink-0" />
+            <Clock className="w-5 h-5 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide">End</p>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">End</p>
+              <p className="text-sm font-medium text-foreground">
                 {opportunity.date.end_date && (
                   <span>{new Date(opportunity.date.end_date).toLocaleDateString("en-US", {
                     weekday: "short",
@@ -164,18 +164,18 @@ export function PostContent({ opportunity, }: PostContentProps) {
         )}
 
         <div className="flex items-center gap-3">
-          <Users className="w-5 h-5 text-gray-600 flex-shrink-0" />
+          <Users className="w-5 h-5 text-muted-foreground flex-shrink-0" />
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Available Spots</p>
-            <p className="text-sm font-medium text-gray-900">{opportunity.number_of_volunteers} spots</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Available Spots</p>
+            <p className="text-sm font-medium text-foreground">{opportunity.number_of_volunteers} spots</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <Target className="w-5 h-5 text-gray-600 flex-shrink-0" />
+          <Target className="w-5 h-5 text-muted-foreground flex-shrink-0" />
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Commitment</p>
-            <p className="text-sm font-medium text-gray-900">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Commitment</p>
+            <p className="text-sm font-medium text-foreground">
               {opportunity.commitment_type === 'workbased' ? 'Work based' : 'Event based'}
             </p>
           </div>
@@ -183,9 +183,9 @@ export function PostContent({ opportunity, }: PostContentProps) {
 
         {opportunity.external_event_link && (
           <div className="flex items-center gap-3">
-            <ExternalLink className="w-5 h-5 text-gray-600 flex-shrink-0" />
+            <ExternalLink className="w-5 h-5 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide">External Link</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">External Link</p>
               <a
                 href={opportunity.external_event_link}
                 target="_blank"
@@ -239,12 +239,12 @@ export function PostContent({ opportunity, }: PostContentProps) {
         <div className="space-y-4">
           {opportunity.category.length > 0 && (
             <div>
-              <p className="text-sm font-semibold text-gray-700 mb-3">Categories</p>
+              <p className="text-sm font-semibold text-foreground mb-3">Categories</p>
               <div className="flex flex-wrap gap-2">
                 {opportunity.category.map((cat, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm rounded-full border border-blue-200 font-medium"
+                    className="px-3 py-1.5 bg-primary/10 text-primary text-sm rounded-full border border-primary/20 font-medium"
                   >
                     {cat}
                   </span>
@@ -255,12 +255,12 @@ export function PostContent({ opportunity, }: PostContentProps) {
 
           {opportunity.required_skills.length > 0 && (
             <div>
-              <p className="text-sm font-semibold text-gray-700 mb-3">Required Skills</p>
+              <p className="text-sm font-semibold text-foreground mb-3">Required Skills</p>
               <div className="flex flex-wrap gap-2">
                 {opportunity.required_skills.map((skill, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm rounded-full border border-gray-300 font-medium"
+                    className="px-3 py-1.5 bg-muted text-foreground text-sm rounded-full border border-border font-medium"
                   >
                     {skill}
                   </span>
@@ -275,12 +275,12 @@ export function PostContent({ opportunity, }: PostContentProps) {
       {opportunity.requirements && opportunity.requirements.length > 0 && (
         <div className="space-y-4">
           <div>
-            <p className="text-sm font-semibold text-gray-700 mb-3">Requirements</p>
+            <p className="text-sm font-semibold text-foreground mb-3">Requirements</p>
             <div className="flex flex-wrap gap-2">
               {opportunity.requirements.map((requirement, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1.5 bg-orange-50 text-orange-700 text-sm rounded-full border border-orange-200 font-medium flex items-center gap-2"
+                  className="px-3 py-1.5 bg-secondary text-secondary-foreground text-sm rounded-full border border-border font-medium flex items-center gap-2"
                 >
                   <svg
                     className="w-4 h-4"
@@ -306,46 +306,10 @@ export function PostContent({ opportunity, }: PostContentProps) {
 
       {/* Description */}
       <div 
-        className="prose prose-sm max-w-none text-gray-700"
+        className="prose prose-sm max-w-none text-muted-foreground"
         dangerouslySetInnerHTML={{ __html: opportunity.description || "" }}
       />
 
-      {/* Action Buttons */}
-      {!isOrganisation && !isCreator && (
-        <div className="flex items-center gap-3 pt-4">
-          <ApplyButton
-            opportunityId={opportunity._id}
-            opportunityDetails={opportunityDetails}
-            opportunityDate={opportunity.date}
-            className="bg-blue-600 h-10 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium text-sm transition-colors"
-          />
-          <FavoriteButton opportunityId={opportunity._id} />
-          {/* Withdraw Button: only show if already applied */}
-          <div className="flex-1 flex justify-end">
-            {applicationStatus && (applicationStatus.status === 'pending' || applicationStatus.status === 'approved') && (
-              <>
-                <button
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition disabled:opacity-50"
-                  onClick={() => setIsWithdrawDialogOpen(true)}
-                  disabled={revokeMutation.isPending || isStatusLoading}
-                >
-                  {revokeMutation.isPending ? 'Withdrawing...' : 'Withdraw Application'}
-                </button>
-                <ConfirmationDialog
-                  isOpen={isWithdrawDialogOpen}
-                  onOpenChange={setIsWithdrawDialogOpen}
-                  title="Withdraw Application"
-                  description="Are you sure you want to withdraw your application for this opportunity? This action cannot be undone."
-                  confirmText={revokeMutation.isPending ? 'Withdrawing...' : 'Withdraw'}
-                  onConfirm={handleWithdraw}
-                  variant="destructive"
-                  isLoading={revokeMutation.isPending}
-                />
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

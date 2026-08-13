@@ -1,28 +1,42 @@
-"use client";
-
+import { notFound, redirect } from "next/navigation";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 import OrganisationDashboard from "@/components/layout/organisation/dashboard";
-import { useParams } from "next/navigation";
+import SystemAdminDashboard from "@/components/layout/system-admin/dashboard";
+import SystemAdminShell from "@/components/layout/system-admin/SystemAdminShell";
 
-const DashboardPage = () => {
-  const params = useParams();
-  const role = params.role as string;
+type DashboardPageProps = {
+  params: Promise<{ role: string }>;
+};
 
-  const renderDashboard = () => {
-    switch (role) {
-      case "organisation":
-        return <OrganisationDashboard />;
+const DashboardPage = async ({ params }: DashboardPageProps) => {
+  const resolvedParams = await params;
+  const rawRole = resolvedParams.role;
+  const role = rawRole === "organization" || rawRole === "admin" ? "organisation" : rawRole;
 
-      default:
-        return (
-          <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-            <p className="text-gray-600">Invalid role: {role}</p>
-          </div>
-        );
-    }
-  };
+  if (role === "volunteer") {
+    redirect("/find-opportunity/most-recent");
+  }
 
-  return <ProtectedLayout>{renderDashboard()}</ProtectedLayout>;
+  if (role === "mentor") {
+    redirect("/find-volunteer");
+  }
+
+  switch (role) {
+    case "organisation":
+      return (
+        <ProtectedLayout>
+          <OrganisationDashboard />
+        </ProtectedLayout>
+      );
+    case "system-admin":
+      return (
+        <SystemAdminShell>
+          <SystemAdminDashboard />
+        </SystemAdminShell>
+      );
+    default:
+      notFound();
+  }
 };
 
 export default DashboardPage;

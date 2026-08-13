@@ -53,18 +53,18 @@ const AttachmentFile: React.FC<{
           "flex items-center gap-3 p-3 rounded-lg",
           isOwnMessage
             ? "bg-white/10 text-white border border-white/10"
-            : "bg-gray-50 text-gray-800 border border-gray-200"
+            : "bg-muted text-foreground border border-border"
         )}
       >
         <div className={cn(
           "h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0",
-          isOwnMessage ? "bg-white/20" : "bg-white shadow-sm text-blue-500"
+          isOwnMessage ? "bg-white/20" : "bg-card shadow-sm text-primary"
         )}>
           <FileText size={20} />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">{file.filename}</p>
-          <p className={cn("text-xs opacity-70", isOwnMessage ? "text-blue-100" : "text-gray-500")}>
+          <p className={cn("text-xs opacity-70", isOwnMessage ? "text-blue-100" : "text-muted-foreground")}>
             {formatFileSize(file.size)}
           </p>
         </div>
@@ -103,22 +103,22 @@ const AttachmentFile: React.FC<{
         "flex items-center gap-3 p-3 rounded-lg transition-all duration-200 group/file",
         isOwnMessage
           ? "bg-white/10 hover:bg-white/20 text-white border border-white/10"
-          : "bg-gray-50 hover:bg-gray-100 text-gray-800 border border-gray-200"
+          : "bg-muted hover:bg-muted/80 text-foreground border border-border"
       )}
     >
       <div className={cn(
         "h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors",
-        isOwnMessage ? "bg-white/20 group-hover/file:bg-white/30" : "bg-white shadow-sm text-blue-500"
+        isOwnMessage ? "bg-white/20 group-hover/file:bg-white/30" : "bg-card shadow-sm text-primary"
       )}>
         {isImage ? <ImageIcon size={20} /> : <FileText size={20} />}
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate">{file.filename}</p>
-        <p className={cn("text-xs opacity-70", isOwnMessage ? "text-blue-100" : "text-gray-500")}>
+        <p className={cn("text-xs opacity-70", isOwnMessage ? "text-blue-100" : "text-muted-foreground")}>
           {formatFileSize(file.size)}
         </p>
       </div>
-      <Download size={16} className={cn("flex-shrink-0 opacity-0 group-hover/file:opacity-100 transition-opacity", isOwnMessage ? "text-white" : "text-gray-500")} />
+      <Download size={16} className={cn("flex-shrink-0 opacity-0 group-hover/file:opacity-100 transition-opacity", isOwnMessage ? "text-white" : "text-muted-foreground")} />
     </a>
   );
 };
@@ -140,7 +140,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMess
             name={message.sender?.organization_profile?.title || message.sender?.name || 'User'}
             image={message.sender?.image}
             size={32}
-            className="ring-2 ring-white"
+            className="ring-2 ring-card"
           />
         </div>
       )}
@@ -151,11 +151,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMess
             "relative shadow-sm overflow-hidden",
             isOwnMessage
               ? "bg-gradient-to-br from-blue-600 to-blue-500 text-white rounded-2xl rounded-tr-sm"
-              : "bg-white border border-gray-100 text-gray-800 rounded-2xl rounded-tl-sm"
+              : "bg-card border border-border text-foreground rounded-2xl rounded-tl-sm"
           )}
         >
           {hasText && (
-            <div className={cn("px-4 py-3 text-sm sm:text-[15px] leading-relaxed", isOwnMessage ? "text-blue-50" : "text-gray-800")}>
+            <div className={cn("px-4 py-3 text-sm sm:text-[15px] leading-relaxed", isOwnMessage ? "text-blue-50" : "text-foreground")}>
               <FormattedMessage content={message.content!} isOwnMessage={isOwnMessage} />
             </div>
           )}
@@ -185,7 +185,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMess
 
         <p className={cn(
           "text-[11px] font-medium mt-1 px-1 transition-opacity opacity-0 group-hover:opacity-100 select-none",
-          isOwnMessage ? "text-gray-400 mr-1" : "text-gray-400 ml-1"
+          isOwnMessage ? "text-muted-foreground mr-1" : "text-muted-foreground ml-1"
         )}>
           {formatMessageDate(new Date(message.createdAt))}
         </p>

@@ -1,3 +1,10 @@
+export interface AvailableUser {
+  _id: string;
+  name: string;
+  image: string;
+  role: string;
+}
+
 export type Message = {
   _id: string;
   content?: string;

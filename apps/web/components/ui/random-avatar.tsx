@@ -154,7 +154,7 @@ export const RandomAvatar: React.FC<RandomAvatarProps> = ({
   return (
     <div
       className={cn(
-        "relative overflow-hidden flex items-center justify-center bg-white",
+        "relative overflow-hidden flex items-center justify-center bg-muted",
         roundedClasses[shape],
         className
       )}

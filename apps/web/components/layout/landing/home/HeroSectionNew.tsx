@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import SearchBar from "@/components/common/SearchBar-old-ref";
 
 export default function HeroSectionNew() {
@@ -22,7 +22,7 @@ export default function HeroSectionNew() {
     transition: { duration: 0.6, ease: "easeOut" }
   };
 
-  const stagger = {
+  const stagger: Variants = {
     animate: {
       transition: {
         staggerChildren: 0.1
@@ -30,7 +30,7 @@ export default function HeroSectionNew() {
     }
   };
 
-  const floatingImage = {
+  const floatingImage: Variants = {
     initial: { opacity: 0, scale: 0.8 },
     animate: { 
       opacity: 1, 
@@ -44,7 +44,7 @@ export default function HeroSectionNew() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section className="relative overflow-hidden bg-background">
       {/* Dynamic Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
         <motion.div 
@@ -85,7 +85,7 @@ export default function HeroSectionNew() {
         }}
       />
 
-        <div className="container mx-auto px-4 pt-32 pb-32 sm:px-6 lg:px-8 relative">
+        <div className="container mx-auto px-4 pt-32 pb-16 md:pb-24 sm:px-6 lg:px-8 relative">
           <motion.div 
             className="max-w-4xl mx-auto text-center"
             variants={stagger}
@@ -119,7 +119,7 @@ export default function HeroSectionNew() {
             {/* Search Bar Container */}
             <motion.div 
               variants={fadeInUp}
-              className="relative z-20 max-w-3xl mx-auto p-2 bg-white/40 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl shadow-primary/10"
+              className="relative z-20 max-w-3xl mx-auto p-2 bg-background/40 backdrop-blur-xl rounded-2xl border border-border/20 shadow-2xl shadow-primary/10"
             >
               <SearchBar onSearch={handleSearch} />
             </motion.div>
@@ -137,7 +137,7 @@ export default function HeroSectionNew() {
               whileHover="hover"
               className="absolute top-[22%] left-[4%] z-0 pointer-events-auto"
             >
-              <div className="relative w-[140px] h-[160px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white rotate-[-6deg]">
+              <div className="relative w-[140px] h-[160px] rounded-2xl overflow-hidden shadow-2xl border-4 border-background rotate-[-6deg]">
                 <Image src="/images/new-landing-hero/top-left.jpg" alt="Kindora" fill className="object-cover" />
               </div>
             </motion.div>
@@ -150,7 +150,7 @@ export default function HeroSectionNew() {
               whileHover="hover"
               className="absolute top-[18%] right-[4%] z-0 pointer-events-auto"
             >
-              <div className="relative w-[150px] h-[170px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white rotate-[8deg]">
+              <div className="relative w-[150px] h-[170px] rounded-2xl overflow-hidden shadow-2xl border-4 border-background rotate-[8deg]">
                 <Image src="/images/new-landing-hero/top-right.jpg" alt="Kindora" fill className="object-cover" />
               </div>
             </motion.div>
@@ -163,7 +163,7 @@ export default function HeroSectionNew() {
               whileHover="hover"
               className="absolute bottom-[22%] left-[2%] z-0 pointer-events-auto"
             >
-              <div className="relative w-[130px] h-[150px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white rotate-[12deg]">
+              <div className="relative w-[130px] h-[150px] rounded-2xl overflow-hidden shadow-2xl border-4 border-background rotate-[12deg]">
                 <Image src="/images/new-landing-hero/bottom-left.jpg" alt="Kindora" fill className="object-cover" />
               </div>
             </motion.div>
@@ -176,7 +176,7 @@ export default function HeroSectionNew() {
               whileHover="hover"
               className="absolute bottom-[12%] right-[2%] z-0 pointer-events-auto"
             >
-              <div className="relative w-[140px] h-[160px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white rotate-[-4deg]">
+              <div className="relative w-[140px] h-[160px] rounded-2xl overflow-hidden shadow-2xl border-4 border-background rotate-[-4deg]">
                 <Image src="/images/new-landing-hero/bottom-right.jpg" alt="Kindora" fill className="object-cover" />
               </div>
             </motion.div>

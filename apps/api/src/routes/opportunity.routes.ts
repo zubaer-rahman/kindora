@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/auth";
+import { allowRoles } from "../middleware/role-guard";
+import { UserRole } from "../db/interfaces/user";
 import {
   createOpportunity,
   getAllOpportunities,
@@ -33,13 +35,13 @@ router.get("/mentor/all", getMentorOpportunitiesAll);
 router.get("/mentor", getMentorOpportunities);
 
 router.get("/", getAllOpportunities);
-router.post("/", createOpportunity);
+router.post("/", allowRoles(UserRole.ORGANIZATION, UserRole.ADMIN, UserRole.MENTOR), createOpportunity);
 
 router.get("/:id", getOpportunity);
-router.put("/:id", updateOpportunity);
-router.delete("/:id", deleteOpportunity);
+router.put("/:id", allowRoles(UserRole.ORGANIZATION, UserRole.ADMIN, UserRole.MENTOR), updateOpportunity);
+router.delete("/:id", allowRoles(UserRole.ORGANIZATION, UserRole.ADMIN, UserRole.MENTOR), deleteOpportunity);
 
-router.patch("/:id/archive", archiveOpportunity);
-router.patch("/:id/unarchive", unarchiveOpportunity);
+router.patch("/:id/archive", allowRoles(UserRole.ORGANIZATION, UserRole.ADMIN, UserRole.MENTOR), archiveOpportunity);
+router.patch("/:id/unarchive", allowRoles(UserRole.ORGANIZATION, UserRole.ADMIN, UserRole.MENTOR), unarchiveOpportunity);
 
 export default router;

@@ -34,7 +34,7 @@ export default function OpportunityDrawer({
   const axiosAuth = useAxiosAuth();
 
   // Favorite functionality for sidebar button
-  const { isFavorite, isLoading: isFavoriteLoading, isToggling, toggleFavorite } = useFavorite(opportunityId || "");
+  const { isFavorite, isLoading: isFavoriteLoading, isToggling, toggleFavorite } = useFavorite(opportunityId);
 
   // Fetch opportunity data
   const {
@@ -86,19 +86,19 @@ export default function OpportunityDrawer({
 
       {/* Drawer - Compact design with sidebar matching dashboard theme */}
       <div
-        className={`fixed top-0 right-0 h-full bg-white z-50 shadow-2xl w-full md:w-[900px] max-w-[95vw] flex flex-col transition-transform duration-300 ease-out ${isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 h-full bg-card z-50 shadow-2xl w-full md:w-[900px] max-w-[95vw] flex flex-col transition-transform duration-300 ease-out ${isOpen ? "translate-x-0" : "translate-x-full"
           }`}
       >
         {/* Scrollable Container */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           {/* Upwork-style Header - Sticky inside scroll container for perfect alignment */}
-          <div className="sticky top-0 bg-white px-6 py-4 flex items-center lg:gap-6 z-20 flex-shrink-0">
+          <div className="sticky top-0 bg-card px-6 py-4 flex items-center lg:gap-6 z-20 flex-shrink-0">
             <div className="flex-1">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="p-2 -ml-2 hover:bg-gray-50 cursor-pointer text-[#1570EF] transition-colors"
+                className="p-2 -ml-2 hover:bg-muted cursor-pointer text-primary transition-colors"
               >
                 <IoArrowBackOutline className="text-2xl" />
               </Button>
@@ -112,7 +112,7 @@ export default function OpportunityDrawer({
                 href={`/opportunities/${opportunity?._id}?referrer_url_path=${encodeURIComponent(pathname)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium text-[#1570EF] hover:underline flex items-center gap-2"
+                className="text-sm font-medium text-primary hover:underline flex items-center gap-2"
               >
                 <ExternalLink className="w-4 h-4" />
                 <span className="hidden sm:inline">Open opportunity in a new window</span>
@@ -128,7 +128,7 @@ export default function OpportunityDrawer({
             </div>
           ) : error || !opportunity ? (
             <div className="flex flex-col items-center justify-center h-full min-h-[400px] p-8">
-              <p className="text-red-600 mb-4 text-sm">Error loading opportunity</p>
+              <p className="text-destructive mb-4 text-sm">Error loading opportunity</p>
               <Button onClick={onClose} variant="outline" size="sm">
                 Close
               </Button>
@@ -140,27 +140,27 @@ export default function OpportunityDrawer({
                 <div className="flex-1 pt-4 sm:pt-6 min-w-0 max-w-full space-y-4">
                   {/* Title and Metadata */}
                   <div className="space-y-4">
-                    <h1 className="text-xl sm:text-2xl font-bold text-[#0A0D12] tracking-tight">
+                    <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
                       {opportunity.title}
                     </h1>
 
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1.5">
                         <span className="font-medium">Posted {formatDistanceToNow(opportunity.createdAt, { addSuffix: true })}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <MapPin className="w-4 h-4 text-muted-foreground/70" />
                         <span>{opportunity.location}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Key Info Grid - Compact */}
-                  <div className="grid grid-cols-2 gap-4 py-4 border-t border-gray-100">
+                  <div className="grid grid-cols-2 gap-4 py-4 border-t border-border">
                     {opportunity.date?.start_date && (
                       <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                        <span className="text-gray-600">
+                        <Calendar className="w-4 h-4 text-muted-foreground/70 flex-shrink-0" />
+                        <span className="text-foreground/80">
                           {new Date(opportunity.date.start_date).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
@@ -171,33 +171,33 @@ export default function OpportunityDrawer({
                     )}
 
                     <div className="flex items-center gap-2 text-sm">
-                      <Users className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-gray-600 font-medium">{opportunity.number_of_volunteers} spots</span>
+                      <Users className="w-4 h-4 text-muted-foreground/70 flex-shrink-0" />
+                      <span className="text-foreground/80 font-medium">{opportunity.number_of_volunteers} spots</span>
                     </div>
 
                     <div className="flex items-center gap-2 text-sm">
-                      <Target className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-gray-600">
+                      <Target className="w-4 h-4 text-muted-foreground/70 flex-shrink-0" />
+                      <span className="text-foreground/80">
                         {opportunity.commitment_type === "workbased" ? "Work based" : "Event based"}
                       </span>
                     </div>
                   </div>
                   {/* Description - Compact */}
                   <div className="space-y-2">
-                    <p className="text-xs font-medium text-gray-500">Description</p>
+                    <p className="text-xs font-medium text-muted-foreground">Description</p>
                     <div 
-                      className="prose prose-sm max-w-none text-gray-700 text-sm leading-relaxed"
+                      className="prose prose-sm max-w-none text-foreground/90 text-sm leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: opportunity.description || "" }}
                     />
                   </div>
                   {/* Categories and Skills - Compact */}
                   {(opportunity.category?.length > 0 || opportunity.required_skills?.length > 0) && (
-                    <div className="space-y-2 pt-2 border-t border-gray-100">
+                    <div className="space-y-2 pt-2 border-t border-border">
 
 
                       {opportunity.required_skills?.length > 0 && (
                         <div>
-                          <p className="text-xs font-medium text-gray-500 mb-1.5">Skills We're looking for</p>
+                          <p className="text-xs font-medium text-muted-foreground mb-1.5">Skills We're looking for</p>
                           <div className="flex flex-wrap gap-1.5">
                             {opportunity.required_skills.map((skill: string, index: number) => (
                               <Badge
@@ -217,13 +217,13 @@ export default function OpportunityDrawer({
                   {/* Requirements - Compact */}
                   {opportunity.requirements && opportunity.requirements.length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-xs font-medium text-gray-500">Requirements</p>
+                      <p className="text-xs font-medium text-muted-foreground">Requirements</p>
                       <div className="flex flex-wrap gap-1.5">
                         {opportunity.requirements.map((requirement: string, index: number) => (
                           <Badge
                             key={index}
                             variant="outline"
-                            className="text-xs font-normal px-2 py-0.5 bg-orange-50 text-orange-700 border-orange-200 flex items-center gap-1.5"
+                            className="text-xs font-normal px-2 py-0.5 bg-secondary/50 text-secondary-foreground border-secondary flex items-center gap-1.5"
                           >
                             <svg
                               className="w-3 h-3 flex-shrink-0"
@@ -250,13 +250,13 @@ export default function OpportunityDrawer({
 
                   {/* Contact Info - Compact */}
                   {(opportunity.email_contact || opportunity.phone_contact || opportunity.external_event_link) && (
-                    <div className="space-y-2 pt-2 border-t border-gray-100">
-                      <p className="text-xs font-medium text-gray-500">Contact</p>
+                    <div className="space-y-2 pt-2 border-t border-border">
+                      <p className="text-xs font-medium text-muted-foreground">Contact</p>
                       <div className="space-y-1.5">
                         {opportunity.email_contact && (
                           <a
                             href={`mailto:${opportunity.email_contact}`}
-                            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                            className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 hover:underline"
                           >
                             <Mail className="w-3.5 h-3.5" />
                             <span className="truncate">{opportunity.email_contact}</span>
@@ -265,7 +265,7 @@ export default function OpportunityDrawer({
                         {opportunity.phone_contact && (
                           <a
                             href={`tel:${opportunity.phone_contact}`}
-                            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                            className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 hover:underline"
                           >
                             <Phone className="w-3.5 h-3.5" />
                             <span>{opportunity.phone_contact}</span>
@@ -276,7 +276,7 @@ export default function OpportunityDrawer({
                             href={opportunity.external_event_link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                            className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 hover:underline"
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
                             <span className="truncate">External Link</span>
@@ -287,15 +287,15 @@ export default function OpportunityDrawer({
                   )}
 
                   {/* Posted Date */}
-                  <div className="pt-2 border-t border-gray-100">
-                    <p className="text-xs text-gray-500">
+                  <div className="pt-2 border-t border-border">
+                    <p className="text-xs text-muted-foreground">
                       Posted {formatDistanceToNow(opportunity.createdAt, { addSuffix: true })}
                     </p>
                   </div>
                 </div>
 
                 {/* Sidebar */}
-                <div className="hidden lg:block w-[1px] bg-gray-200 flex-shrink-0"></div>
+                <div className="hidden lg:block w-[1px] bg-border flex-shrink-0"></div>
                 <div className="lg:w-[300px] pt-4 sm:pt-6 lg:flex-shrink-0 lg:max-w-[300px] min-w-0">
                   <div className="space-y-6">
 
@@ -314,11 +314,11 @@ export default function OpportunityDrawer({
                             location: opportunity.location,
                           }}
                           opportunityDate={opportunity.date}
-                          className="w-full h-10 text-sm bg-[#1570EF] hover:bg-[#1570EF]/90 text-white font-semibold rounded-full transition-all"
+                          className="w-full h-10 text-sm bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full transition-all"
                         />
                         <Button
                           variant="outline"
-                          className="w-full h-10 text-sm border-[#1570EF] text-[#1570EF] hover:bg-[#1570EF]/5 flex items-center justify-center gap-2 font-semibold rounded-full transition-all"
+                          className="w-full h-10 text-sm border-primary text-primary hover:bg-primary/10 flex items-center justify-center gap-2 font-semibold rounded-full transition-all"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleFavorite();
@@ -329,7 +329,7 @@ export default function OpportunityDrawer({
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                             <Heart
-                              className={`h-4 w-4 ${isFavorite ? "fill-[#1570EF]" : ""}`}
+                              className={`h-4 w-4 ${isFavorite ? "fill-primary" : ""}`}
                             />
                           )}
                           <span>{isFavorite ? "Saved" : "Save opportunity"}</span>

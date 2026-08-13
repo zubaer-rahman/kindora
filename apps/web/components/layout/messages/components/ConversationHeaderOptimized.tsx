@@ -68,7 +68,7 @@ export const ConversationHeaderOptimized: React.FC<ConversationHeaderProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between p-2 sm:p-3 lg:p-4 border-b border-gray-200 bg-white min-h-[60px] sm:min-h-[64px]">
+    <div className="flex items-center justify-between p-2 sm:p-3 lg:p-4 border-b border-border bg-card min-h-[60px] sm:min-h-[64px]">
       {/* Left side - Back button (mobile) and Avatar/Info */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         {/* Back button for mobile */}
@@ -77,7 +77,7 @@ export const ConversationHeaderOptimized: React.FC<ConversationHeaderProps> = ({
             variant="ghost"
             size="sm"
             onClick={onBack}
-            className="md:hidden h-8 w-8 p-0 flex-shrink-0 hover:bg-gray-100"
+            className="md:hidden h-8 w-8 p-0 flex-shrink-0 hover:bg-muted"
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="sr-only">Back to conversations</span>
@@ -87,7 +87,7 @@ export const ConversationHeaderOptimized: React.FC<ConversationHeaderProps> = ({
         {/* Avatar/Group Icon */}
         {isGroup ? (
           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center flex-shrink-0 shadow-sm">
-            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
           </div>
         ) : (
           <div className="flex-shrink-0">
@@ -98,7 +98,7 @@ export const ConversationHeaderOptimized: React.FC<ConversationHeaderProps> = ({
         {/* User/Group Info */}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-            <h2 className="font-semibold text-sm sm:text-base lg:text-lg truncate text-gray-900 leading-tight">
+            <h2 className="font-semibold text-sm sm:text-base lg:text-lg truncate text-foreground leading-tight">
               {isGroup ? truncateName(user.name) : truncateName(user.name)}
             </h2>
             {isGroup && getAdminCount() > 0 && (
@@ -111,14 +111,14 @@ export const ConversationHeaderOptimized: React.FC<ConversationHeaderProps> = ({
           {/* Group member info - responsive layout */}
           {isGroup && (
             <div className="flex items-center gap-1 sm:gap-2 mt-0.5 flex-wrap">
-              <p className="text-xs text-gray-500 flex items-center gap-1 flex-shrink-0">
+              <p className="text-xs text-muted-foreground flex items-center gap-1 flex-shrink-0">
                 <Users className="h-3 w-3" />
                 {getMemberCount()} member{getMemberCount() !== 1 ? 's' : ''}
               </p>
               {getAdminCount() > 0 && getMemberCount() > getAdminCount() && (
                 <>
-                  <span className="text-xs text-gray-400 hidden sm:inline">•</span>
-                  <p className="text-xs text-gray-500 flex-shrink-0 hidden sm:block">
+                  <span className="text-xs text-muted-foreground hidden sm:inline">•</span>
+                  <p className="text-xs text-muted-foreground flex-shrink-0 hidden sm:block">
                     {getMemberCount() - getAdminCount()} regular
                   </p>
                 </>
@@ -159,7 +159,7 @@ export const ConversationHeaderOptimized: React.FC<ConversationHeaderProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 hover:bg-gray-100 flex-shrink-0"
+                className="h-8 w-8 p-0 hover:bg-muted flex-shrink-0"
               >
                 <MoreHorizontal className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
@@ -185,7 +185,7 @@ export const ConversationHeaderOptimized: React.FC<ConversationHeaderProps> = ({
                 <>
                   <DropdownMenuItem
                     onClick={onDeleteGroup}
-                    className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                    className="text-destructive focus:text-destructive focus:bg-destructive/10"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete Group
@@ -198,7 +198,7 @@ export const ConversationHeaderOptimized: React.FC<ConversationHeaderProps> = ({
                 <>
                   <DropdownMenuItem
                     onClick={onDeleteConversation}
-                    className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                    className="text-destructive focus:text-destructive focus:bg-destructive/10"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete Conversation

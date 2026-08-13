@@ -51,15 +51,41 @@ export async function recruitApplicant(userId: string, input: RecruitApplicantIn
   return organisationRecruitment;
 }
 
-export async function getRecruitedApplicants(_userId: string, input: RecruitedApplicantsQuery) {
-  const matchCondition = input.opportunityId
-    ? { opportunity: input.opportunityId }
-    : {};
+export async function getRecruitedApplicants(userId: string, input: RecruitedApplicantsQuery) {
+  const user = await UserModel.findById(userId);
+  if (!user) throw new AppError(404, 'User not found.');
 
-  const recruitedApplications = await RecModel.find()
+  let allowedOpportunityIds: any[] = [];
+  if (input.opportunityId) {
+    allowedOpportunityIds = [input.opportunityId];
+  } else {
+    if (user.role === 'mentor') {
+      const MentorModel = (await import('../db/models/opportunity-mentor.js')).default as any;
+      const assignments = await MentorModel.find({ volunteer: user._id });
+      allowedOpportunityIds = assignments.map((a: any) => a.opportunity);
+    } else if (user.organization_profile) {
+      const OppModel = (await import('../db/models/opportunity.js')).default as any;
+      const opps = await OppModel.find({ organization_profile: user.organization_profile }).select('_id');
+      allowedOpportunityIds = opps.map((o: any) => o._id);
+    } else {
+      return [];
+    }
+  }
+
+  // Find applications for the allowed opportunities
+  const allowedApplications = await AppModel.find({
+    opportunity: { $in: allowedOpportunityIds }
+  }).select('_id');
+
+  const applicationIds = allowedApplications.map((a: any) => a._id);
+
+  if (applicationIds.length === 0) return [];
+
+  const recruitedApplications = await RecModel.find({
+    application: { $in: applicationIds }
+  })
     .populate({
       path: 'application',
-      match: matchCondition,
       populate: [
         {
           path: 'volunteer',

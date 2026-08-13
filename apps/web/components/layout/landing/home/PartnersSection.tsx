@@ -15,7 +15,7 @@ export default function PartnersSection() {
   ];
 
   return (
-    <section className="py-12 md:py-16 bg-white border-y border-gray-100">
+    <section className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1170px]">
         <p className="text-center text-sm font-medium text-muted-foreground uppercase tracking-widest mb-10">
           Trusted by leading organizations and communities

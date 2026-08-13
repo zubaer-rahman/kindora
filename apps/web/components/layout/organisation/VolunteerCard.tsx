@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { formatText } from "@/utils/helpers/formatText";
@@ -42,23 +43,17 @@ export default function VolunteerCard({
 }: VolunteerCardProps) {
   const router = useRouter();
 
-  const handleViewProfile = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onCardClick) {
-      onCardClick(volunteer);
-    } else {
-      router.push(`/find-volunteer/volunteer/details/${volunteer._id}`);
-    }
-  };
-
   return (
     <Card
-      className="hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden w-full h-[340px] py-0 relative bg-white border border-gray-100 flex flex-col justify-between"
-      onClick={() => {
+      className="hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden w-full h-[340px] py-0 relative bg-card border border-border text-card-foreground flex flex-col justify-between"
+      onClick={(e) => {
+        e.preventDefault();
         if (onCardClick) {
           onCardClick(volunteer);
         } else {
-          router.push(`/find-volunteer/volunteer/details/${volunteer._id}`);
+          const targetUrl = `/find-volunteer/volunteer/details/${volunteer._id || (volunteer as any).id}`;
+          console.log("Card Navigating to:", targetUrl);
+          router.push(targetUrl);
         }
       }}
     >
@@ -67,18 +62,18 @@ export default function VolunteerCard({
           <div className="flex items-center gap-3">
             <UserAvatar user={volunteer} size={44} className="rounded-full w-11 h-11" />
             <div className="flex flex-col">
-              <h3 className="text-base font-semibold text-gray-900 mb-0.5 line-clamp-1">{toTitleCase(volunteer.name)}</h3>
+              <h3 className="text-base font-semibold text-foreground mb-0.5 line-clamp-1">{toTitleCase(volunteer.name)}</h3>
               {volunteer.volunteer_profile?.is_available ? (
-                <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-xs font-medium mt-1 w-fit">✓ Available</span>
+                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full text-xs font-medium mt-1 w-fit">✓ Available</span>
               ) : (
-                <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs font-medium mt-1 w-fit">Unavailable</span>
+                <span className="bg-muted text-muted-foreground border border-border px-2 py-0.5 rounded-full text-xs font-medium mt-1 w-fit">Unavailable</span>
               )}
             </div>
           </div>
         </div>
 
-        <div className="flex items-center text-sm text-gray-500 mb-2">
-          <MapPin className="w-4 h-4 mr-1 text-pink-500" />
+        <div className="flex items-center text-sm text-muted-foreground mb-2">
+          <MapPin className="w-4 h-4 mr-1 text-pink-500 flex-shrink-0" />
           <span className="truncate">
             {volunteer.area && volunteer.state
               ? `${formatText(volunteer.area)}, ${formatText(volunteer.state)}`
@@ -101,13 +96,13 @@ export default function VolunteerCard({
                 {shown.map((interest, idx) => (
                   <span
                     key={idx}
-                    className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-xs font-normal"
+                    className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full text-xs font-normal"
                   >
                     {interest.replace(/_/g, " ")}
                   </span>
                 ))}
                 {extra > 0 && (
-                  <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full text-xs font-normal">
+                  <span className="bg-muted text-muted-foreground/80 px-2 py-0.5 rounded-full text-xs font-normal">
                     +{extra} more
                   </span>
                 )}
@@ -117,7 +112,7 @@ export default function VolunteerCard({
         </div>
 
         {volunteer.volunteer_profile?.bio && (
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
             {volunteer.volunteer_profile.bio}
           </p>
         )}
@@ -126,23 +121,33 @@ export default function VolunteerCard({
           {isPublic ? (
             <Button
               variant="default"
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-1 text-sm h-9 cursor-pointer"
-              onClick={handleViewProfile}
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-1 text-sm h-9 cursor-pointer"
+              asChild
             >
-              View Profile
+              <Link 
+                href={`/find-volunteer/volunteer/details/${volunteer._id || (volunteer as any).id}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                View Profile
+              </Link>
             </Button>
           ) : (
             <>
               <Button
                 variant="outline"
-                className="flex-1 flex items-center justify-center gap-1 text-sm h-9 border-gray-200 cursor-pointer"
-                onClick={handleViewProfile}
+                className="flex-1 flex items-center justify-center gap-1 text-sm h-9 border-border cursor-pointer"
+                asChild
               >
-                View Profile
+                <Link 
+                  href={`/find-volunteer/volunteer/details/${volunteer._id || (volunteer as any).id}`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  View Profile
+                </Link>
               </Button>
               <Button
                 variant="default"
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-1 text-sm h-9 cursor-pointer"
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-1 text-sm h-9 cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   onConnect(volunteer);

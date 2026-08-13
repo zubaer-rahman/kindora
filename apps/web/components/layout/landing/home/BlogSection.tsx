@@ -38,9 +38,9 @@ export default function BlogSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="py-16 md:py-24 bg-background">
       <div className="container max-w-[1170px] mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-[40px] max-w-[732px] mx-auto md:text-4xl font-semibold text-[#0A0D12] mb-[72px] text-center">
+        <h2 className="text-[40px] max-w-[732px] mx-auto md:text-4xl font-semibold text-foreground mb-[72px] text-center">
           Find Expert Tips and Growth Insights on Our Blog
         </h2>
 
@@ -56,20 +56,20 @@ export default function BlogSection() {
               />
             </div>
             <CardContent className="p-0">
-              <h3 className="text-xl md:text-[20px] font-semibold text-[#0A0A0A] mb-4">
+              <h3 className="text-xl md:text-[20px] font-semibold text-foreground mb-4">
                 {featuredPost.title}
               </h3>
-              <p className="text-[#414651] text-base md:text-lg mt-4 mb-6 md:mb-8 leading-relaxed line-clamp-2">
+              <p className="text-muted-foreground text-base md:text-lg mt-4 mb-6 md:mb-8 leading-relaxed line-clamp-2">
                 {featuredPost.description}
               </p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                 <Button
                   variant="outline"
-                  className="border-[#181D27] h-[48px] text-base md:text-lg !rounded-full py-3 px-[31px] text-[#181D27] bg-[#F5F5F5] w-full sm:w-auto"
+                  className="border-foreground h-[48px] text-base md:text-lg !rounded-full py-3 px-[31px] text-foreground bg-muted w-full sm:w-auto"
                 >
                   Learn More
                 </Button>
-                <div className="flex items-center gap-4 md:gap-6 text-sm text-[#717680]">
+                <div className="flex items-center gap-4 md:gap-6 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <ClockIcon className="w-4 h-4" />
                     <span>{featuredPost.readTime}</span>
@@ -96,10 +96,10 @@ export default function BlogSection() {
                   />
                 </div>
                 <CardContent className="flex flex-col justify-between p-0 py-2">
-                  <h4 className="font-semibold text-lg md:text-[20px] text-[#0A0A0A] mb-4 sm:mb-0">
+                  <h4 className="font-semibold text-lg md:text-[20px] text-foreground mb-4 sm:mb-0">
                     {post.title}
                   </h4>
-                  <div className="flex items-center gap-4 md:gap-6 text-sm text-[#6A7282]">
+                  <div className="flex items-center gap-4 md:gap-6 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <ClockIcon className="w-4 h-4" />
                       <span>{post.readTime}</span>

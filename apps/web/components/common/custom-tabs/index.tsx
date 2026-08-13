@@ -33,7 +33,7 @@ export default function CustomTabs({
                     <TabsTrigger
                         key={tab.value}
                         value={tab.value}
-                        className="px-5 py-2 text-sm text-[#5E6D55] font-medium data-[state=active]:text-[#101828] rounded-none bg-transparent border-b-[3px] border-transparent data-[state=active]:border-b-[#1570EF] shadow-none hover:text-[#101828] focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:shadow-none transition-all"
+                        className="px-5 py-2 text-sm text-muted-foreground font-medium data-[state=active]:text-foreground rounded-none bg-transparent shadow-none hover:text-foreground focus-visible:ring-0 focus-visible:ring-offset-0 border-b-[3px] border-transparent data-[state=active]:border-b-primary dark:data-[state=active]:border-transparent dark:data-[state=active]:border-b-primary data-[state=active]:bg-transparent dark:data-[state=active]:bg-transparent data-[state=active]:shadow-none group-data-[variant=default]/tabs-list:data-[state=active]:shadow-none transition-all"
                     >
                         {tab.label}
                         {tab.count !== undefined && ` (${tab.count})`}

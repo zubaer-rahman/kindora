@@ -93,10 +93,10 @@ export default function LatestOpportunitiesSection({
 
   if (isLoading) {
     return (
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto max-w-[1170px]">
           <div className="flex items-center justify-center min-h-[400px]">
-            <Loader2 className="h-8 w-8 animate-spin text-[#2563EB]" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         </div>
       </section>
@@ -105,11 +105,11 @@ export default function LatestOpportunitiesSection({
 
   if (error) {
     return (
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto max-w-[1170px]">
           <div className="text-center py-12">
-            <p className="text-red-600">Error loading opportunities</p>
-            <p className="text-gray-600 mt-2">{error.message}</p>
+            <p className="text-destructive">Error loading opportunities</p>
+            <p className="text-muted-foreground mt-2">{error.message}</p>
           </div>
         </div>
       </section>
@@ -117,16 +117,16 @@ export default function LatestOpportunitiesSection({
   }
 
   return (
-    <section className="py-12 md:py-16 bg-white">
+    <section className="py-16 md:py-24 bg-background">
       <div className="container mx-auto max-w-[1170px]">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
           <div className="flex-1">
-            <h2 className="text-2xl max-w-[588px] sm:text-3xl md:text-[40px] font-semibold text-[#0A0D12] mb-8">
+            <h2 className="text-2xl max-w-[588px] sm:text-3xl md:text-[40px] font-semibold text-foreground mb-8">
               {title}
             </h2>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-              <p className="text-base sm:text-lg text-[#6A7282]">
+              <p className="text-base sm:text-lg text-muted-foreground">
                 Showing {showingCount} {showingCount === 1 ? "Opportunity" : "Opportunities"} of{" "}
                 {totalOpportunities.toLocaleString()} {totalOpportunities === 1 ? "total" : "totals"}
               </p>
@@ -134,7 +134,7 @@ export default function LatestOpportunitiesSection({
                 <Button
                   variant="outline"
                   asChild
-                  className="border-gray-300 !rounded-full text-[#414651] hover:bg-gray-50 rounded-lg px-[30px] py-[15px] h-auto w-fit"
+                  className="border-border !rounded-full text-muted-foreground hover:bg-muted rounded-lg px-[30px] py-[15px] h-auto w-fit"
                 >
                   <Link href="/find-opportunity/most-recent">See all</Link>
                 </Button>
@@ -146,7 +146,7 @@ export default function LatestOpportunitiesSection({
         {/* Cards Grid */}
         {opportunities.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600">No opportunities available at the moment.</p>
+            <p className="text-muted-foreground">No opportunities available at the moment.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px] mb-12">
@@ -165,7 +165,7 @@ export default function LatestOpportunitiesSection({
                   return (
                     <span
                       key={`ellipsis-${index}`}
-                      className="px-1 sm:px-2 text-base sm:text-lg text-[#99A1AF]"
+                      className="px-1 sm:px-2 text-base sm:text-lg text-muted-foreground"
                     >
                       ...
                     </span>
@@ -178,8 +178,8 @@ export default function LatestOpportunitiesSection({
                     size="icon"
                     onClick={() => setCurrentPage(page as number)}
                     className={`rounded-[10px] w-8 h-8 sm:w-[40px] sm:h-[40px] cursor-pointer text-sm sm:text-base ${currentPage === page
-                      ? "bg-[#EFF8FF] text-[#1570EF] border-none"
-                      : "border-[#E9EAEB] text-gray-700 hover:bg-gray-50"
+                      ? "bg-primary/10 text-primary border-none"
+                      : "border-border text-muted-foreground hover:bg-muted"
                       }`}
                   >
                     {page}
@@ -193,9 +193,9 @@ export default function LatestOpportunitiesSection({
                 size="icon"
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="rounded-[10px] cursor-pointer bg-[#EFF8FF] w-8 h-8 sm:w-[40px] sm:h-[40px] border-none text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                className="rounded-[10px] cursor-pointer bg-primary/10 w-8 h-8 sm:w-[40px] sm:h-[40px] border-none text-muted-foreground hover:bg-muted disabled:opacity-50"
               >
-                <ChevronLeft className="h-4 w-4 sm:h-6 sm:w-6 text-[#6A7282]" />
+                <ChevronLeft className="h-4 w-4 sm:h-6 sm:w-6 text-muted-foreground" />
               </Button>
               <Button
                 variant="outline"
@@ -204,9 +204,9 @@ export default function LatestOpportunitiesSection({
                   setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="rounded-[10px] cursor-pointer bg-[#EFF8FF] w-8 h-8 sm:w-[40px] sm:h-[40px] border-none text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                className="rounded-[10px] cursor-pointer bg-primary/10 w-8 h-8 sm:w-[40px] sm:h-[40px] border-none text-muted-foreground hover:bg-muted disabled:opacity-50"
               >
-                <ChevronRight className="h-4 w-4 sm:h-6 sm:w-6 text-[#6A7282]" />
+                <ChevronRight className="h-4 w-4 sm:h-6 sm:w-6 text-muted-foreground" />
               </Button>
             </div>
           </div>

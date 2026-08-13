@@ -39,7 +39,7 @@ export default function OpportunityTable({
 
   return (
     <div className="hidden md:block px-4 flex-1 min-h-[400px]">
-      <div className="flex items-center py-3 px-6 bg-gray-50 text-sm text-gray-500 rounded-md">
+      <div className="flex items-center py-3 px-6 bg-muted text-sm text-muted-foreground rounded-md">
         {table.getHeaderGroups().map((headerGroup) => (
           <React.Fragment key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
@@ -66,11 +66,11 @@ export default function OpportunityTable({
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center items-center py-10 text-gray-500 min-h-[300px]">
+        <div className="flex justify-center items-center py-10 text-muted-foreground min-h-[300px]">
           Loading...
         </div>
       ) : data.length === 0 ? (
-        <div className="flex justify-center items-center py-10 text-gray-500 min-h-[300px]">
+        <div className="flex justify-center items-center py-10 text-muted-foreground min-h-[300px]">
           No opportunities found.
         </div>
       ) : (
@@ -78,7 +78,7 @@ export default function OpportunityTable({
           {table.getRowModel().rows.map((row) => (
             <div
               key={row.id}
-              className="flex items-center py-4 px-6 border-b last:border-b-0 hover:bg-gray-50 min-h-[64px]"
+              className="flex items-center py-4 px-6 border-b last:border-b-0 hover:bg-muted min-h-[64px]"
             >
               {row.getVisibleCells().map((cell) => (
                 <div

@@ -37,7 +37,7 @@ export const DesktopSearch = ({ query, placeholder, onInput, onSearch, searchHis
           className="relative origin-right"
           style={{ transformOrigin: 'right', marginLeft: 'auto' }}
         >
-          <span className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none pl-2">
+          <span className="absolute left-0 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none pl-2">
             <Search className="h-5 w-5" />
           </span>
           <SearchInput
@@ -46,7 +46,7 @@ export const DesktopSearch = ({ query, placeholder, onInput, onSearch, searchHis
             onInput={onInput}
             onSearch={onSearch}
             autoFocus
-            className="w-full text-black pl-10 pr-2 text-[20px] font-normal border-0 border-b-2 border-black bg-transparent placeholder:text-gray-400 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 outline-none shadow-none rounded-none"
+            className="w-full text-foreground pl-10 pr-2 text-[20px] font-normal border-0 border-b-2 border-foreground bg-transparent placeholder:text-muted-foreground focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 outline-none shadow-none rounded-none"
             />
           <SearchSuggestions
             query={query}
@@ -58,12 +58,12 @@ export const DesktopSearch = ({ query, placeholder, onInput, onSearch, searchHis
         </motion.div>
         <button
           type="button"
-          className="text-black hover:text-gray-600 focus:outline-none z-50 cursor-pointer"
+          className="text-foreground hover:text-muted-foreground focus:outline-none z-50 cursor-pointer"
           onClick={onClose}
           aria-label="Close search"
           style={{ fontSize: 28, background: 'none', border: 'none', padding: 0, height: 80 }}
         >
-          <X className="h-6 w-6 text-gray-500" />
+          <X className="h-6 w-6 text-muted-foreground" />
         </button>
       </div>
     </div>

@@ -50,11 +50,16 @@ export const useConversations = () => {
     },
   });
 
+  const invalidateGroups = () => {
+    queryClient.invalidateQueries({ queryKey: ["groups"] });
+  };
+
   return {
     conversations,
     groups,
     isLoadingConversations,
     isLoadingGroups,
     markAsReadMutation,
+    invalidateGroups,
   };
 };

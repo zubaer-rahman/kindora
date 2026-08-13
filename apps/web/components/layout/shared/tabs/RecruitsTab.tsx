@@ -82,13 +82,12 @@ export function RecruitsTab({
     return (
       <div className="space-y-6">
         <div className="space-y-2">
-          <div className="w-full border-b border-[#F1F1F1]" />
           <div className="flex flex-col sm:flex-row justify-between gap-3">
             <div className="relative flex-1 max-w-[333px]">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="Search volunteers"
-                className="pl-10 bg-gray-50 border-0"
+                className="pl-10 bg-muted border-0"
                 value=""
                 disabled
               />
@@ -105,7 +104,7 @@ export function RecruitsTab({
             </div>
           </div>
         </div>
-        <div className="text-center text-gray-500 py-8">Loading recruited volunteers...</div>
+        <div className="text-center text-muted-foreground py-8">Loading recruited volunteers...</div>
       </div>
     );
   }
@@ -113,13 +112,12 @@ export function RecruitsTab({
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <div className="w-full border-b border-[#F1F1F1]" />
         <div className="flex flex-col sm:flex-row justify-between gap-3">
           <div className="relative flex-1 max-w-[333px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               placeholder="Search volunteers"
-              className="pl-10 bg-gray-50 border-0"
+              className="pl-10 bg-muted border-0"
               value={recruitsSearchQuery || ""}
               onChange={(e) => setRecruitsSearchQuery(e.target.value)}
             />
@@ -151,7 +149,7 @@ export function RecruitsTab({
         />
       ))}
       {filteredRecruitedApplicants?.length === 0 && (
-        <div className="text-center text-gray-500 py-8">
+        <div className="text-center text-muted-foreground py-8">
           {recruitsSearchQuery
             ? "No matching volunteers found"
             : "No recruited volunteers yet"}

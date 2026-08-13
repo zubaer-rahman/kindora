@@ -3,7 +3,6 @@ import { Fragment, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import ProtectedNavbar from "@/components/navbar/ProtectedNavbar";
-import NewFooter from "@/components/layout/landing/home/NewFooter";
 import Loading from "@/app/loading";
 import { FeedbackButton } from "@/components/FeedbackButton";
 
@@ -18,9 +17,16 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       if (session?.user) {
+        const userRole = (session.user as any).role?.toLowerCase();
+
+        // System admin has no profile — redirect directly to their dashboard
+        if (userRole === "system_admin") {
+          router.push("/system-admin/dashboard");
+          return;
+        }
+
         // Logged in but profile is missing or session is stale
         let role = "volunteer";
-        const userRole = session.user.role?.toLowerCase();
         if (userRole === "organization" || userRole === "admin" || userRole === "organisation") {
           role = "organisation";
         } else if (userRole === "mentor") {
@@ -37,7 +43,7 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
   if (isLoading || !isAuthenticated) {
     return (
       <Loading size="medium">
-        <p className="text-gray-600 mt-2">Wait a sec...</p>
+        <p className="text-muted-foreground mt-2">Wait a sec...</p>
       </Loading>
     );
   }
@@ -46,8 +52,7 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
     <Fragment>
       <div className="flex flex-col min-h-screen">
         <ProtectedNavbar />
-        <main className="flex-1 relative pt-[72px]">{children}</main>
-        <NewFooter containerClassName="max-w-[1280px] mx-auto" paddingClassName="px-4" />
+        <main className="flex-1 relative w-full max-w-[1280px] mx-auto">{children}</main>
       </div>
       <FeedbackButton />
     </Fragment>

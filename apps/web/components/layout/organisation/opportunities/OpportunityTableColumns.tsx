@@ -37,16 +37,16 @@ export const createOpportunityTableColumns = ({ activeTab, onTitleClick, actions
                   e.stopPropagation();
                   onTitleClick(info.row.original._id);
                 }}
-                className="text-left hover:text-[#246BFD] hover:scale-105 transition-all duration-200 cursor-pointer"
+                className="text-left hover:text-primary hover:scale-105 transition-all duration-200 cursor-pointer"
               >
                 {info.row.original.title}
               </button>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="font-medium text-[#246BFD]">
+              <span className="font-medium text-primary">
                 {org?.title || "Organization"}
               </span>
-              <span className="text-gray-400">•</span>
+              <span className="text-muted-foreground">•</span>
               <span>
                 Posted –{" "}
                 {new Date(info.row.original.createdAt).toLocaleDateString()}
@@ -64,7 +64,7 @@ export const createOpportunityTableColumns = ({ activeTab, onTitleClick, actions
       const opportunity = info.row.original;
       if (!opportunity.date?.start_date) {
         return (
-          <div className="w-full text-center text-gray-400">Not set</div>
+          <div className="w-full text-center text-muted-foreground">Not set</div>
         );
       }
 
@@ -78,7 +78,7 @@ export const createOpportunityTableColumns = ({ activeTab, onTitleClick, actions
       return (
         <div className="w-full text-center">
           <div className="text-sm font-medium">{formattedDate}</div>
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-muted-foreground">
             {opportunity.time?.start_time
               ? formatTimeToAMPM(opportunity.time.start_time)
               : "Time TBD"}

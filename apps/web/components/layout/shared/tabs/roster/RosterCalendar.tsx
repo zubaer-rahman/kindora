@@ -125,29 +125,29 @@ function ShiftDetailPanel({
     <div className="fixed inset-y-0 right-0 w-80 bg-white border-l border-[#e5e7eb] shadow-xl z-50 flex flex-col">
       <div className="flex items-start justify-between p-4 border-b border-[#f3f4f6]">
         <div>
-          <h3 className="font-semibold text-gray-900 text-sm">{shift.title}</h3>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <h3 className="font-semibold text-foreground text-sm">{shift.title}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
             {formatDate(shift.date)} &middot;{" "}
             {formatTimeRange(shift.startTime, shift.endTime)}
           </p>
-          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium mt-1 inline-block">
+          <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-medium mt-1 inline-block">
             {shift.role}
           </span>
         </div>
         <button
           onClick={onClose}
-          className="p-1 rounded hover:bg-gray-100 text-gray-400"
+          className="p-1 rounded hover:bg-accent text-muted-foreground"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
           Volunteers ({shift.assignedVolunteers.length}/{shift.maxVolunteers})
         </p>
         {shift.assignedVolunteers.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-6">
+          <p className="text-sm text-muted-foreground text-center py-6">
             No volunteers assigned yet
           </p>
         ) : (
@@ -161,10 +161,10 @@ function ShiftDetailPanel({
                   {v.initials}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-sm font-medium text-foreground truncate">
                     {v.name}
                   </p>
-                  <p className="text-xs text-gray-500 capitalize">{v.status}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{v.status}</p>
                 </div>
               </div>
             ))}
@@ -191,7 +191,7 @@ function ShiftDetailPanel({
             <Button
               size="sm"
               onClick={() => onSignup?.(shift.id)}
-              className="w-full bg-[#2563EB] hover:bg-[#1d4fd8] text-white"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               Sign up
             </Button>
@@ -237,12 +237,12 @@ function WeekCalendar({
             const isToday = toISODate(d) === toISODate(new Date());
             return (
               <div key={i} className="py-2 text-center">
-                <p className="text-xs text-gray-500 font-medium">
+                <p className="text-xs text-muted-foreground font-medium">
                   {DAY_LABELS[i]}
                 </p>
                 <p
                   className={`text-sm font-semibold mt-0.5 w-7 h-7 flex items-center justify-center mx-auto rounded-full ${
-                    isToday ? "bg-[#2563EB] text-white" : "text-gray-900"
+                    isToday ? "bg-primary text-primary-foreground" : "text-foreground"
                   }`}
                 >
                   {d.getDate()}
@@ -260,9 +260,9 @@ function WeekCalendar({
               <div
                 key={h}
                 style={{ height: `${SLOT_HEIGHT}px` }}
-                className="border-b border-[#f3f4f6] flex items-start justify-end pr-2 pt-1"
+                className="border-b border-border flex items-start justify-end pr-2 pt-1"
               >
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-muted-foreground">
                   {h === 12 ? "12PM" : h > 12 ? `${h - 12}PM` : `${h}AM`}
                 </span>
               </div>
@@ -280,15 +280,15 @@ function WeekCalendar({
                   position: "relative",
                   height: `${TOTAL_HOURS * SLOT_HEIGHT}px`,
                 }}
-                className="border-l border-[#f3f4f6]"
+                className="border-l border-border"
               >
                 {hours.map((h) => (
                   <div
                     key={h}
                     style={{ height: `${SLOT_HEIGHT}px` }}
-                    className={`border-b border-[#f3f4f6] ${
+                    className={`border-b border-border ${
                       role === "organiser"
-                        ? "hover:bg-blue-50 cursor-pointer transition-colors"
+                        ? "hover:bg-accent cursor-pointer transition-colors"
                         : ""
                     }`}
                     onClick={
@@ -340,11 +340,11 @@ function MonthCalendar({
 
   return (
     <div>
-      <div className="grid grid-cols-7 border-b border-[#e5e7eb]">
+      <div className="grid grid-cols-7 border-b border-border">
         {DAY_LABELS.map((l) => (
           <div
             key={l}
-            className="py-2 text-center text-xs font-semibold text-gray-500"
+            className="py-2 text-center text-xs font-semibold text-muted-foreground"
           >
             {l}
           </div>
@@ -357,7 +357,7 @@ function MonthCalendar({
             return (
               <div
                 key={`pad-${i}`}
-                className="border-b border-r border-[#f3f4f6] min-h-[80px] bg-gray-50"
+                className="border-b border-r border-border min-h-[80px] bg-muted"
               />
             );
           }
@@ -368,9 +368,9 @@ function MonthCalendar({
           return (
             <div
               key={dateStr}
-              className={`border-b border-r border-[#f3f4f6] min-h-[80px] p-1 ${
+              className={`border-b border-r border-border min-h-[80px] p-1 ${
                 role === "organiser"
-                  ? "hover:bg-blue-50 cursor-pointer transition-colors"
+                  ? "hover:bg-accent cursor-pointer transition-colors"
                   : ""
               }`}
               onClick={
@@ -379,7 +379,7 @@ function MonthCalendar({
             >
               <div
                 className={`text-xs font-semibold w-6 h-6 flex items-center justify-center rounded-full mb-1 ${
-                  isToday ? "bg-[#2563EB] text-white" : "text-gray-700"
+                  isToday ? "bg-primary text-primary-foreground" : "text-foreground"
                 }`}
               >
                 {d.getDate()}
@@ -410,7 +410,7 @@ function MonthCalendar({
                   );
                 })}
                 {dayShifts.length > 3 && (
-                  <div className="text-[10px] text-gray-400 pl-1">
+                  <div className="text-[10px] text-muted-foreground pl-1">
                     +{dayShifts.length - 3} more
                   </div>
                 )}
@@ -514,30 +514,30 @@ export function RosterCalendar({
           </Button>
           <button
             onClick={prevPeriod}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={nextPeriod}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground transition-colors"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
-          <span className="text-sm font-semibold text-gray-800">
+          <span className="text-sm font-semibold text-foreground">
             {periodLabel}
           </span>
         </div>
 
-        <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+        <div className="flex items-center bg-muted rounded-lg p-0.5">
           {(["week", "month"] as CalendarMode[]).map((m) => (
             <button
               key={m}
               onClick={() => setMode(m)}
               className={`px-3 py-1 rounded-md text-xs font-medium capitalize transition-colors ${
                 mode === m
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {m}

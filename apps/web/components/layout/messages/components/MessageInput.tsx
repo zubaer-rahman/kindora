@@ -4,7 +4,8 @@ import { Textarea } from "@/components/ui/textarea";
 import Avatar from "./Avatar";
 import { Paperclip, X, FileText, Image as ImageIcon, Loader2, SendHorizontal, Smile } from "lucide-react";
 import { cn } from "@/lib/utils";
-import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import EmojiPicker, { EmojiClickData, Theme as EmojiTheme } from "emoji-picker-react";
+import { useTheme } from "next-themes";
 
 interface Mentionee {
   _id: string;
@@ -33,6 +34,7 @@ export const MessageInput: React.FC<MessageInputProps> = React.memo(({
   isGroup = false,
   currentUserId
 }) => {
+  const { resolvedTheme } = useTheme();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showMentions, setShowMentions] = useState(false);
@@ -140,18 +142,18 @@ export const MessageInput: React.FC<MessageInputProps> = React.memo(({
   };
 
   return (
-    <div className="w-full bg-white pb-3 pt-3 relative">
+    <div className="w-full bg-card pb-3 pt-3 relative">
       {/* File Previews */}
       {selectedFiles.length > 0 && (
-        <div className="px-4 py-2 border-b flex flex-wrap gap-2 max-h-32 overflow-y-auto mb-2 bg-gray-50/50">
+        <div className="px-4 py-2 border-b flex flex-wrap gap-2 max-h-32 overflow-y-auto mb-2 bg-muted/50">
           {selectedFiles.map((file, index) => (
-            <div key={index} className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-lg py-1.5 px-3 text-xs group relative animate-in fade-in zoom-in-95">
+            <div key={index} className="flex items-center gap-2 bg-card border border-border shadow-sm rounded-lg py-1.5 px-3 text-xs group relative animate-in fade-in zoom-in-95">
               {file.type.startsWith('image/') ? <ImageIcon size={14} className="text-blue-500" /> : <FileText size={14} className="text-orange-500" />}
-              <span className="max-w-[120px] truncate font-medium text-gray-700">{file.name}</span>
+              <span className="max-w-[120px] truncate font-medium text-foreground">{file.name}</span>
               <button
                 type="button"
                 onClick={() => removeFile(index)}
-                className="text-gray-400 hover:text-red-500 transition-colors ml-1"
+                className="text-muted-foreground hover:text-destructive transition-colors ml-1"
                 disabled={isSending}
               >
                 <X size={14} />
@@ -162,8 +164,8 @@ export const MessageInput: React.FC<MessageInputProps> = React.memo(({
       )}
 
       {showMentions && filteredMentionees.length > 0 && (
-        <div className="absolute bottom-full left-4 mb-2 w-64 bg-white border border-gray-100 rounded-2xl shadow-xl z-[100] overflow-hidden ring-1 ring-black/5 animate-in slide-in-from-bottom-2">
-          <div className="p-2 border-b bg-gray-50/50 text-xs font-medium text-gray-500">
+        <div className="absolute bottom-full left-4 mb-2 w-64 bg-popover text-popover-foreground border border-border rounded-2xl shadow-xl z-[100] overflow-hidden ring-1 ring-black/5 animate-in slide-in-from-bottom-2">
+          <div className="p-2 border-b bg-muted/50 text-xs font-medium text-muted-foreground">
             Mention someone
           </div>
           <div className="max-h-48 overflow-y-auto p-1">
@@ -172,7 +174,7 @@ export const MessageInput: React.FC<MessageInputProps> = React.memo(({
                 key={m._id}
                 className={cn(
                   "flex items-center gap-2 p-2 rounded-xl cursor-pointer transition-all duration-200",
-                  index === selectedIndex ? "bg-blue-50 text-blue-700" : "hover:bg-gray-50 text-gray-700"
+                  index === selectedIndex ? "bg-accent text-accent-foreground" : "hover:bg-muted text-foreground"
                 )}
                 onClick={() => handleMentionSelect(m.name)}
                 onMouseEnter={() => setSelectedIndex(index)}
@@ -186,7 +188,7 @@ export const MessageInput: React.FC<MessageInputProps> = React.memo(({
       )}
 
       <form onSubmit={onSubmit} className="w-full px-3 sm:px-4 relative">
-        <div className="flex items-end gap-2 bg-gray-100 rounded-[26px] p-1.5 transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-100 focus-within:bg-white border border-transparent focus-within:border-blue-200">
+        <div className="flex items-end gap-2 bg-muted rounded-[26px] p-1.5 transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-card border border-transparent focus-within:border-primary/40">
 
           <div className="flex items-center pb-1 pl-1">
             <input
@@ -203,7 +205,7 @@ export const MessageInput: React.FC<MessageInputProps> = React.memo(({
               size="icon"
               onClick={() => fileInputRef.current?.click()}
               disabled={isSending}
-              className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-transparent rounded-full transition-colors"
+              className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-transparent rounded-full transition-colors"
             >
               <Paperclip className="h-5 w-5" />
             </Button>
@@ -215,7 +217,7 @@ export const MessageInput: React.FC<MessageInputProps> = React.memo(({
                 size="icon"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 className={cn(
-                  "h-8 w-8 text-gray-400 hover:text-yellow-500 hover:bg-transparent rounded-full transition-colors hidden sm:flex",
+                  "h-8 w-8 text-muted-foreground hover:text-yellow-500 hover:bg-transparent rounded-full transition-colors hidden sm:flex",
                   showEmojiPicker && "text-yellow-500 bg-yellow-50"
                 )}
               >
@@ -227,12 +229,13 @@ export const MessageInput: React.FC<MessageInputProps> = React.memo(({
                     className="fixed inset-0 z-40 bg-transparent"
                     onClick={() => setShowEmojiPicker(false)}
                   />
-                  <div className="relative z-50 shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
+                  <div className="relative z-50 shadow-xl rounded-2xl border border-border overflow-hidden">
                     <EmojiPicker
                       onEmojiClick={(emojiData: EmojiClickData) => {
                         setNewMessage(newMessage + emojiData.emoji);
                         inputRef.current?.focus();
                       }}
+                      theme={resolvedTheme === 'dark' ? EmojiTheme.DARK : EmojiTheme.LIGHT}
                       lazyLoadEmojis={true}
                       width={300}
                       height={400}
@@ -251,7 +254,7 @@ export const MessageInput: React.FC<MessageInputProps> = React.memo(({
             onKeyDown={onKeyDown}
             placeholder="Type a message..."
             disabled={isSending}
-            className="flex-1 min-h-[40px] max-h-32 py-2.5 px-2 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400 text-gray-700 text-[15px] leading-relaxed resize-none overflow-y-auto shadow-none"
+            className="flex-1 min-h-[40px] max-h-32 py-2.5 px-2 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground text-foreground text-[15px] leading-relaxed resize-none overflow-y-auto shadow-none"
             rows={1}
             style={{ height: 'auto', minHeight: '44px' }}
             onInput={(e) => {
@@ -268,8 +271,8 @@ export const MessageInput: React.FC<MessageInputProps> = React.memo(({
             className={cn(
               "h-10 w-10 rounded-full flex-shrink-0 transition-all duration-200 mb-0.5 mr-0.5",
               (!newMessage?.trim() && selectedFiles.length === 0)
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed hover:bg-gray-200"
-                : "bg-blue-600 hover:bg-blue-700 text-white shadow-md active:scale-95"
+                ? "bg-muted text-muted-foreground cursor-not-allowed hover:bg-muted"
+                : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-md active:scale-95"
             )}
           >
             {isSending ? (

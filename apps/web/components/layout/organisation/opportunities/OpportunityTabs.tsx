@@ -41,7 +41,7 @@ export default function OpportunityTabs({
 
   return (
     <div className="mb-4 ">
-      <div className="hidden md:grid md:grid-cols-4 w-full max-w-full overflow-hidden bg-[#F1F1F2] rounded-[30px]">
+      <div className="hidden md:grid md:grid-cols-4 w-full max-w-full overflow-hidden bg-muted rounded-[30px]">
         {tabs.map((tab) => (
           <Button
             key={tab.value}
@@ -50,8 +50,8 @@ export default function OpportunityTabs({
             className={`
               h-10 w-full px-2 rounded-[24px] transition-all
               ${activeTab === tab.value
-                ? "bg-[#246BFD] text-white hover:bg-[#246BFD]/90"
-                : "bg-transparent text-gray-600 hover:bg-[#246BFD]/10 hover:text-[#246BFD]"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "bg-transparent text-foreground hover:bg-primary/10 hover:text-primary"
               }
             `}
           >

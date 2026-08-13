@@ -21,7 +21,7 @@ export const SearchInput = ({ query, placeholder, onInput, onSearch, autoFocus, 
     }}
     autoFocus={autoFocus}
     readOnly={readOnly}
-    className={`shadow-none text-black focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 ${className}`}
+    className={`shadow-none text-foreground focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 ${className}`}
     autoComplete="off"
   />
 ); 

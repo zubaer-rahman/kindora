@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function FAQHero() {
   return (
-    <section className="relative pt-44 md:pt-60 pb-16 md:pb-24 overflow-hidden bg-white">
+    <section className="relative pt-44 md:pt-60 pb-16 md:pb-24 overflow-hidden bg-background">
       {/* Background Mesh */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
         <motion.div 
@@ -30,7 +30,7 @@ export default function FAQHero() {
           <motion.div
             initial={{ opacity: 0, x: -15 }}
             animate={{ opacity: 1, x: 0 }}
-            className="inline-flex items-center rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] bg-primary/5 text-primary mb-8 border border-primary/10"
+            className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-primary/5 text-primary mb-6 ring-1 ring-inset ring-primary/10"
           >
             Support Center
           </motion.div>
@@ -38,7 +38,7 @@ export default function FAQHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl font-bold text-slate-900 mb-8 tracking-tight leading-[1.05]"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-6 leading-[1.1]"
           >
             How can we <br className="hidden md:block" />
             <span className="text-primary italic">help you?</span>
@@ -47,7 +47,7 @@ export default function FAQHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-xl text-slate-500 leading-relaxed max-w-2xl font-medium"
+            className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto md:mx-0"
           >
             Everything you need to know about Kindora. Can&apos;t find what you&apos;re looking for? Reach out to our specialized support team.
           </motion.p>

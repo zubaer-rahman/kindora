@@ -26,7 +26,7 @@ export const MobileSearch = ({ query, placeholder, onInput, onSearch, searchHist
         className="flex-1 flex items-center relative"
         style={{ minWidth: 0 }}
       >
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
           <Search className="h-5 w-5" />
         </span>
         <SearchInput
@@ -35,7 +35,7 @@ export const MobileSearch = ({ query, placeholder, onInput, onSearch, searchHist
           onInput={onInput}
           onSearch={onSearch}
           autoFocus
-          className="w-full pl-10 pr-2 py-2 border border-black text-base font-normal focus:border-black focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400 bg-white outline-none shadow-none rounded-md"
+          className="w-full pl-10 pr-2 py-2 border border-foreground text-base font-normal focus:border-foreground focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground bg-background outline-none shadow-none rounded-md"
         />
         <SearchSuggestions
           query={query}

@@ -31,11 +31,11 @@ export default function EmptyState({
   const variantClasses = {
     default: "py-12 px-4",
     minimal: "py-8 px-4",
-    card: "py-16 px-6 bg-white rounded-xl ",
+    card: "py-16 px-6 bg-card rounded-xl ",
   };
 
   const iconClasses = cn(
-    "text-gray-400 mb-4",
+    "text-muted-foreground mb-4",
     variant === "default" ? "h-16 w-16" : "h-12 w-12 ",
     iconClassName
   );
@@ -45,8 +45,8 @@ export default function EmptyState({
       {Icon && <Icon className={iconClasses} strokeWidth={1.5} />}
 
       <div className="max-w-sm mx-auto">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-500 text-sm leading-relaxed mb-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
+        <p className="text-muted-foreground text-sm leading-relaxed mb-6">
           {description}
         </p>
 
@@ -55,7 +55,7 @@ export default function EmptyState({
             onClick={onAction}
             variant="secondary"
             size="sm"
-            className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-center py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 gap-2 cursor-pointer group"
+            className="bg-muted hover:bg-muted/80 text-foreground text-center py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 gap-2 cursor-pointer group"
           >
             {actionLabel}
             <ExternalLink className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

@@ -46,7 +46,9 @@ export default function LoginPage() {
         hasRedirected.current = true;
         const role = session.user.role.toLowerCase();
         let destination = "/find-opportunity/most-recent";
-        if (role === "mentor") {
+        if (role === "system_admin") {
+          destination = "/system-admin/dashboard";
+        } else if (role === "mentor") {
           destination = "/mentor/dashboard";
         } else if (role !== "volunteer") {
           destination = "/organisation/dashboard";
@@ -56,6 +58,13 @@ export default function LoginPage() {
       } else if (!isAuthenticated && session?.user?.role && !hasProfile) {
         hasRedirected.current = true;
         const role = session.user.role.toLowerCase();
+
+        // System admin needs no profile — go straight to dashboard
+        if (role === "system_admin") {
+          router.replace("/system-admin/dashboard");
+          return;
+        }
+
         // Map backend roles to frontend route slugs/role params
         let roleParam = "volunteer";
         if (role === "organisation" || role === "organization" || role === "admin") {
@@ -99,7 +108,7 @@ export default function LoginPage() {
   if (isLoading) {
     return (
       <Loading size="medium">
-        <p className="text-gray-600 mt-2">Wait a sec...</p>
+        <p className="text-muted-foreground mt-2">Wait a sec...</p>
       </Loading>
     );
   }
@@ -111,21 +120,21 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="overflow-hidden">
           <div className="p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-6">
               Log in to Kindora
             </h2>
 
             {error && (
-              <div className="mb-4 p-3 bg-white border-l-4 border-red-500 text-red-700">
+              <div className="mb-4 p-3 bg-background border-l-4 border-destructive text-destructive">
                 <p className="text-sm">{error}</p>
               </div>
             )}
 
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-sm text-gray-600 font-medium">New to Kindora?</span>
+              <span className="text-sm text-muted-foreground font-medium">New to Kindora?</span>
               <Link
                 href="/signup"
-                className="text-sm text-blue-600 hover:text-blue-700 font-bold transition-all px-1"
+                className="text-sm text-primary hover:text-primary/80 font-bold transition-all px-1"
               >
                 Sign up
               </Link>
@@ -135,7 +144,7 @@ export default function LoginPage() {
               <div className="space-y-1">
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-foreground"
                 >
                   Email
                 </label>
@@ -145,14 +154,14 @@ export default function LoginPage() {
                     type="email"
                     {...register("email")}
                     placeholder="Enter your email address"
-                    className="w-full border border-gray-300 rounded-lg p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full border border-input rounded-lg p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-background"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail size={18} />
+                    <Mail size={18} className="text-muted-foreground" />
                   </div>
                 </div>
                 {errors.email && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-destructive text-sm mt-1">
                     {errors.email.message}
                   </p>
                 )}
@@ -161,7 +170,7 @@ export default function LoginPage() {
               <div className="space-y-1">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-foreground"
                 >
                   Password
                 </label>
@@ -171,16 +180,16 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     {...register("password")}
                     placeholder="Enter your password"
-                    className="w-full border border-gray-300 rounded-lg p-3 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full border border-input rounded-lg p-3 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-background"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock size={18} />
+                    <Lock size={18} className="text-muted-foreground" />
                   </div>
                   <button
                     type="button"
                     tabIndex={-1}
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground focus:outline-none"
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />
@@ -190,7 +199,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-destructive text-sm mt-1">
                     {errors.password.message}
                   </p>
                 )}
@@ -199,7 +208,7 @@ export default function LoginPage() {
               <div className="flex justify-end">
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                  className="text-sm text-primary hover:text-primary/80 transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -208,7 +217,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-medium transition-colors flex items-center justify-center"
+                className="w-full bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 font-medium transition-colors flex items-center justify-center"
               >
                 {isSubmitting ? (
                   <Loader2 className="h-5 w-5 mr-2 animate-spin" />
@@ -218,13 +227,13 @@ export default function LoginPage() {
             </form>
           </div>
 
-          <div className="px-8 py-4 bg-gray-50 border-t border-gray-100 text-center text-sm text-gray-600">
+          <div className="px-8 py-4 border-t border-border text-center text-sm text-muted-foreground">
             <p>
               By continuing, you agree to Kindora&apos;s{" "}
               <Link
                 href="/terms"
                 prefetch={false}
-                className="text-blue-600 hover:underline transition-colors"
+                className="text-primary hover:underline transition-colors"
               >
                 Terms of Service
               </Link>{" "}
@@ -232,7 +241,7 @@ export default function LoginPage() {
               <Link
                 href="/privacy"
                 prefetch={false}
-                className="text-blue-600 hover:underline transition-colors"
+                className="text-primary hover:underline transition-colors"
               >
                 Privacy Policy
               </Link>

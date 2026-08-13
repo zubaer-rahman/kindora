@@ -1,4 +1,4 @@
-import { LogOut, User, MessageCircle, Info } from "lucide-react";
+import { LogOut, User, MessageCircle, Info, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { SessionUser } from "@/types/navigation";
@@ -21,6 +21,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { usePathname } from "next/navigation";
 import { isProtectedPath } from "@/utils/helpers/pathCheck";
+import { useTheme } from "next-themes";
 
 interface UserMenuProps {
   user: SessionUser;
@@ -29,11 +30,17 @@ interface UserMenuProps {
 export function UserMenu({ user }: UserMenuProps) {
   const [isAvailable, setIsAvailable] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const hasInitialized = useRef(false);
   const pathname = usePathname();
   const axiosAuth = useAxiosAuth();
+  const { theme, setTheme, resolvedTheme } = useTheme();
 
   const protectedPath = isProtectedPath(pathname);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -44,6 +51,8 @@ export function UserMenu({ user }: UserMenuProps) {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  const isSystemAdmin = user.role === "system_admin";
 
   const userRole =
     (user.role === "admin" || user.role === "organization")
@@ -160,7 +169,7 @@ export function UserMenu({ user }: UserMenuProps) {
             {isVolunteer && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center justify-between pt-1 cursor-help hover:bg-slate-50 rounded-md px-1 -mx-1 transition-colors duration-200">
+                  <div className="flex items-center justify-between pt-1 cursor-help hover:bg-muted rounded-md px-1 -mx-1 transition-colors duration-200">
                     <span className="text-xs text-muted-foreground font-medium">
                       Open to volunteer
                     </span>
@@ -175,17 +184,17 @@ export function UserMenu({ user }: UserMenuProps) {
                   sideOffset={4}
                   side={isMobile ? "bottom" : "left"}
                   align={isMobile ? "center" : "start"}
-                  className="max-w-[180px] p-2.5 bg-slate-900 border-slate-700 shadow-lg"
+                  className="max-w-[180px] p-2.5 bg-foreground border-border shadow-lg"
                 >
                   <div className="flex items-start gap-2">
-                    <Info className="h-3.5 w-3.5 text-blue-400 mt-0.5 flex-shrink-0" />
+                    <Info className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
                     <div className="space-y-1">
-                      <p className="text-xs font-medium text-slate-100">
+                      <p className="text-xs font-medium text-background">
                         {isAvailable
                           ? "Available for Opportunities"
                           : "Currently Unavailable"}
                       </p>
-                      <p className="text-xs text-slate-300 leading-relaxed">
+                      <p className="text-xs text-muted-foreground leading-relaxed">
                         {isAvailable
                           ? "Organisations can see your profile and contact you for volunteer work."
                           : "Your profile is hidden from organisations. Toggle to become visible again."}
@@ -199,7 +208,7 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem asChild disabled={isSystemAdmin}>
             <Link
               href={`/${userRole}/profile`}
               className="flex items-center cursor-pointer"
@@ -208,7 +217,7 @@ export function UserMenu({ user }: UserMenuProps) {
               <span className="truncate">Profile</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem asChild disabled={isSystemAdmin}>
             <Link
               href={`/${userRole}/messages`}
               className="flex items-center cursor-pointer"
@@ -217,6 +226,21 @@ export function UserMenu({ user }: UserMenuProps) {
               <span className="truncate">Messages</span>
             </Link>
           </DropdownMenuItem>
+          {mounted && (
+            <DropdownMenuItem onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
+              {resolvedTheme === 'dark' ? (
+                <>
+                  <Sun className="mr-2 h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">Light mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="mr-2 h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">Dark mode</span>
+                </>
+              )}
+            </DropdownMenuItem>
+          )}
           {/* Settings temporarily hidden
           <DropdownMenuItem asChild>
             <Link
@@ -231,7 +255,7 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="text-red-600 focus:text-red-600 cursor-pointer"
+          className="text-destructive focus:text-destructive cursor-pointer"
           onClick={() => signOut({ callbackUrl: "/login" })}
         >
           <LogOut className="mr-2 h-4 w-4 flex-shrink-0" />

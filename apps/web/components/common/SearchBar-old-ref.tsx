@@ -29,14 +29,14 @@ export default function SearchBar({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`bg-white rounded-2xl sm:rounded-3xl border border-gray-100 w-full p-4 sm:p-6 md:py-8 md:px-[27px] shadow-[0_9px_32px_0_rgba(0,0,0,0.08)] flex flex-col gap-2 md:gap-[10px] ${className}`}
+      className={`bg-background rounded-2xl sm:rounded-3xl border border-border w-full p-4 sm:p-6 md:py-8 md:px-[27px] shadow-[0_9px_32px_0_rgba(0,0,0,0.08)] flex flex-col gap-2 md:gap-[10px] ${className}`}
     >
       {/* Desktop Labels Row - positioned horizontally at the top */}
       <div className="hidden md:flex flex-row pb-3 w-full">
-        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide text-left flex-1 px-4">
+        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide text-left flex-1 px-4">
           What
         </label>
-        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide text-left flex-1 px-4">
+        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide text-left flex-1 px-4">
           Where
         </label>
       </div>
@@ -45,30 +45,30 @@ export default function SearchBar({
       <div className="flex flex-col md:hidden gap-3 w-full">
         {/* What Input */}
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">What</label>
-          <div className="flex items-center gap-3 border border-[#A4A7AE] rounded-lg px-4 py-3 min-h-[48px]">
-            <Search className="h-5 w-5 text-gray-400 flex-shrink-0" />
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">What</label>
+          <div className="flex items-center gap-3 border border-input rounded-lg px-4 py-3 min-h-[48px]">
+            <Search className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             <Input
               type="text"
               placeholder="Keywords (e.g., food bank, mentor)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-0 text-sm p-0 placeholder:text-gray-400 bg-transparent flex-1 min-w-0 shadow-none"
+              className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-0 text-sm p-0 placeholder:text-muted-foreground/60 bg-transparent dark:bg-transparent flex-1 min-w-0 shadow-none"
             />
           </div>
         </div>
 
         {/* Where Input */}
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Where</label>
-          <div className="flex items-center gap-3 border border-[#A4A7AE] rounded-lg px-4 py-3 min-h-[48px]">
-            <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Where</label>
+          <div className="flex items-center gap-3 border border-input rounded-lg px-4 py-3 min-h-[48px]">
+            <MapPin className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             <Input
               type="text"
               placeholder="Suburb, city or postcode"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-0 text-sm p-0 placeholder:text-gray-400 bg-transparent flex-1 min-w-0 shadow-none"
+              className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-0 text-sm p-0 placeholder:text-muted-foreground/60 bg-transparent dark:bg-transparent flex-1 min-w-0 shadow-none"
             />
           </div>
         </div>
@@ -76,45 +76,45 @@ export default function SearchBar({
         {/* Search Button */}
         <Button
           type="submit"
-          className="bg-[#2563EB] hover:bg-[#1d4ed8] text-white px-6 py-3 h-[48px] w-full text-sm font-semibold border-none rounded-lg whitespace-nowrap mt-2"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 h-[48px] w-full text-sm font-semibold border-none rounded-lg whitespace-nowrap mt-2"
         >
           Search
         </Button>
       </div>
 
       {/* Desktop Layout - Horizontal Row */}
-      <div className="hidden md:flex flex-row items-center gap-0 border border-[#A4A7AE] p-1 rounded-full w-full">
+      <div className="hidden md:flex flex-row items-center gap-0 border border-input p-1 rounded-full w-full">
         {/* What Input */}
         <div className="flex-1 flex items-center gap-3 px-4 py-0 min-h-[48px]">
-          <Search className="h-5 w-5 text-gray-400 flex-shrink-0" />
+          <Search className="h-5 w-5 text-muted-foreground flex-shrink-0" />
           <Input
             type="text"
             placeholder="Keywords(e.g.,food bank,mentor)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-0 text-base p-0 placeholder:text-gray-400 bg-transparent flex-1 min-w-0 shadow-none"
+            className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-0 text-base p-0 placeholder:text-muted-foreground/60 bg-transparent dark:bg-transparent flex-1 min-w-0 shadow-none"
           />
         </div>
 
         {/* Vertical Separator */}
-        <div className="w-px h-[24px] bg-[#A4A7AE80] mr-7"></div>
+        <div className="w-px h-[24px] bg-border mr-7"></div>
 
         {/* Where Input */}
         <div className="flex-1 flex items-center gap-3 px-4 py-0 min-h-[48px]">
-          <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
+          <MapPin className="h-5 w-5 text-muted-foreground flex-shrink-0" />
           <Input
             type="text"
             placeholder="Suburb, city or postcode"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-0 text-base p-0 placeholder:text-gray-400 bg-transparent flex-1 min-w-0 shadow-none"
+            className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-0 text-base p-0 placeholder:text-muted-foreground/60 bg-transparent dark:bg-transparent flex-1 min-w-0 shadow-none"
           />
         </div>
 
         {/* Search Button */}
         <Button
           type="submit"
-          className="bg-[#2563EB] cursor-pointer hover:bg-[#1d4ed8] text-white px-8 py-3 h-[48px] w-[142px] text-sm font-semibold border-none rounded-full whitespace-nowrap"
+          className="bg-primary cursor-pointer hover:bg-primary/90 text-primary-foreground px-8 py-3 h-[48px] w-[142px] text-sm font-semibold border-none rounded-full whitespace-nowrap"
         >
           Search
         </Button>

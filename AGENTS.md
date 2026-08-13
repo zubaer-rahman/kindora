@@ -1,33 +1,36 @@
 # AGENTS.md
 
-Kindora: volunteer/mentor matching platform. Next.js 16 (App Router) + React 19 + Tailwind v4 (shadcn/ui, Radix), tRPC v11 served from the Next app, MongoDB/Mongoose, Supabase storage, NextAuth v4, Upstash Redis. Package manager is pnpm (9.x). Node 24 is installed locally.
+Kindora: volunteer/mentor matching platform. pnpm monorepo with `apps/web` (Next.js 16, React 19) and `apps/api` (Express 5 REST API).
 
 ## Commands
 
-- `pnpm dev` — dev server on :3000
-- `pnpm build` / `pnpm start` — Next production build/serve
-- `pnpm build:server` — `tsc --project server/tsconfig.json`, compiles `server/` + `auth/` + `utils/` + `lib/` into `dist/server/`. The app itself imports server source directly via `@/*`; this script is only used to typecheck the backend.
-- Typecheck: `npx tsc --noEmit` — currently passes. No test framework exists.
-- **Lint is broken — do not rely on it.** `pnpm lint` runs `next lint`, which was removed in Next 16 (fails with "Invalid project directory ... /lint"). `npx eslint .` also crashes (ESLint 9 `FlatCompat` circular JSON error). Don't waste time on these.
+- `pnpm dev` — runs web (:3000) + API (:8000) in parallel via root `package.json`
+- `pnpm build` / `pnpm start` — builds/starts both apps
+- `pnpm build:server` — `tsc --project server/tsconfig.json` (backend-only typecheck)
+- Typecheck: `npx tsc --noEmit` — currently passes. **No test framework exists.**
+- **Lint is broken** — `pnpm lint` calls `next lint` (removed in Next 16). `npx eslint .` crashes (ESLint 9 FlatCompat circular JSON). Skip both.
 
 ## Architecture
 
-- **tRPC is the whole backend.** Routers live in `server/modules/<feature>/` (each: `index.ts` router + `*.validation.ts`). Mongoose models in `server/db/models`, interfaces `server/db/interfaces`, types `server/db/types`. The `AppRouter` is assembled in `server/index.ts` and served at `/api/trpc` via `app/api/trpc/[trpc]/route.ts` (uses `@trpc/server/adapters/fetch`, adds CORS via `ALLOWED_ORIGINS`).
-- **Dual auth.** Web uses NextAuth v4 (`auth/`), mobile uses JWT tokens (`server/modules/auth/mobile-token.ts`: 1h access + 30d refresh). `server/config/context.ts` resolves the user from NextAuth session first, else the `Authorization: Bearer` header. Web client: `utils/trpc.ts` + `config/Provider.tsx` (split link: batch for queries, subscription link for realtime). Mobile client: `utils/mobile-client.ts` (auto token refresh on 401).
-- **Auth middleware:** `server/middlewares/with-auth.ts` exports `protectedProcedure`; most routers use it. `AuthError` (lib/exceptions.ts) is the standard way to signal 401s.
-- **Mongoose connection is cached** in a module-level `dbPromise` (`server/config/mongoose.ts`), so `connectDB()` is idempotent across hot reloads.
-- **Cron:** `server/index.ts` calls `initializeCronJobs()` (services/init-cron.ts) at import time unless `NODE_ENV=test`. Uses node-cron + Upstash Redis; schedule from `MESSAGE_NOTIFICATION_CRON_SCHEDULE`.
-- **Supabase** is only used for chat-attachment storage (bucket `chat-attachments`, 10MB cap; `lib/supabase.ts`, URL helper `utils/supabase-url.ts`). Migrations in `supabase/migrations`. Images go through Cloudinary (`next.config.ts` whitelists `res.cloudinary.com`).
+- **Web (`apps/web`)** is the whole frontend. Role-based protected routes live under `app/(protected)/[role]/` (dynamic segment) and `app/(protected)/system-admin/` (separate route). Each role folder has `dashboard/`, `messages/`, `profile/`, `settings/` subpages.
+- **API (`apps/api`)** is a standalone Express 5 app. Routers in `src/routes/`, controllers in `src/controllers/`, Mongoose models in `src/db/models/`. Served at `/api/v1`.
+- **Auth is dual.** Web uses NextAuth v4 (`auth/`), mobile uses JWT (`server/modules/auth/mobile-token.ts`: 1h access + 30d refresh). `server/config/context.ts` resolves the user from NextAuth session first, else `Authorization: Bearer`.
+- **Role routing pattern:** `app/(protected)/[role]/dashboard/page.tsx` reads `params.role` and switches between `<OrganisationDashboard />`, `<SystemAdminDashboard />`, etc. `ProtectedLayout` (`components/layout/ProtectedLayout.tsx`) redirects users without a profile to `/signup?role=...`, except `system_admin` who is redirected straight to `/system-admin/dashboard`.
+- **System admin is special:** must have role `system_admin` AND email ending `.kindora.com`. Enforced client-side in `SystemAdminShell` (`components/layout/system-admin/SystemAdminShell.tsx`) and server-side in `controllers/system-admin.controller.ts` (`isSystemAdmin` helper). Separate layout with sidebar but no footer.
+- **Data fetching:** client components use `@tanstack/react-query` with `useAxiosAuth` hook (`hooks/useAxiosAuth.ts`) that attaches the NextAuth session's `api_token` as a Bearer header.
+- **Cron jobs** (`services/init-cron.ts`) initialize at API import time unless `NODE_ENV=test`. Uses node-cron + Upstash Redis.
 
 ## Env & setup gotchas
 
-- `.env` is required and gitignored; copy `.env.example`. `lib/supabase.ts` and `lib/redis.ts` **throw at import time** if their env vars are missing, so any module importing them (messaging, notifications, presence) breaks without `NEXT_PUBLIC_SUPABASE_URL/ANON_KEY` and `UPSTASH_REDIS_REST_URL/TOKEN`. Also needs `MONGODB_URI`, `NEXTAUTH_SECRET`, `CLOUDINARY_*`.
-- `server/tsconfig.json` sets `rootDir: ".."` and includes `auth/`, `utils/`, `lib/`, so all four must stay type-compatible with the server tsconfig, not just the app tsconfig.
-- Dead dependencies to ignore: `@prisma/client` (no schema, unused), `vercel` CLI, `install`. `scripts/` holds one-off ops (cleanup-states.js, drop-notif-index.ts), not build steps. `trpc_output.json` at root is a stale debug dump — ignore it.
-- `next-env.d.ts` is gitignored and regenerated by Next.
+- Each app has its own `.env`: `apps/web/.env` and `apps/api/.env`. Both are gitignored; examples in `apps/web/.env.example` and `apps/api/.env.example`.
+- `apps/web` needs: `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NEXT_PUBLIC_API_URL`, optional `GOOGLE_*`.
+- `apps/api` needs: `MONGODB_URI`, `NEXTAUTH_SECRET`, `JWT_SECRET`, `REFRESH_TOKEN_SECRET`, `CLOUDINARY_*`, `SMTP_*`, `UPSTASH_REDIS_REST_*`, `ALLOWED_ORIGINS`.
+- Path aliases: `@/*` maps to `apps/web/*`, `@/server/*` maps to `apps/api/src/*`.
+- `next.config.ts` sets `turbopack.root` to `../../` because the web app lives in a monorepo subdirectory.
 
 ## Conventions
 
 - Commit messages use conventional style (`feat:`, `chore:`); work is committed to `main` on `origin` (github.com/zubaer-rahman/kindora).
-- Components: shadcn/ui (new-york) in `components/ui`; domain UI in `components/layout`/`modals`. Hooks in `hooks/`, validation schemas (zod) in `utils/validation/` and alongside routers.
-- No comment-bloated code; match existing style (see `server/modules/auth/index.ts` for the canonical router pattern).
+- Components: shadcn/ui (new-york) in `components/ui`; domain layouts in `components/layout/` (per-role shells + dashboards). Hooks in `hooks/`.
+- Role strings in code: `volunteer`, `mentor`, `organisation` (note: also aliased as `organization`/`admin` in some places), `system_admin`.
+- No comment-bloated code; match existing style. `server/modules/auth/index.ts` is the canonical router pattern for the API.

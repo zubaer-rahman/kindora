@@ -26,6 +26,10 @@ const UserSchema: Schema = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
+    is_blocked: {
+      type: Boolean,
+      default: false,
+    },
     volunteer_profile: {
       type: Schema.Types.ObjectId,
       ref: "volunteer_profile",

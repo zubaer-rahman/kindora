@@ -38,12 +38,12 @@ export default function FAQPage() {
     <PublicLayout>
       <FAQHero />
       
-      <div className="container max-w-[1170px] mx-auto px-4 md:px-8 py-20 md:py-32">
+      <div className="container max-w-[1170px] mx-auto px-4 md:px-8 py-16 md:py-24">
         <div className="flex flex-col md:flex-row gap-16 md:gap-24">
           <div className="md:w-1/3">
              <div className="sticky top-32">
-               <h2 className="text-3xl font-bold text-slate-900 mb-6 tracking-tight">Platform Support</h2>
-               <p className="text-slate-500 font-medium leading-relaxed mb-8">
+               <h2 className="text-2xl sm:text-3xl md:text-[40px] font-semibold text-foreground mb-6 tracking-tight">Platform Support</h2>
+               <p className="text-muted-foreground font-medium leading-relaxed mb-8">
                  Get answers to the most frequently asked questions about the Kindora platform and how to make the most of your volunteering journey.
                </p>
                <div className="h-1.5 w-16 bg-primary rounded-full" />

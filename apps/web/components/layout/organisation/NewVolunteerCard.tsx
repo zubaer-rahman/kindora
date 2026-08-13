@@ -40,7 +40,7 @@ export default function NewVolunteerCard({
 
     return (
         <Card
-            className="group hover:bg-[#F9FAFB] transition-colors rounded-none border-x-0 p-0 border-t-0 border-b border-[#E9EAEB] bg-white cursor-pointer flex flex-col w-full shadow-none"
+            className="group hover:bg-muted transition-colors rounded-xl border border-border p-0 bg-card cursor-pointer flex flex-col w-full shadow-none"
         >
             <CardContent className="px-4 py-6 flex flex-col flex-1">
                 <div className="flex flex-col md:flex-row gap-4">
@@ -54,19 +54,19 @@ export default function NewVolunteerCard({
                         <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                             <div>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="text-xl font-semibold text-[#101828] group-hover:text-[#1570EF] transition-colors cursor-pointer" onClick={() => router.push(`/find-volunteer/volunteer/details/${volunteer._id}`)}>
+                                    <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors cursor-pointer" onClick={() => router.push(`/find-volunteer/volunteer/details/${volunteer._id}`)}>
                                         {toTitleCase(volunteer.name)}
                                     </h3>
                                     {volunteer.volunteer_profile?.is_available && (
-                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800">
                                             Open to Volunteer
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-base text-[#344054] font-medium mt-1">
+                                <p className="text-base text-foreground font-medium mt-1">
                                     {volunteer.volunteer_profile?.course || "Volunteer"}
                                 </p>
-                                <div className="flex items-center text-[13px] text-[#475467] mt-1">
+                                <div className="flex items-center text-sm text-muted-foreground mt-1">
                                     <span className="truncate">
                                         {volunteer.area && volunteer.state
                                             ? `${formatText(volunteer.area)}, ${formatText(volunteer.state)}`
@@ -81,7 +81,7 @@ export default function NewVolunteerCard({
 
                             <div className="flex-shrink-0">
                                 <Button
-                                    className="bg-[#1570EF] hover:bg-[#1056b3] text-white font-medium rounded-full px-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1570EF]"
+                                    className="bg-primary hover:bg-primary/90 text-white font-medium rounded-full px-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
                                     onClick={() => onConnect(volunteer)}
                                     disabled={!volunteer.volunteer_profile?.is_available}
                                 >
@@ -102,13 +102,13 @@ export default function NewVolunteerCard({
                                         {shown.map((interest, idx) => (
                                             <span
                                                 key={idx}
-                                                className="bg-[#F2F4F7] text-[#344054] hover:bg-[#E4E7EB] border-none px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap"
+                                                className="bg-muted text-foreground hover:bg-muted/80 border-none px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap"
                                             >
                                                 {interest.replace(/_/g, " ")}
                                             </span>
                                         ))}
                                         {extra > 0 && (
-                                            <span className="bg-[#F2F4F7] text-[#344054] px-3 py-1 rounded-full text-xs font-medium">
+                                            <span className="bg-muted text-foreground px-3 py-1 rounded-full text-xs font-medium">
                                                 +{extra}
                                             </span>
                                         )}
@@ -119,7 +119,7 @@ export default function NewVolunteerCard({
 
                         {/* Description */}
                         {volunteer.volunteer_profile?.bio && (
-                            <p className="text-base text-[#344054] line-clamp-2 leading-relaxed">
+                            <p className="text-base text-foreground line-clamp-2 leading-relaxed">
                                 {volunteer.volunteer_profile.bio}
                             </p>
                         )}

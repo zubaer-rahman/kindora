@@ -92,19 +92,19 @@ export function OrganiserShiftCard({
   );
 
   return (
-    <div className="bg-white rounded-xl border border-[#e5e7eb] overflow-hidden">
+    <div className="bg-card rounded-xl border border-border overflow-hidden">
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 px-5 pt-4 pb-3 border-b border-[#f3f4f6]">
+      <div className="flex items-start justify-between gap-3 px-5 pt-4 pb-3 border-b border-border">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <h3 className="font-semibold text-gray-900 text-base truncate">
+            <h3 className="font-semibold text-foreground text-base truncate">
               {shift.title}
             </h3>
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
+            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-medium">
               {shift.role}
             </span>
           </div>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {formatDate(shift.date)} &middot;{" "}
             {formatTimeRange(shift.startTime, shift.endTime)}
           </p>
@@ -113,7 +113,7 @@ export function OrganiserShiftCard({
           <CapacityPill shift={shift} />
           <button
             onClick={() => onEdit(shift)}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors"
             title="Edit shift"
           >
             <Edit2 className="w-4 h-4" />
@@ -121,7 +121,7 @@ export function OrganiserShiftCard({
           {onDelete && (
             <button
               onClick={() => onDelete(shift.id)}
-              className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
               title="Delete shift"
             >
               <Trash2 className="w-4 h-4" />
@@ -131,19 +131,19 @@ export function OrganiserShiftCard({
       </div>
 
       {/* Volunteer rows */}
-      <div className="divide-y divide-[#f3f4f6]">
+      <div className="divide-y divide-border">
         {shift.assignedVolunteers.map((v) => (
           <div key={v.id} className="flex items-center gap-3 px-5 py-3">
             <Avatar volunteer={v} />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-foreground truncate">
                 {v.name}
               </p>
               <div className="flex flex-wrap gap-1 mt-0.5">
                 {v.skills.slice(0, 3).map((sk) => (
                   <span
                     key={sk}
-                    className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded"
+                    className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
                   >
                     {sk}
                   </span>
@@ -156,14 +156,14 @@ export function OrganiserShiftCard({
                 <StatusBadge status={v.status} />
                 <button
                   onClick={() => onUpdateVolunteerStatus(shift.id, v.id, "confirmed")}
-                  className="p-1.5 rounded-lg hover:bg-green-50 text-green-500 hover:text-green-600 transition-colors ml-1"
+                  className="p-1.5 rounded-lg hover:bg-green-500/10 text-green-500 hover:text-green-600 transition-colors ml-1"
                   title="Accept volunteer"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => onUnassign(shift.id, v.id)}
-                  className="p-1.5 rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-400 transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground/50 hover:text-destructive transition-colors"
                   title="Reject volunteer"
                 >
                   <X className="w-4 h-4" />
@@ -174,7 +174,7 @@ export function OrganiserShiftCard({
                 <StatusBadge status={v.status} />
                 <button
                   onClick={() => onUnassign(shift.id, v.id)}
-                  className="p-1.5 rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-400 transition-colors ml-1"
+                  className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground/50 hover:text-destructive transition-colors ml-1"
                   title="Remove volunteer"
                 >
                   <X className="w-4 h-4" />
@@ -189,12 +189,12 @@ export function OrganiserShiftCard({
           <button
             key={`empty-${i}`}
             onClick={() => onAssign(shift)}
-            className="w-full flex items-center gap-3 px-5 py-3 hover:bg-blue-50 transition-colors group"
+            className="w-full flex items-center gap-3 px-5 py-3 hover:bg-accent transition-colors group"
           >
-            <div className="w-8 h-8 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center group-hover:border-blue-400 transition-colors">
-              <Plus className="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-500" />
+            <div className="w-8 h-8 rounded-full border-2 border-dashed border-border flex items-center justify-center group-hover:border-primary transition-colors">
+              <Plus className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />
             </div>
-            <span className="text-sm text-gray-400 group-hover:text-blue-600 font-medium">
+            <span className="text-sm text-muted-foreground group-hover:text-primary font-medium">
               Assign a volunteer
             </span>
           </button>
@@ -203,10 +203,10 @@ export function OrganiserShiftCard({
         {shift.maxVolunteers === 0 && shift.assignedVolunteers.length === 0 && (
           <button
             onClick={() => onAssign(shift)}
-            className="w-full flex items-center gap-3 px-5 py-3 hover:bg-blue-50 transition-colors group"
+            className="w-full flex items-center gap-3 px-5 py-3 hover:bg-accent transition-colors group"
           >
-            <Plus className="w-4 h-4 text-gray-400 group-hover:text-blue-500" />
-            <span className="text-sm text-gray-400 group-hover:text-blue-600 font-medium">
+            <Plus className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
+            <span className="text-sm text-muted-foreground group-hover:text-primary font-medium">
               Assign a volunteer
             </span>
           </button>
@@ -261,8 +261,8 @@ export function VolunteerShiftCard({
 
   return (
     <div
-      className={`bg-white rounded-xl border overflow-hidden ${
-        isJoined ? "border-[#2563EB]" : "border-[#e5e7eb]"
+      className={`bg-card rounded-xl border overflow-hidden ${
+        isJoined ? "border-primary" : "border-border"
       }`}
     >
       <div className="px-5 pt-4 pb-4">
@@ -270,14 +270,14 @@ export function VolunteerShiftCard({
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h3 className="font-semibold text-gray-900 text-base">
+              <h3 className="font-semibold text-foreground text-base">
                 {shift.title}
               </h3>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
+              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-medium">
                 {shift.role}
               </span>
             </div>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {formatDate(shift.date)} &middot;{" "}
               {formatTimeRange(shift.startTime, shift.endTime)}
             </p>
@@ -287,13 +287,13 @@ export function VolunteerShiftCard({
 
         {/* Progress bar */}
         <div className="mb-4">
-          <div className="flex justify-between text-xs text-gray-500 mb-1">
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>Spots filled</span>
             <span>
               {shift.assignedVolunteers.length}/{shift.maxVolunteers}
             </span>
           </div>
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all"
               style={{
@@ -324,7 +324,7 @@ export function VolunteerShiftCard({
             variant="outline"
             size="sm"
             disabled
-            className="w-full text-gray-400 border-gray-200 cursor-not-allowed"
+            className="w-full text-muted-foreground border-border cursor-not-allowed"
           >
             Shift full
           </Button>
@@ -332,7 +332,7 @@ export function VolunteerShiftCard({
           <Button
             size="sm"
             onClick={() => onSignup(shift.id)}
-            className="w-full bg-[#2563EB] hover:bg-[#1d4fd8] text-white font-medium"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
           >
             Sign up for this shift
           </Button>

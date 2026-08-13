@@ -126,7 +126,7 @@ export const FormSelect = <T extends FieldValues>({
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-full p-0 bg-white border shadow-lg" 
+          className="w-full p-0 border shadow-lg"
           style={{ zIndex }}
           align="start"
           sideOffset={4}
@@ -143,14 +143,14 @@ export const FormSelect = <T extends FieldValues>({
               <CommandEmpty className="py-2 text-center">
                 {inputValue && (
                   <div className="flex items-center justify-center space-x-2">
-                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100">
-                      <svg className="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-accent flex items-center justify-center border border-border">
+                      <svg className="w-3.5 h-3.5 text-accent-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
                     </div>
-                    <div className="flex flex-col items-start bg-gray-50 border border-gray-100 rounded-md px-2 py-1 min-w-[120px]">
-                      <span className="text-xs text-gray-700 font-semibold leading-tight">&quot;{inputValue}&quot; not found</span>
-                      <span className="text-xs text-gray-500 mt-0.5 leading-tight">You can keep it as your input</span>
+                    <div className="flex flex-col items-start bg-muted border border-border rounded-md px-2 py-1 min-w-[120px]">
+                      <span className="text-xs text-foreground font-semibold leading-tight">&quot;{inputValue}&quot; not found</span>
+                      <span className="text-xs text-muted-foreground mt-0.5 leading-tight">You can keep it as your input</span>
                     </div>
                   </div>
                 )}
@@ -213,7 +213,7 @@ export const FormSelect = <T extends FieldValues>({
           <SelectValue placeholder={placeholder || `Select ${label}`} />
         )}
       </SelectTrigger>
-      <SelectContent style={{ zIndex }} className="bg-white border shadow-lg">
+      <SelectContent style={{ zIndex }} className="border shadow-lg">
         {options.map((option) => (
           <SelectItem 
             key={option.value} 

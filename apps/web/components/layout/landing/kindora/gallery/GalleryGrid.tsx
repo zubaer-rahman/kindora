@@ -48,17 +48,17 @@ export default function GalleryGrid() {
   }));
 
   return (
-    <section className="py-24 md:py-32 bg-slate-50/50 relative overflow-hidden">
+    <section className="py-16 md:py-24 bg-muted relative overflow-hidden">
       <div className="container max-w-[1170px] mx-auto px-4 md:px-8">
         
         {/* Navigation Wrapper */}
-        <div className="flex flex-col items-center mb-20">
+        <div className="flex flex-col items-center mb-8 md:mb-12">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold text-slate-900 mb-4 tracking-tight">Browse by Year</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-[40px] font-semibold text-foreground mb-4 tracking-tight">Browse by Year</h2>
             <div className="h-1.5 w-16 bg-primary rounded-full mx-auto" />
           </motion.div>
 
@@ -78,12 +78,12 @@ export default function GalleryGrid() {
               className="w-full"
               onValueChange={setActiveYear}
             >
-              <TabsList className="bg-white/80 backdrop-blur-sm p-1.5 rounded-full h-auto gap-1 border border-slate-200/60 shadow-lg shadow-slate-100/50">
+              <TabsList className="bg-card/80 backdrop-blur-sm p-1.5 rounded-full h-auto gap-1 border border-border shadow-lg shadow-black/5">
                 {years.map((year) => (
                   <TabsTrigger
                     key={year}
                     value={year}
-                    className="py-3 px-14 rounded-full data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/25 data-[state=inactive]:text-slate-500 hover:text-primary transition-all font-bold text-base border-0"
+                    className="py-3 px-14 rounded-full data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/25 data-[state=inactive]:text-muted-foreground hover:text-primary transition-all font-bold text-base border-0"
                   >
                     {year}
                   </TabsTrigger>
@@ -112,7 +112,7 @@ export default function GalleryGrid() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.05, duration: 0.6 }}
-                  className="group relative aspect-[4/5] rounded-[48px] overflow-hidden shadow-xl shadow-slate-200/60 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 bg-white border-4 border-white"
+                  className="group relative aspect-[4/5] rounded-3xl overflow-hidden shadow-xl shadow-black/5 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 bg-card border-4 border-card"
                 >
                   <Image
                     src={image.src}

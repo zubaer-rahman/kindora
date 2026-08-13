@@ -1,6 +1,7 @@
 'use client';
 
-import { MapPin, GraduationCap, Heart, Linkedin, Facebook } from "lucide-react";
+import { MapPin, GraduationCap, Heart } from "lucide-react";
+import { FaLinkedin, FaFacebook } from "react-icons/fa";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -76,11 +77,11 @@ export function ProfileSidebar() {
         <h3 className="font-medium mb-2">Social profiles</h3>
         <div className="flex flex-col gap-2">
           <a href="#" className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
-            <Linkedin className="w-4 h-4" />
+            <FaLinkedin className="w-4 h-4" />
             LinkedIn
           </a>
           <a href="#" className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
-            <Facebook className="w-4 h-4" />
+            <FaFacebook className="w-4 h-4" />
             Facebook
           </a>
         </div>

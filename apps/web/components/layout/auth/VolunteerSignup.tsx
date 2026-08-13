@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { SignupStep } from "@/components/layout/auth/SignupStep";
+import { SignupActionBar } from "@/components/layout/auth/SignupActionBar";
 import { VolunteerSignupForm, volunteerSignupSchema } from "@/types/auth";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -18,7 +19,6 @@ import {
 } from "@/lib/auth-api";
 import toast from "react-hot-toast";
 import { Form } from "@/components/ui/form";
-
 import { Loader2 } from "lucide-react";
 
 const EMAIL_TAKEN_MESSAGE =
@@ -237,7 +237,7 @@ export default function VolunteerSignup() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8 pb-32">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 pb-32">
       {/* Already logged in but no volunteer profile: show only "Complete profile" (no name/email/password) */}
       {isLoggedIn && !isAuthenticated && !isProfileSetupComplete && (
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl space-y-6">
@@ -303,27 +303,10 @@ export default function VolunteerSignup() {
                 role="volunteer"
               />
 
-              <div className="fixed bottom-0 left-0 right-0 bg-gray-50 py-4 px-6 border-t border-gray-200">
-                <div className="container mx-auto px-4">
-                  <div className="flex justify-end">
-                    <Button
-                      type="button"
-                      onClick={handleSignup}
-                      disabled={isSignupLoading || isProfileSetupComplete}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      {isSignupLoading ? (
-                        <div className="flex items-center">
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                          Creating account...
-                        </div>
-                      ) : (
-                        "Create Account"
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <SignupActionBar
+                onClick={handleSignup}
+                isLoading={isSignupLoading || isProfileSetupComplete}
+              />
             </form>
           </Form>
         </div>

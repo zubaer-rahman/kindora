@@ -195,10 +195,23 @@ export default function OrganizationProfile() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto mb-3"></div>
-          <p className="text-gray-600 text-sm">Loading profile...</p>
+      <div className="w-full h-[calc(100vh-2rem)] sm:h-[calc(100vh-4rem)] max-w-7xl mx-auto p-2 sm:p-4 lg:p-6 overflow-hidden">
+        <div className="w-full h-full border border-border rounded-lg overflow-hidden">
+          <div className="flex flex-col h-full">
+            <div className="flex-shrink-0 flex items-center gap-4 p-4 sm:p-6 border-b border-border">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-muted animate-pulse flex-shrink-0" />
+              <div className="space-y-3 min-w-0 flex-1">
+                <div className="h-6 sm:h-7 w-48 sm:w-64 max-w-full bg-muted animate-pulse rounded" />
+                <div className="h-4 w-32 sm:w-40 max-w-full bg-muted animate-pulse rounded" />
+              </div>
+            </div>
+            <div className="flex-1 min-h-0 flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto mb-3"></div>
+                <p className="text-muted-foreground text-sm">Loading profile...</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -207,50 +220,60 @@ export default function OrganizationProfile() {
   const profile = profileData?.organizationProfile;
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto p-3 md:p-6">
-        <BackButton className="mb-4" />
-
-        <div className="space-y-6">
-          {/* Cover Image */}
-          <div className="relative h-32 md:h-48 rounded-xl overflow-hidden bg-gray-200 shadow-sm border border-gray-100">
-            {profile?.cover_img ? (
-              <NextImage
-                src={profile.cover_img}
-                alt="Organization Cover"
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-r from-blue-400 to-indigo-500 opacity-20" />
-            )}
-          </div>
-
-          {/* Organization Logo Card */}
-          <ProfileCard className="mb-6 -mt-12 relative z-10 mx-auto max-w-[95%]">
-            <div className="flex flex-col items-center space-y-4">
-              <RandomAvatar
-                name={profile?.title || "Organization"}
-                imageUrl={profile?.profile_img}
-                objectFit="contain"
-                size={120}
-                className="h-24 w-24 lg:h-28 lg:w-28 ring-3 ring-gray-100 shadow-lg"
-              />
-              <div className="text-center">
-                <h3 className="text-lg font-bold text-gray-900 mb-1">
+    <div className="w-full h-[calc(100vh-2rem)] sm:h-[calc(100vh-4rem)] max-w-7xl mx-auto p-2 sm:p-4 lg:p-6 overflow-hidden">
+      <div className="w-full h-full border border-border rounded-lg overflow-hidden">
+        <div className="flex flex-col h-full">
+          {/* Profile header */}
+          <div className="flex-shrink-0 border-b border-border bg-card">
+            {/* Banner Background */}
+            <div className="relative h-24 sm:h-32 w-full bg-muted">
+              {profile?.cover_img ? (
+                <NextImage
+                  src={profile.cover_img}
+                  alt="Organization Cover"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-r from-primary/40 to-primary/60 opacity-20" />
+              )}
+            </div>
+            
+            {/* Avatar and Title Info */}
+            <div className="relative px-4 sm:px-6 pb-4 sm:pb-6 flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-5">
+              {/* Overlapping Avatar */}
+              <div className="relative -mt-10 sm:-mt-12">
+                <RandomAvatar
+                  name={profile?.title || "Organization"}
+                  imageUrl={profile?.profile_img}
+                  size={96}
+                  className="h-20 w-20 sm:h-24 sm:w-24 ring-4 ring-background shadow-lg"
+                />
+              </div>
+              
+              <div className="text-left min-w-0 pb-1">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground break-words leading-tight">
                   {profile?.title || "Organization"}
                 </h3>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Organization
+                </p>
               </div>
             </div>
-          </ProfileCard>
+          </div>
 
-          {/* Organization Information Card */}
-          <InformationCard
-            title="Organisation Information"
-            editMode={editMode === "organization" ? "active" : "inactive"}
-            onEditClick={() => setEditMode("organization")}
-            onCancelClick={handleCancelEdit}
-          >
+          {/* Scrollable profile content */}
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6">
+            <div className="space-y-6">
+
+              {/* Organization Information Card */}
+              <InformationCard
+                noBg
+                title="Organisation Information"
+                editMode={editMode === "organization" ? "active" : "inactive"}
+                onEditClick={() => setEditMode("organization")}
+                onCancelClick={handleCancelEdit}
+              >
             {editMode === "organization" ? (
               <Form {...form}>
                 <form
@@ -259,7 +282,7 @@ export default function OrganizationProfile() {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Organisation Logo</label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Organisation Logo</label>
                       <ProfilePhotoInput
                         name="profile_img"
                         defaultValue={form.watch("profile_img")}
@@ -449,7 +472,9 @@ export default function OrganizationProfile() {
                 />
               </div>
             )}
-          </InformationCard>
+              </InformationCard>
+            </div>
+          </div>
         </div>
       </div>
     </div>

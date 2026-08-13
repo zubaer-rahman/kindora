@@ -5,6 +5,7 @@ import ConversationHeaderOptimized from "./ConversationHeaderOptimized";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Message, Conversation, Group } from "@/types/message";
 
 interface ChatAreaProps {
@@ -159,8 +160,34 @@ export const ChatArea: React.FC<ChatAreaProps> = React.memo(({
 
   if (isLoadingMessages) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="flex-1 flex flex-col min-h-0">
+        {/* Header skeleton */}
+        <div className="flex-shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
+          <Skeleton className="w-10 h-10 rounded-full flex-shrink-0" />
+          <div className="flex-1 min-w-0 space-y-2">
+            <Skeleton className="h-4 w-32 sm:w-44 max-w-full" />
+            <Skeleton className="h-3 w-20 sm:w-28 max-w-full" />
+          </div>
+        </div>
+
+        {/* Messages skeleton */}
+        <div className="flex-1 min-h-0 bg-muted/50 p-4 sm:p-6 space-y-4 sm:space-y-5">
+          <div className="flex justify-end">
+            <Skeleton className="h-10 sm:h-11 w-2/3 sm:w-1/2 rounded-2xl rounded-br-md" />
+          </div>
+          <div className="flex justify-start">
+            <Skeleton className="h-12 sm:h-14 w-3/4 sm:w-3/5 rounded-2xl rounded-bl-md" />
+          </div>
+          <div className="flex justify-end">
+            <Skeleton className="h-10 sm:h-11 w-1/2 sm:w-2/5 rounded-2xl rounded-br-md" />
+          </div>
+          <div className="flex justify-start">
+            <Skeleton className="h-11 sm:h-14 w-2/3 sm:w-1/2 rounded-2xl rounded-bl-md" />
+          </div>
+          <div className="flex justify-end">
+            <Skeleton className="h-10 sm:h-11 w-3/5 sm:w-2/5 rounded-2xl rounded-br-md" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -184,26 +211,26 @@ export const ChatArea: React.FC<ChatAreaProps> = React.memo(({
         <div className="flex-1 flex flex-col items-center justify-center py-8 px-4">
           {isGroup ? (
             <div className="text-center max-w-sm">
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-blue-500" />
+              <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center mx-auto mb-4">
+                <Users className="h-8 w-8 text-primary" />
               </div>
-              <h2 className="text-xl font-semibold mb-2 text-gray-900">
+              <h2 className="text-xl font-semibold mb-2 text-foreground">
                 {(selectedConversation as Group)?.name?.length > 20
                   ? `${(selectedConversation as Group)?.name?.substring(0, 20)}...`
                   : (selectedConversation as Group)?.name}
               </h2>
-              <p className="text-sm text-gray-500 mb-4">{(selectedConversation as Group)?.members?.length || 0} members</p>
-              <p className="text-sm text-gray-500">Start the conversation by sending a message</p>
+              <p className="text-sm text-muted-foreground mb-4">{(selectedConversation as Group)?.members?.length || 0} members</p>
+              <p className="text-sm text-muted-foreground">Start the conversation by sending a message</p>
             </div>
           ) : (
             <div className="text-center max-w-sm">
-              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                <svg className="h-8 w-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              <h2 className="text-xl font-semibold mb-2 text-gray-900">No messages yet</h2>
-              <p className="text-sm text-gray-500">Send a message to start the conversation</p>
+              <h2 className="text-xl font-semibold mb-2 text-foreground">No messages yet</h2>
+              <p className="text-sm text-muted-foreground">Send a message to start the conversation</p>
             </div>
           )}
         </div>
@@ -227,7 +254,7 @@ export const ChatArea: React.FC<ChatAreaProps> = React.memo(({
         />
       )}
 
-      <div className="flex-1 min-h-0 bg-gray-50/50 relative">
+      <div className="flex-1 min-h-0 bg-muted/50 relative">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `radial-gradient(#000 1px, transparent 1px)`, backgroundSize: '20px 20px' }} />
         <ScrollArea ref={scrollAreaRef} className="h-full">
           <div className="space-y-4 px-4 py-4 pb-8">
@@ -272,9 +299,9 @@ export const ChatArea: React.FC<ChatAreaProps> = React.memo(({
             {isTargetTyping && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground animate-pulse p-2">
                 <div className="flex gap-1">
-                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                  <span className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                  <span className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce"></span>
                 </div>
                 <span>{isGroup ? "Someone is typing..." : `${headerData?.name || 'Someone'} is typing...`}</span>
               </div>

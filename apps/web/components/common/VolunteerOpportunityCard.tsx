@@ -47,6 +47,7 @@ export default function VolunteerOpportunityCard({
     const { data: favoriteData } = useQuery({
         queryKey: ["favoriteStatus", opportunity._id],
         queryFn: async () => {
+            if (!opportunity._id) return { isFavorite: false };
             const res = await axiosAuth.get(`/api/v1/applications/favorite-status/${opportunity._id}`);
             return res.data.data;
         },
@@ -116,11 +117,11 @@ export default function VolunteerOpportunityCard({
     const getStatusBadge = (status: string) => {
         switch (status.toLowerCase()) {
             case 'approved':
-                return <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-none">Approved</Badge>;
+                return <Badge className="bg-success/10 text-success hover:bg-success/10 border-none">Approved</Badge>;
             case 'pending':
-                return <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-none">Pending</Badge>;
+                return <Badge className="bg-warning/10 text-warning hover:bg-warning/10 border-none">Pending</Badge>;
             case 'rejected':
-                return <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-none">Rejected</Badge>;
+                return <Badge className="bg-destructive/10 text-destructive hover:bg-destructive/10 border-none">Rejected</Badge>;
             default:
                 return <Badge variant="secondary">{status}</Badge>;
         }
@@ -165,12 +166,12 @@ export default function VolunteerOpportunityCard({
     return (
         <Card
             onClick={handleCardClick}
-            className="group hover:bg-[#F9FAFB] transition-colors rounded-none border-x-0 p-0 border-t-0 border-b border-[#E9EAEB] bg-white cursor-pointer flex flex-col w-full shadow-none"
+            className="group hover:bg-muted transition-colors rounded-none border-x-0 p-0 border-t-0 border-b border-border bg-background cursor-pointer flex flex-col w-full shadow-none"
         >
             <CardContent className="px-4 py-6  flex flex-col flex-1">
                 {/* Top: Posted/Applied Time & Status */}
                 <div className="  flex items-center justify-between">
-                    <span className="text-xs text-[#667085]">
+                    <span className="text-xs text-muted-foreground">
                         {dateLabel} {timeAgo}
                     </span>
                     <div className="flex items-center gap-2">
@@ -179,15 +180,15 @@ export default function VolunteerOpportunityCard({
                             variant="ghost"
                             size="icon"
                             className={cn(
-                                "h-9 w-9 rounded-full border border-[#E9EAEB] hover:bg-white transition-colors",
-                                isFavorite && "bg-[#FEF3F2] border-[#FECDCA]"
+                                "h-9 w-9 rounded-full border border-border hover:bg-background transition-colors",
+                                isFavorite && "bg-destructive/10 border-destructive/20"
                             )}
                             onClick={handleFavoriteClick}
                         >
                             <Heart
                                 className={cn(
                                     "w-4 h-4 transition-colors",
-                                    isFavorite ? "fill-[#D92D20] text-[#D92D20]" : "text-[#667085]"
+                                    isFavorite ? "fill-destructive text-destructive" : "text-muted-foreground"
                                 )}
                             />
                         </Button>
@@ -196,24 +197,24 @@ export default function VolunteerOpportunityCard({
 
                 {/* Title Row */}
                 <div className="flex justify-between items-start ">
-                    <h3 className="text-xl font-semibold text-[#101828] group-hover:text-[#1570EF] transition-colors line-clamp-2 flex-1 mr-4">
+                    <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 flex-1 mr-4">
                         {opportunity.title}
                     </h3>
                 </div>
 
                 {/* Metadata Line */}
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4 text-[13px] text-[#475467]">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4 text-[13px] text-muted-foreground">
                     <span className="font-medium">{commitmentType}</span>
-                    <span className="text-[#D0D5DD]">•</span>
+                    <span className="text-border">•</span>
                     <span>Flexible</span>
-                    <span className="text-[#D0D5DD]">•</span>
+                    <span className="text-border">•</span>
                     <span>Est. Time: {opportunity.commitment_type === 'regular' ? 'Long term' : 'Short term'}</span>
                 </div>
 
                 {/* Description with Expand/Collapse */}
                 <div className="mb-4">
                     <p className={cn(
-                        "text-base text-[#344054] leading-relaxed",
+                        "text-base text-foreground leading-relaxed",
                         !isExpanded && "line-clamp-3"
                     )}>
                         {cleanDescription}
@@ -224,7 +225,7 @@ export default function VolunteerOpportunityCard({
                                 e.stopPropagation();
                                 setIsExpanded(!isExpanded);
                             }}
-                            className="text-[#1570EF] text-sm font-medium mt-1 hover:underline"
+                            className="text-primary text-sm font-medium mt-1 hover:underline"
                         >
                             {isExpanded ? "less" : "more"}
                         </button>
@@ -238,7 +239,7 @@ export default function VolunteerOpportunityCard({
                             onClick={(e) => { e.stopPropagation(); scrollToExtreme('left'); }}
                             className="flex-shrink-0 p-1 transition-all hover:scale-110 active:scale-95 flex items-center justify-center"
                         >
-                            <ChevronLeft className="w-6 h-6 text-[#667085]" />
+                            <ChevronLeft className="w-6 h-6 text-muted-foreground" />
                         </button>
                     )}
 
@@ -252,7 +253,7 @@ export default function VolunteerOpportunityCard({
                             <Badge
                                 key={index}
                                 variant="secondary"
-                                className="bg-[#F2F4F7] text-[#344054] hover:bg-[#E4E7EB] border-none px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap"
+                                className="bg-muted text-foreground hover:bg-muted/80 border-none px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap"
                             >
                                 {cat}
                             </Badge>
@@ -264,21 +265,21 @@ export default function VolunteerOpportunityCard({
                             onClick={(e) => { e.stopPropagation(); scrollToExtreme('right'); }}
                             className="flex-shrink-0 p-1 transition-all hover:scale-110 active:scale-95 flex items-center justify-center"
                         >
-                            <ChevronRight className="w-6 h-6 text-[#667085]" />
+                            <ChevronRight className="w-6 h-6 text-muted-foreground" />
                         </button>
                     )}
                 </div>
 
                 {/* Footer Row */}
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-2">
-                    <div className="flex items-center gap-1 text-[13px] text-[#475467]">
+                    <div className="flex items-center gap-1 text-[13px] text-muted-foreground">
                         <MapPin className="w-3.5 h-3.5" />
-                        <span>{opportunity.location || "Australia"}</span>
+                        <span>{opportunity.location || "Location not specified"}</span>
                     </div>
                 </div>
 
                 {/* Proposals */}
-                <div className="text-[13px] text-[#475467]">
+                <div className="text-[13px] text-muted-foreground">
                     Proposals: <span className="font-medium">{proposalsRange}</span>
                 </div>
             </CardContent>

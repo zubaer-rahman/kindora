@@ -16,7 +16,11 @@ export default function OpportunitiesPage() {
   const [activeTab, setActiveTab] = useState("open");
   const axiosAuth = useAxiosAuth();
 
-  const { data: opportunities, isLoading, refetch } = useQuery<Opportunity[]>({
+  const {
+    data: opportunities,
+    isLoading,
+    refetch,
+  } = useQuery<Opportunity[]>({
     queryKey: ["organizationOpportunities"],
     queryFn: async () => {
       const res = await axiosAuth.get("/api/v1/opportunities/my-org");
@@ -51,23 +55,23 @@ export default function OpportunitiesPage() {
           .filter((opp) => {
             if (opp.is_archived) return false;
             if (!opp.date?.end_date) return false;
-            
+
             const endDate = new Date(opp.date.end_date);
-             if (opp.time?.end_time) {
-              const [hours, minutes] = opp.time.end_time.split(':').map(Number);
+            if (opp.time?.end_time) {
+              const [hours, minutes] = opp.time.end_time.split(":").map(Number);
               endDate.setHours(hours, minutes, 0, 0);
             }
-            
+
             return endDate < now;
           })
           .sort((a, b) => {
             const endDateA = new Date(a.date?.end_date || 0);
             const endDateB = new Date(b.date?.end_date || 0);
-            return endDateB.getTime() - endDateA.getTime();  
+            return endDateB.getTime() - endDateA.getTime();
           });
       case "recruited":
         return opportunities.filter(
-          (opp) => !opp.is_archived && opp.recruitCount && opp.recruitCount > 0
+          (opp) => !opp.is_archived && opp.recruitCount && opp.recruitCount > 0,
         );
       case "archived":
         return opportunities.filter((opp) => opp.is_archived);
@@ -76,13 +80,13 @@ export default function OpportunitiesPage() {
     }
   }, [opportunities, activeTab]);
 
-   const { currentPage, totalPages, paginatedData, setCurrentPage } =
+  const { currentPage, totalPages, paginatedData, setCurrentPage } =
     usePagination(filteredOpportunities, {
       pageSize: 4,
       initialPage: 1,
     });
 
-   const tabCounts = React.useMemo(() => {
+  const tabCounts = React.useMemo(() => {
     if (!opportunities) return { open: 0, draft: 0, recruited: 0, archived: 0 };
 
     const now = new Date();
@@ -92,36 +96,34 @@ export default function OpportunitiesPage() {
       draft: opportunities.filter((opp) => {
         if (opp.is_archived) return false;
         if (!opp.date?.end_date) return false;
-        
+
         const endDate = new Date(opp.date.end_date);
         if (opp.time?.end_time) {
-          const [hours, minutes] = opp.time.end_time.split(':').map(Number);
+          const [hours, minutes] = opp.time.end_time.split(":").map(Number);
           endDate.setHours(hours, minutes, 0, 0);
         }
-        
+
         return endDate < now;
       }).length,
       recruited: opportunities.filter(
-        (opp) => !opp.is_archived && opp.recruitCount && opp.recruitCount > 0
+        (opp) => !opp.is_archived && opp.recruitCount && opp.recruitCount > 0,
       ).length,
       archived: opportunities.filter((opp) => opp.is_archived).length,
     };
   }, [opportunities]);
 
-
-
   return (
     <ProtectedLayout>
-      <div className="  min-h-screen">
+      <div className="min-h-screen">
         <div className="max-w-7xl py-4 sm:py-8 px-4 mx-auto">
-          <div className="bg-white rounded-lg flex flex-col min-h-[600px]">
+          <div className="rounded-lg flex flex-col min-h-[600px]">
             <div className="px-4 pt-5">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
                   <h1 className="text-xl sm:text-2xl font-semibold mb-1">
                     Opportunities
                   </h1>
-                  <p className="text-sm text-gray-500">Posted tasks</p>
+                  <p className="text-sm text-muted-foreground">Posted tasks</p>
                 </div>
                 <CreateOpportunityButton />
               </div>
@@ -143,7 +145,7 @@ export default function OpportunitiesPage() {
               totalPages={totalPages}
             />
 
-            <div className="px-4 flex items-center justify-center border-t bg-gray-50">
+            <div className="px-4 flex items-center justify-center border-t bg-muted">
               <PaginationWrapper
                 currentPage={currentPage}
                 totalPages={totalPages}

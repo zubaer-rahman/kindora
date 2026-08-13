@@ -43,7 +43,7 @@ console.log("image",  contract?.profileImg);
               />
             </div>
             <h3 
-              className="text-lg font-semibold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
+              className="text-lg font-semibold text-foreground cursor-pointer hover:text-primary transition-colors"
               onClick={() => {
                 router.push(`/find-volunteer/volunteer/details/${contract.id}`);
               }}
@@ -54,14 +54,14 @@ console.log("image",  contract?.profileImg);
         </div>
 
         <div className="mt-2">
-          <p className="text-sm text-gray-600 font-medium mb-1">
+          <p className="text-sm text-muted-foreground font-medium mb-1">
             Active Opportunities ({contract.opportunities.length}):
           </p>
           <div className="space-y-1">
             {contract.opportunities.slice(0, 6).map((opportunity) => (
               <p 
                 key={opportunity.id}
-                className="text-sm text-blue-600 cursor-pointer hover:text-blue-800 transition-colors"
+                className="text-sm text-primary cursor-pointer hover:text-primary/80 transition-colors"
                 onClick={() => {
                   router.push(`/organisation/opportunities/${opportunity.id}`);
                 }}
@@ -71,7 +71,7 @@ console.log("image",  contract?.profileImg);
             ))}
             {contract.opportunities.length > 6 && (
               <p 
-                className="text-sm text-blue-600 cursor-pointer hover:text-blue-800 transition-colors font-medium"
+                className="text-sm text-primary cursor-pointer hover:text-primary/80 transition-colors font-medium"
                 onClick={() => {
                   router.push(`/find-volunteer/volunteer/details/${contract.id}`);
                 }}

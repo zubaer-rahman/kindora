@@ -19,10 +19,11 @@ export const useFavorite = (opportunityId: string) => {
   const { data: favoriteStatus, isPending: isStatusPending } = useQuery({
     queryKey: ["favoriteStatus", opportunityId],
     queryFn: async () => {
+      if (!opportunityId) return { isFavorite: false };
       const res = await axiosAuth.get(`/api/v1/applications/favorite-status/${opportunityId}`);
       return res.data.data;
     },
-    enabled: !!session?.user,
+    enabled: !!session?.user && !!opportunityId,
   });
 
   useEffect(() => {

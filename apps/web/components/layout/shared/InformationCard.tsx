@@ -13,6 +13,7 @@ interface InformationCardProps {
   onCancelClick: () => void;
   children: React.ReactNode;
   className?: string;
+  noBg?: boolean;
 }
 
 export function InformationCard({
@@ -22,6 +23,7 @@ export function InformationCard({
   onCancelClick,
   children,
   className = "",
+  noBg = false,
 }: InformationCardProps) {
   return (
     <ProfileCard
@@ -30,6 +32,7 @@ export function InformationCard({
       onEditClick={onEditClick}
       onCancelClick={onCancelClick}
       className={className}
+      noBg={noBg}
     >
       {children}
     </ProfileCard>
@@ -45,8 +48,8 @@ interface InfoFieldProps {
 export function InfoField({ label, value, className = "" }: InfoFieldProps) {
   return (
     <div className={className}>
-      <p className="text-sm font-medium text-gray-500 mb-2">{label}</p>
-      <p className="text-gray-900 font-medium text-base">{value || "Not specified"}</p>
+      <p className="text-sm font-medium text-muted-foreground mb-2">{label}</p>
+      <p className="text-foreground font-medium text-base break-words">{value || "Not specified"}</p>
     </div>
   );
 }
@@ -82,21 +85,21 @@ export function BadgeList({
   const getBadgeClasses = (color: string) => {
     switch (color) {
       case "blue":
-        return "px-3 py-1.5 text-sm bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors";
+        return "px-3 py-1.5 text-sm bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-900 dark:hover:bg-blue-900/50 transition-colors";
       case "green":
-        return "px-3 py-1.5 text-sm bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors";
+        return "px-3 py-1.5 text-sm bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 dark:bg-green-950/50 dark:text-green-300 dark:border-green-900 dark:hover:bg-green-900/50 transition-colors";
       case "purple":
-        return "px-3 py-1.5 text-sm bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition-colors";
+        return "px-3 py-1.5 text-sm bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 dark:bg-purple-950/50 dark:text-purple-300 dark:border-purple-900 dark:hover:bg-purple-900/50 transition-colors";
       case "orange":
-        return "px-3 py-1.5 text-sm bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 transition-colors";
+        return "px-3 py-1.5 text-sm bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 dark:bg-orange-950/50 dark:text-orange-300 dark:border-orange-900 dark:hover:bg-orange-900/50 transition-colors";
       default:
-        return "px-3 py-1.5 text-sm bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors";
+        return "px-3 py-1.5 text-sm bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-900 dark:hover:bg-blue-900/50 transition-colors";
     }
   };
 
   return (
     <div className={className}>
-      <p className="text-sm font-medium text-gray-500 mb-3">{label}</p>
+      <p className="text-sm font-medium text-muted-foreground mb-3">{label}</p>
       <div className="flex flex-wrap gap-2">
         {items && items.length > 0 ? (
           items.map((item: string, index: number) => (
@@ -109,7 +112,7 @@ export function BadgeList({
             </Badge>
           ))
         ) : (
-          <p className="text-gray-500 italic text-sm">{emptyMessage}</p>
+          <p className="text-muted-foreground italic text-sm">{emptyMessage}</p>
         )}
       </div>
     </div>
@@ -128,15 +131,15 @@ export function SubmitButton({
   className = "" 
 }: SubmitButtonProps) {
   return (
-    <div className="flex justify-end pt-4 border-t border-gray-200">
+    <div className="flex justify-end pt-4 border-t border-border">
       <Button 
         type="submit" 
-        className={`bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer w-full sm:w-auto text-base ${className}`}
+        className={`bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium cursor-pointer w-full sm:w-auto text-base ${className}`}
         disabled={isPending}
       >
         {isPending ? (
           <span className="flex items-center justify-center">
-            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>

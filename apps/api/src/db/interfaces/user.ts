@@ -2,6 +2,7 @@ import { Document } from "mongoose";
 import mongoose from "mongoose";
 
 export enum UserRole {
+  SYSTEM_ADMIN = "system_admin",
   ADMIN = "admin",
   VOLUNTEER = "volunteer",
   MENTOR = "mentor",
@@ -21,6 +22,7 @@ export interface IUser extends Document {
   provider: AuthProvider;
   image?: string;
   is_verified: boolean;
+  is_blocked: boolean;
   referred_by: string;
   volunteer_profile?: mongoose.Types.ObjectId;
   mentor_profile?: mongoose.Types.ObjectId;

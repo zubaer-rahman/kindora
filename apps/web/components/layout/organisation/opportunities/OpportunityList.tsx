@@ -48,10 +48,10 @@ export default function OpportunityList({
       <div className="md:hidden px-4 flex-1 min-h-[400px]">
         {isLoading ? (
           <Loading size="medium">
-            <p className="text-gray-600 mt-2">Wait a sec...</p>
+            <p className="text-muted-foreground mt-2">Wait a sec...</p>
           </Loading>
         ) : data.length === 0 ? (
-          <div className="flex justify-center items-center py-10 text-gray-500 min-h-[300px]">
+          <div className="flex justify-center items-center py-10 text-muted-foreground min-h-[300px]">
             No opportunities found.
           </div>
         ) : (

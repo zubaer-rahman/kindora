@@ -17,18 +17,18 @@ export const SearchSuggestions = ({ query, searchHistory, suggestions, onSelect,
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.3 }}
-        className="absolute left-0 top-full mt-2 w-full bg-white rounded-md z-50"
+        className="absolute left-0 top-full mt-2 w-full bg-background rounded-md z-50"
       >
         {(query === '' ? searchHistory : suggestions).map((item) => (
           <button
             key={item}
-            className="flex items-center w-full px-4 py-2 text-left hover:bg-gray-100 text-gray-800 gap-2 rounded"
+            className="flex items-center w-full px-4 py-2 text-left hover:bg-muted text-foreground gap-2 rounded"
             onClick={() => onSelect(item)}
           >
             {query === '' ? (
-              <History className="w-4 h-4 text-gray-400" />
+              <History className="w-4 h-4 text-muted-foreground" />
             ) : (
-              <Search className="w-4 h-4 text-gray-400" />
+              <Search className="w-4 h-4 text-muted-foreground" />
             )}
             {item}
           </button>

@@ -42,8 +42,8 @@ export default function MobileTabsSlider({
             className={cn(
               "flex-shrink-0 h-10 px-4 sm:px-5 rounded-[20px] transition-all whitespace-nowrap shadow-sm text-sm",
               activeTab === tab.value
-                ? "bg-[#246BFD] text-white hover:bg-[#246BFD]/90 shadow-lg"
-                : "bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 border border-blue-200"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
+                : "bg-muted text-primary hover:bg-muted/80 hover:text-primary/80 border border-border"
             )}
           >
             {tab.icon && <span className="mr-1 sm:mr-2">{tab.icon}</span>}
@@ -59,7 +59,7 @@ export default function MobileTabsSlider({
         <div className=" ">
           <Separator
             className={cn(
-              " bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200  border-gray-200",
+              "border-border",
               separatorClassName
             )}
           />

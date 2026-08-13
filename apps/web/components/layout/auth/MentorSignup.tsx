@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { SignupStep } from "@/components/layout/auth/SignupStep";
+import { SignupActionBar } from "@/components/layout/auth/SignupActionBar";
 import { MentorSignupForm, mentorSignupSchema } from "@/types/auth";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -290,27 +291,10 @@ export default function MentorSignup() {
                                 role="mentor"
                             />
 
-                            <div className="fixed bottom-0 left-0 right-0 bg-gray-50 py-4 px-6 border-t border-gray-200">
-                                <div className="container mx-auto px-4">
-                                    <div className="flex justify-end">
-                                        <Button
-                                            type="button"
-                                            onClick={handleSignup}
-                                            disabled={isSignupLoading || isProfileSetupComplete}
-                                            className="bg-blue-600 hover:bg-blue-700"
-                                        >
-                                            {isSignupLoading ? (
-                                                <div className="flex items-center">
-                                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                                    Creating account...
-                                                </div>
-                                            ) : (
-                                                "Create Account"
-                                            )}
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
+                            <SignupActionBar
+                              onClick={handleSignup}
+                              isLoading={isSignupLoading || isProfileSetupComplete}
+                            />
                         </form>
                     </Form>
                 </div>
