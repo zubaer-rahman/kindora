@@ -6,6 +6,7 @@ import VolunteerApplication from '../db/models/volunteer-application';
 import OrganisationRecruitment from '../db/models/organisation-recruitment';
 import OpportunityMentor from '../db/models/opportunity-mentor';
 import FavoriteOpportunity from '../db/models/favorite-opportunity';
+import OrganizationProfile from '../db/models/organization-profile';
 import { AppError } from '../lib/errors.js';
 import { CreateOpportunityInput, ListOpportunitiesQuery } from '../validators/opportunity.validator.js';
 import { notificationService } from './notification-sender.service.js';
