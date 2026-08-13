@@ -11,13 +11,19 @@ const app = express();
 
 const allowedOrigins = env.allowed_origins?.split(",") ?? [
   "http://localhost:3000",
+  "https://kindora-teal.vercel.app"
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin))
+      if (
+        !origin || 
+        allowedOrigins.includes(origin) || 
+        origin.endsWith(".vercel.app")
+      ) {
         return callback(null, true);
+      }
       callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
