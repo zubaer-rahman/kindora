@@ -20,6 +20,7 @@ import {
   isResetPasswordPath,
 } from "@/utils/helpers/pathCheck";
 import KindoraLogo from "@/components/common/KindoraLogo";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function LandingNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -68,7 +69,7 @@ export default function LandingNavbar() {
   const conversationsUnreadCount =
     conversations?.reduce(
       (total, conv) => total + (conv.unreadCount || 0),
-      0
+      0,
     ) || 0;
 
   const groupsUnreadCount =
@@ -116,6 +117,7 @@ export default function LandingNavbar() {
       return [];
     }
     return [
+      { label: "Home", href: "/" },
       { label: "About", href: "/about" },
       { label: "Gallery", href: "/kindora/gallery" },
       { label: "FAQ", href: "/faq" },
@@ -129,9 +131,7 @@ export default function LandingNavbar() {
   return (
     <>
       <nav className="flex justify-center py-3 px-4 sm:px-6 lg:px-8 h-[100px] fixed top-0 left-0 w-full z-50">
-        <div
-          className="max-w-[1170px] flex items-center justify-between relative z-[60] bg-white border border-gray-200 w-full rounded-full shadow-lg h-20"
-        >
+        <div className="max-w-[1170px] flex items-center justify-between relative z-[60] bg-background/80 backdrop-blur-lg border border-border w-full rounded-full shadow-lg h-20">
           {/* Logo */}
           <Link
             href={
@@ -149,15 +149,21 @@ export default function LandingNavbar() {
           {/* Desktop Navigation */}
           {!protectedPath && (
             <div className="hidden md:flex items-center space-x-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isActive =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`text-sm font-medium transition-colors ${isActive ? "text-primary border-b-2 border-primary rounded-none" : "text-muted-foreground hover:text-primary"}`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </div>
           )}
 
@@ -166,39 +172,46 @@ export default function LandingNavbar() {
             {authPath ? (
               <div className="flex items-center space-x-2 sm:space-x-4">
                 {session ? (
-                  <UserMenu user={session.user as SessionUser} />
+                  <>
+                    <ThemeToggle />
+                    <UserMenu user={session.user as SessionUser} />
+                  </>
                 ) : (
                   <div className="flex items-center space-x-2 sm:space-x-6">
+                    <ThemeToggle />
                     {roleParam !== "mentor" && (
                       <div
                         className={cn(
-                          "flex items-center gap-1 ms-2 sm:ms-0 sm:gap-3 px-2 sm:px-4 py-1 sm:py-2 bg-white/60 rounded-full border border-blue-200",
-                          isSigninPath && "border-none bg-transparent"
+                          "flex items-center gap-1 ms-2 sm:ms-0 sm:gap-3 px-2 sm:px-4 py-1 sm:py-2 bg-background/60 backdrop-blur-md rounded-full border border-primary/20",
+                          isSigninPath && "border-none bg-transparent",
                         )}
                       >
                         {!isSigninPath && (
-                          <span className="text-xs sm:text-sm text-gray-700">
+                          <span className="text-xs sm:text-sm text-foreground">
                             {roleParam !== "organisation"
                               ? "Wanna join as an organisation?"
                               : "Wanna join as a volunteer?"}
                           </span>
                         )}
-                        <Button
-                          asChild
-                          className="bg-primary hover:bg-primary/95 text-white rounded-full h-10  px-6 text-sm font-bold shadow-md shadow-primary/20 transition-all hover:scale-105 active:scale-95"
-                        >
+                        {!isSigninPath ? (
                           <Link
                             href={
-                              isSigninPath
-                                ? "/signup"
-                                : roleParam !== "organisation"
-                                  ? "/signup?role=organisation"
-                                  : "/signup"
+                              roleParam !== "organisation"
+                                ? "/signup?role=organisation"
+                                : "/signup"
                             }
+                            className="text-xs sm:text-sm font-semibold text-primary hover:text-primary/80 transition-colors duration-200 px-3 py-1 bg-primary/10 rounded-full whitespace-nowrap"
                           >
                             Sign up
                           </Link>
-                        </Button>
+                        ) : (
+                          <Button
+                            asChild
+                            className="bg-primary hover:bg-primary/90 h-10 rounded-full px-6 text-primary-foreground cursor-pointer shadow-lg shadow-primary/20"
+                          >
+                            <Link href="/signup">Sign up</Link>
+                          </Button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -207,24 +220,26 @@ export default function LandingNavbar() {
             ) : protectedPath ? (
               <div className="flex items-center space-x-4">
                 <Link
-                  href={`/${session?.user?.role !== "volunteer"
-                    ? "organisation"
-                    : `${session?.user?.role}`
-                    }/messages`}
-                  className="hidden md:flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/60 transition-colors relative bg-white/40"
+                  href={`/${
+                    session?.user?.role !== "volunteer"
+                      ? "organisation"
+                      : `${session?.user?.role}`
+                  }/messages`}
+                  className="hidden md:flex items-center justify-center w-10 h-10 rounded-full hover:bg-background/60 transition-colors relative bg-background/40"
                 >
-                  <MessageCircle className="h-5 w-5 text-gray-900" />
+                  <MessageCircle className="h-5 w-5 text-foreground" />
                   {totalUnreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {totalUnreadCount}
                     </span>
                   )}
                 </Link>
                 {session?.user?.role !== "volunteer" && (
-                  <div className="hidden md:flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/60 transition-colors bg-white/40">
+                  <div className="hidden md:flex items-center justify-center w-10 h-10 rounded-full hover:bg-background/60 transition-colors bg-background/40">
                     <NotificationBell />
                   </div>
                 )}
+                <ThemeToggle />
                 {session?.user && (
                   <UserMenu user={session.user as SessionUser} />
                 )}
@@ -232,19 +247,23 @@ export default function LandingNavbar() {
             ) : (
               <div className="flex items-center space-x-3">
                 {session ? (
-                  <UserMenu user={session.user as SessionUser} />
+                  <>
+                    <ThemeToggle />
+                    <UserMenu user={session.user as SessionUser} />
+                  </>
                 ) : (
                   <>
+                    <ThemeToggle />
                     <Button
                       asChild
                       variant="ghost"
-                      className="text-sm font-medium hover:text-primary"
+                      className="text-sm font-medium text-foreground hover:text-primary"
                     >
                       <Link href="/login">Log in</Link>
                     </Button>
                     <Button
                       asChild
-                      className="bg-primary hover:bg-primary/90 h-10 rounded-full px-6 text-white text-sm font-medium shadow-md shadow-primary/20"
+                      className="bg-primary hover:bg-primary/90 h-10 rounded-full px-6 text-primary-foreground text-sm font-medium shadow-md shadow-primary/20"
                     >
                       <Link href="/signup">Sign up</Link>
                     </Button>
@@ -256,7 +275,7 @@ export default function LandingNavbar() {
             {/* Mobile Menu Button */}
             <button
               id="hamburger-button"
-              className="md:hidden p-2 rounded-full text-gray-900 hover:bg-gray-100 transition-colors"
+              className="md:hidden p-2 rounded-full text-foreground hover:bg-muted transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -268,10 +287,10 @@ export default function LandingNavbar() {
             </button>
           </div>
         </div>
-      </nav >
+      </nav>
 
       {/* Mobile Menu */}
-      < MobileMenu
+      <MobileMenu
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
         isAuthPath={authPath}

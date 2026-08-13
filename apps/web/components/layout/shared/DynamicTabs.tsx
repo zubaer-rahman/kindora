@@ -57,12 +57,12 @@ export function DynamicTabs({
       {/* Desktop Tabs - Show on large screens and above */}
       <div className={cn("hidden lg:block")}>
         <Tabs defaultValue={defaultValue} onValueChange={handleTabChange}>
-          <TabsList className={`grid w-full ${cols} p-0 bg-gray-100 rounded-full h-10`}>
+          <TabsList className={`grid w-full ${cols} p-0 bg-muted rounded-full h-10`}>
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="rounded-full transition-colors data-[state=active]:bg-[#246BFD] data-[state=active]:text-white hover:bg-gray-200 data-[state=active]:hover:bg-[#246BFD] flex items-center gap-2"
+                className="rounded-full transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-muted-foreground/10 data-[state=active]:hover:bg-primary flex items-center gap-2"
               >
                 {tab.icon}
                 {tab.label}
@@ -82,12 +82,12 @@ export function DynamicTabs({
       {/* Medium Screen Tabs - Show on medium screens only */}
       <div className={cn("hidden md:block lg:hidden")}>
         <Tabs defaultValue={defaultValue} onValueChange={handleTabChange}>
-          <TabsList className={`grid w-full ${cols} p-0 bg-gray-100 rounded-full h-10`}>
+          <TabsList className={`grid w-full ${cols} p-0 bg-muted rounded-full h-10`}>
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="rounded-full transition-colors data-[state=active]:bg-[#246BFD] data-[state=active]:text-white hover:bg-gray-200 data-[state=active]:hover:bg-[#246BFD] flex items-center gap-1 text-sm"
+                className="rounded-full transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-muted-foreground/10 data-[state=active]:hover:bg-primary flex items-center gap-1 text-sm"
               >
                 {tab.icon}
                 <span className="truncate">{tab.label}</span>

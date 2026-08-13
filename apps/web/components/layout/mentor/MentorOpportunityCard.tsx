@@ -98,7 +98,7 @@ export function MentorOpportunityCard({ opportunity }: MentorOpportunityCardProp
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-2">
                     <div className="flex items-center gap-1 text-[13px] text-[#475467]">
                         <MapPin className="w-3.5 h-3.5" />
-                        <span>{opportunity.location || "Australia"}</span>
+                        <span>{opportunity.location || "Location not specified"}</span>
                     </div>
                 </div>
 

@@ -52,13 +52,13 @@ export default function ShowcaseVideoSection() {
   };
 
   return (
-    <section className="py-20 md:py-32 bg-white overflow-hidden">
+    <section className="py-16 md:py-24 bg-background overflow-hidden">
       <div className="container max-w-[1280px] mx-auto px-4">
-        <div className="flex flex-col items-center mb-16 md:mb-20">
+        <div className="flex flex-col items-center mb-12 md:mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-3xl sm:text-4xl md:text-[40px] font-bold text-slate-900 text-center tracking-tight leading-tight"
+            className="text-3xl sm:text-4xl md:text-[40px] font-bold text-foreground text-center tracking-tight leading-tight"
           >
             Empower Your Impact with <span className="text-primary italic">Kindora</span>
           </motion.h2>
@@ -69,14 +69,14 @@ export default function ShowcaseVideoSection() {
           initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1 }}
-          className="relative group max-w-5xl mx-auto rounded-[32px] overflow-hidden shadow-[0_32px_64px_-12px_rgba(79,70,229,0.15)] border-8 border-white ring-1 ring-slate-100"
+          className="relative group max-w-5xl mx-auto rounded-[32px] overflow-hidden shadow-[0_32px_64px_-12px_rgba(79,70,229,0.15)] border-8 border-background ring-1 ring-border"
         >
           <div className="absolute top-8 right-8 z-20">
             <motion.button 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               onClick={toggleMute}
-              className="flex items-center gap-3 bg-slate-900/40 backdrop-blur-xl border border-white/20 rounded-full py-2.5 px-5 text-white shadow-2xl transition-all duration-300"
+              className="flex items-center gap-3 bg-black/40 backdrop-blur-xl border border-white/20 rounded-full py-2.5 px-5 text-white shadow-2xl transition-all duration-300"
             >
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                 {isMuted ? (

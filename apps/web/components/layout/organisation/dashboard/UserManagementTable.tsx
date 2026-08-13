@@ -215,14 +215,14 @@ export default function UserManagementTable({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="h-8 w-8 p-0 rounded-full hover:bg-gray-100/80 transition-colors duration-200"
+                  className="h-8 w-8 p-0 rounded-full hover:bg-muted/80 transition-colors duration-200"
                 >
-                  <MoreHorizontal className="h-4 w-4 text-gray-500" />
+                  <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="w-64 p-2 bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-xl"
+                className="w-64 p-2 bg-background/95 backdrop-blur-md border border-border shadow-xl rounded-xl"
                 sideOffset={8}
               >
                 {currentUserRole === "admin" &&
@@ -238,14 +238,14 @@ export default function UserManagementTable({
                         <Crown className="w-3.5 h-3.5 text-blue-600" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-gray-900 font-medium">
-                          Change to{" "}
-                          {targetUserRole === "admin" ? "Mentor" : "Admin"}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {targetUserRole === "admin"
-                            ? "Demote to mentor role"
-                            : "Promote to admin role"}
+                         <span className="text-foreground font-medium">
+                           Change to{" "}
+                           {targetUserRole === "admin" ? "Mentor" : "Admin"}
+                         </span>
+                         <span className="text-xs text-muted-foreground">
+                           {targetUserRole === "admin"
+                             ? "Demote to mentor role"
+                             : "Promote to admin role"}
                         </span>
                       </div>
                     </DropdownMenuItem>
@@ -272,12 +272,12 @@ export default function UserManagementTable({
                     demoteMentorMutation.isPending ? (
                       <div className="flex items-center gap-3 w-full">
                         <div className="flex items-center justify-center w-5 h-5">
-                          <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
+                           <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                         </div>
-                        <span className="text-gray-600">
-                          {targetUserRole === "mentor"
-                            ? "Removing..."
-                            : "Promoting..."}
+                         <span className="text-muted-foreground">
+                           {targetUserRole === "mentor"
+                             ? "Removing..."
+                             : "Promoting..."}
                         </span>
                       </div>
                     ) : targetUserRole === "mentor" ? (
@@ -286,11 +286,11 @@ export default function UserManagementTable({
                           <UserMinus className="w-3.5 h-3.5 text-red-600" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-gray-900 font-medium">
-                            Remove Mentor Role
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            Demote to volunteer
+                           <span className="text-foreground font-medium">
+                             Remove Mentor Role
+                           </span>
+                           <span className="text-xs text-muted-foreground">
+                             Demote to volunteer
                           </span>
                         </div>
                       </>
@@ -300,11 +300,11 @@ export default function UserManagementTable({
                           <UserPlus className="w-3.5 h-3.5 text-emerald-600" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-gray-900 font-medium">
-                            Promote to Mentor
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            Grant mentor privileges
+                           <span className="text-foreground font-medium">
+                             Promote to Mentor
+                           </span>
+                           <span className="text-xs text-muted-foreground">
+                             Grant mentor privileges
                           </span>
                         </div>
                       </>
@@ -457,16 +457,16 @@ export default function UserManagementTable({
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
-                        className="h-8 w-8 p-0 rounded-full hover:bg-gray-100/80 transition-colors duration-200"
+                        className="h-8 w-8 p-0 rounded-full hover:bg-muted/80 transition-colors duration-200"
                       >
-                        <MoreHorizontal className="h-4 w-4 text-gray-500" />
+                        <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-64 p-2 bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-xl"
-                      sideOffset={8}
-                    >
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-64 p-2 bg-background/95 backdrop-blur-md border border-border shadow-xl rounded-xl"
+                        sideOffset={8}
+                      >
                       {currentUserRole === "admin" &&
                         targetUserRole !== "volunteer" && (
                           <DropdownMenuItem
@@ -480,16 +480,16 @@ export default function UserManagementTable({
                               <Crown className="w-3.5 h-3.5 text-blue-600" />
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-gray-900 font-medium">
-                                Change to{" "}
-                                {targetUserRole === "admin"
-                                  ? "Mentor"
-                                  : "Admin"}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                {targetUserRole === "admin"
-                                  ? "Demote to mentor role"
-                                  : "Promote to admin role"}
+                               <span className="text-foreground font-medium">
+                                 Change to{" "}
+                                 {targetUserRole === "admin"
+                                   ? "Mentor"
+                                   : "Admin"}
+                               </span>
+                               <span className="text-xs text-muted-foreground">
+                                 {targetUserRole === "admin"
+                                   ? "Demote to mentor role"
+                                   : "Promote to admin role"}
                               </span>
                             </div>
                           </DropdownMenuItem>
@@ -516,12 +516,12 @@ export default function UserManagementTable({
                           demoteMentorMutation.isPending ? (
                             <div className="flex items-center gap-3 w-full">
                               <div className="flex items-center justify-center w-5 h-5">
-                                <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
+                                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                               </div>
-                              <span className="text-gray-600">
-                                {targetUserRole === "mentor"
-                                  ? "Removing..."
-                                  : "Promoting..."}
+                               <span className="text-muted-foreground">
+                                 {targetUserRole === "mentor"
+                                   ? "Removing..."
+                                   : "Promoting..."}
                               </span>
                             </div>
                           ) : targetUserRole === "mentor" ? (
@@ -530,11 +530,11 @@ export default function UserManagementTable({
                                 <UserMinus className="w-3.5 h-3.5 text-red-600" />
                               </div>
                               <div className="flex flex-col">
-                                <span className="text-gray-900 font-medium">
-                                  Remove Mentor Role
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  Demote to volunteer
+                                 <span className="text-foreground font-medium">
+                                   Remove Mentor Role
+                                 </span>
+                                 <span className="text-xs text-muted-foreground">
+                                   Demote to volunteer
                                 </span>
                               </div>
                             </>
@@ -544,11 +544,11 @@ export default function UserManagementTable({
                                 <UserPlus className="w-3.5 h-3.5 text-emerald-600" />
                               </div>
                               <div className="flex flex-col">
-                                <span className="text-gray-900 font-medium">
-                                  Promote to Mentor
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  Grant mentor privileges
+                                 <span className="text-foreground font-medium">
+                                   Promote to Mentor
+                                 </span>
+                                 <span className="text-xs text-muted-foreground">
+                                   Grant mentor privileges
                                 </span>
                               </div>
                             </>

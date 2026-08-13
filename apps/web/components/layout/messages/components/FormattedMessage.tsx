@@ -51,7 +51,7 @@ export const FormattedMessage: React.FC<FormattedMessageProps> = ({ content, isO
             <div
                 className={cn(
                     "max-w-full overflow-x-auto p-2 rounded-lg bg-white/10",
-                    !isOwnMessage && "bg-gray-50"
+                    !isOwnMessage && "bg-muted"
                 )}
                 dangerouslySetInnerHTML={{ __html: trimmedContent }}
             />
@@ -73,7 +73,7 @@ export const FormattedMessage: React.FC<FormattedMessageProps> = ({ content, isO
                                 key={index}
                                 href={normalizedPart}
                                 onClick={(e) => handleLinkClick(e, part)}
-                                className={`${isOwnMessage ? "underline text-blue-100" : "underline text-blue-600"
+                                className={`${isOwnMessage ? "underline text-blue-100" : "underline text-primary"
                                     } hover:opacity-80 transition-opacity`}
                             >
                                 {part}
@@ -84,7 +84,7 @@ export const FormattedMessage: React.FC<FormattedMessageProps> = ({ content, isO
                         return (
                             <span
                                 key={index}
-                                className={`font-semibold ${isOwnMessage ? "text-blue-200" : "text-blue-600"
+                                className={`font-semibold ${isOwnMessage ? "text-blue-200" : "text-primary"
                                     }`}
                             >
                                 {part.replace(/_/g, ' ')}
@@ -101,7 +101,7 @@ export const FormattedMessage: React.FC<FormattedMessageProps> = ({ content, isO
                         <AlertDialogTitle>Leaving Kindora</AlertDialogTitle>
                         <AlertDialogDescription>
                             You are about to leave Kindora to visit an external link:
-                            <span className="block mt-2 font-mono text-xs break-all text-gray-700 bg-gray-50 p-2 rounded">
+                            <span className="block mt-2 font-mono text-xs break-all text-foreground bg-muted p-2 rounded">
                                 {pendingUrl}
                             </span>
                             <br />

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
+import { allowRoles, requireSystemAdmin } from '../middleware/role-guard.js';
 import {
   getPublicVolunteers,
   resetPassword,
@@ -34,8 +35,8 @@ router.get('/organization/:organizationId', getOrganizationUsers);
 router.post('/heartbeat', sendHeartbeat);
 router.get('/online-status', getUsersOnlineStatus);
 
-router.patch('/:userId/role', updateUserRole);
-router.post('/:userId/demote', demoteMentor);
-router.delete('/:userId', deleteUser);
+router.patch('/:userId/role', requireSystemAdmin, updateUserRole);
+router.post('/:userId/demote', requireSystemAdmin, demoteMentor);
+router.delete('/:userId', requireSystemAdmin, deleteUser);
 
 export default router;

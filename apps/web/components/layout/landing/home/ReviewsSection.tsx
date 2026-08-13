@@ -45,21 +45,21 @@ export default function ReviewsSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 overflow-hidden">
+    <section className="py-16 md:py-24 bg-background overflow-hidden">
       <div className="container max-w-[1170px] mx-auto flex flex-col lg:flex-row gap-12 lg:gap-[61px] justify-between px-4">
         <div className="max-w-full lg:max-w-[376px] mb-0 lg:mb-12 text-center lg:text-left">
-          <h2 className="text-2xl sm:text-3xl md:text-[40px] font-semibold text-[#0A0D12] mb-4 md:mb-8 leading-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-[40px] font-semibold text-foreground mb-4 md:mb-8 leading-tight">
             Reviews of People Who Participated Using Kindora
           </h2>
-          <p className="text-base text-[#414651] mb-6 md:mb-8 leading-relaxed">
+          <p className="text-base text-muted-foreground mb-6 md:mb-8 leading-relaxed">
             Discover the experiences of individuals who have contributed their skills and passion to meaningful opportunities through our community.
           </p>
-          <Button className="h-[49px] bg-[#1570EF] hover:bg-[#1d4ed8] px-[30px] py-[15px] rounded-full font-medium text-base text-[#F5FAFF]">
+          <Button className="h-[49px] bg-primary hover:bg-primary/90 px-[30px] py-[15px] rounded-full font-medium text-base text-primary-foreground">
             Join now
           </Button>
         </div>
 
-        <div className="flex-1 w-full lg:max-w-[733px] py-8 md:py-12 relative rounded-3xl md:rounded-4xl bg-[#F5F5F5]">
+        <div className="flex-1 w-full lg:max-w-[733px] py-8 md:py-12 relative rounded-3xl md:rounded-4xl bg-muted">
           <Swiper
             modules={[Navigation, Pagination]}
             spaceBetween={32}
@@ -86,7 +86,7 @@ export default function ReviewsSection() {
           >
             {reviews.map((review, index) => (
               <SwiperSlide key={index}>
-                <div className="review-card bg-white w-[90%] sm:w-full max-w-[549px] mx-auto rounded-2xl md:rounded-3xl py-6 px-6 md:py-10 md:px-8 border-none h-full flex flex-col">
+                <div className="review-card bg-background w-[90%] sm:w-full max-w-[549px] mx-auto rounded-2xl md:rounded-3xl py-6 px-6 md:py-10 md:px-8 border-none h-full flex flex-col">
                   {/* Icon */}
                   <div className="flex  mb-[22px]">
                     <div className="w-16 h-16 rounded-2xl bg-[#F3E8FF] flex items-center justify-center">
@@ -95,7 +95,7 @@ export default function ReviewsSection() {
                   </div>
 
                   {/* Review Text */}
-                  <p className="text-[#414651] text-base mb-[32px] md:min-h-[130px] leading-[26px] text-justify">
+                  <p className="text-muted-foreground text-base mb-[32px] md:min-h-[130px] leading-[26px] text-justify">
                     "{review.review}"
                   </p>
 
@@ -115,10 +115,10 @@ export default function ReviewsSection() {
                       {review.name.charAt(0)}
                     </div>
                     <div className="text-left">
-                      <h3 className="font-medium text-[#414651] text-base">
+                      <h3 className="font-medium text-foreground text-base">
                         {review.name}
                       </h3>
-                      <p className="text-sm text-[#717680]">{review.title}</p>
+                      <p className="text-sm text-muted-foreground">{review.title}</p>
                     </div>
                   </div>
                 </div>
@@ -127,11 +127,11 @@ export default function ReviewsSection() {
           </Swiper>
 
           {/* Custom Navigation Buttons */}
-          <button className="swiper-button-prev-custom absolute left-8 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors">
-            <ChevronLeft className="h-5 w-5 text-black" />
+          <button className="swiper-button-prev-custom absolute left-8 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-background shadow-md flex items-center justify-center hover:bg-muted transition-colors">
+            <ChevronLeft className="h-5 w-5 text-foreground" />
           </button>
-          <button className="swiper-button-next-custom absolute right-8 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors">
-            <ChevronRight className="h-5 w-5 text-black" />
+          <button className="swiper-button-next-custom absolute right-8 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-background shadow-md flex items-center justify-center hover:bg-muted transition-colors">
+            <ChevronRight className="h-5 w-5 text-foreground" />
           </button>
 
           {/* Pagination */}

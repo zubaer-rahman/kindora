@@ -64,6 +64,10 @@ export const listQuerySchema = z.object({
   commitmentType: z.enum(['all', 'workbased', 'eventbased']).default('all'),
   location: z.string().optional(),
   sortBy: z.enum(['recently_added', 'start_date', 'best_matches']).default('recently_added'),
+  saved: z.preprocess(
+    (val) => val === 'true' || val === true,
+    z.boolean().default(false)
+  ),
 });
 
 export type CreateOpportunityInput = z.infer<typeof createOpportunitySchema>;

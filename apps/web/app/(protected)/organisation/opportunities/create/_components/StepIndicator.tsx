@@ -48,13 +48,13 @@ export default function StepIndicator({
                   className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2",
                     isCompleted
-                      ? "bg-[#1570EF] border-[#1570EF] text-white"
+                      ? "bg-primary border-primary text-primary-foreground"
                       : isActive
-                      ? "border-[#1570EF] text-[#1570EF] bg-white"
-                      : "border-gray-300 text-gray-400 bg-white",
+                      ? "border-primary text-primary bg-background"
+                      : "border-border text-muted-foreground bg-background",
                     isClickable &&
                       !isDisabled &&
-                      "cursor-pointer hover:border-[#1570EF]/70",
+                      "cursor-pointer hover:border-primary/70",
                     isDisabled && "cursor-not-allowed opacity-60"
                   )}
                   aria-label={`Step ${stepNumber}: ${step.title}`}
@@ -74,16 +74,16 @@ export default function StepIndicator({
                     className={cn(
                       "text-sm font-normal transition-colors duration-300",
                       isActive
-                        ? "text-[#1570EF]"
+                        ? "text-primary"
                         : isCompleted
-                        ? "text-gray-900"
-                        : "text-gray-500"
+                        ? "text-foreground"
+                        : "text-muted-foreground"
                     )}
                   >
                     {step.title}
                   </p>
                   {step.description && (
-                    <p className="text-xs text-gray-400 mt-0.5">
+                    <p className="text-xs text-muted-foreground/80 mt-0.5">
                       {step.description}
                     </p>
                   )}
@@ -95,11 +95,11 @@ export default function StepIndicator({
                 <div className="flex-1 relative flex items-center mx-4 min-w-[50px]">
                   <div className="w-full relative h-8 flex items-center">
                     {/* Background line */}
-                    <div className="absolute top-1/2 left-0 right-0 h-[1px] -translate-y-1/2 bg-gray-300" />
+                    <div className="absolute top-1/2 left-0 right-0 h-[1px] -translate-y-1/2 bg-border" />
                     {/* Active/Completed line - filled if next step is reached */}
                     <div
                       className={cn(
-                        "absolute top-1/2 left-0 h-[1px] -translate-y-1/2 bg-[#1570EF] transition-all duration-500 ease-in-out",
+                        "absolute top-1/2 left-0 h-[1px] -translate-y-1/2 bg-primary transition-all duration-500 ease-in-out",
                         currentStep > stepNumber ? "right-0" : "w-0"
                       )}
                     />

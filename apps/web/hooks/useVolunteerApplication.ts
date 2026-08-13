@@ -18,10 +18,11 @@ export const useVolunteerApplication = (opportunityId: string) => {
   const { data: applicationStatus, isPending: isStatusPending } = useQuery({
     queryKey: ["applicationStatus", opportunityId],
     queryFn: async () => {
+      if (!opportunityId) return { status: null };
       const res = await axiosAuth.get(`/api/v1/applications/status/${opportunityId}`);
       return res.data.data;
     },
-    enabled: !!session?.user,
+    enabled: !!session?.user && !!opportunityId,
   });
 
   // Memoize the application state to prevent unnecessary re-renders

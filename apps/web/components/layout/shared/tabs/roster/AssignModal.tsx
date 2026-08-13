@@ -49,12 +49,12 @@ export function AssignModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="text-base font-semibold text-gray-900">
+          <DialogTitle className="text-base font-semibold text-foreground">
             Assign Volunteer
           </DialogTitle>
           <div className="mt-1">
-            <p className="text-sm font-medium text-gray-700">{shift.title}</p>
-            <p className="text-xs text-gray-500">
+            <p className="text-sm font-medium text-foreground">{shift.title}</p>
+            <p className="text-xs text-muted-foreground">
               {formatDate(shift.date)} &middot;{" "}
               {formatTimeRange(shift.startTime, shift.endTime)}
             </p>
@@ -63,23 +63,23 @@ export function AssignModal({
 
         {/* Search */}
         <div className="relative flex-shrink-0 mt-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search by name or skill…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-gray-50 border-gray-200 text-sm"
+            className="pl-9 bg-muted border-border text-sm"
           />
         </div>
 
         {/* Recruits list */}
         <div className="flex-1 overflow-y-auto min-h-0 mt-2 -mx-6 px-6">
           {filtered.length === 0 ? (
-            <p className="text-center text-sm text-gray-400 py-8">
+            <p className="text-center text-sm text-muted-foreground py-8">
               No recruits found
             </p>
           ) : (
-            <div className="divide-y divide-[#f3f4f6]">
+            <div className="divide-y divide-border">
               {filtered.map((recruit) => {
                 const isAssigned = assignedIds.has(recruit.id);
                 return (
@@ -97,14 +97,14 @@ export function AssignModal({
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-foreground truncate">
                         {recruit.name}
                       </p>
                       <div className="flex flex-wrap gap-1 mt-0.5">
                         {recruit.skills.slice(0, 4).map((sk) => (
                           <span
                             key={sk}
-                            className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded"
+                            className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
                           >
                             {sk}
                           </span>
@@ -122,7 +122,7 @@ export function AssignModal({
                       <Button
                         size="sm"
                         onClick={() => onAssign(shift.id, recruit.id)}
-                        className="flex-shrink-0 bg-[#2563EB] hover:bg-[#1d4fd8] text-white text-xs h-8 px-3"
+                        className="flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-8 px-3"
                       >
                         Assign
                       </Button>
@@ -135,7 +135,7 @@ export function AssignModal({
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 pt-3 border-t border-[#f3f4f6]">
+        <div className="flex-shrink-0 pt-3 border-t border-border">
           <Button
             variant="outline"
             onClick={onClose}

@@ -6,12 +6,12 @@ import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
-import { VolunteerOpportunityCard } from "@/components/common";
+import { VolunteerOpportunityCard, CustomTabs } from "@/components/common";
 import { MentorOpportunityCard } from "@/components/layout/mentor/MentorOpportunityCard";
 import VolunteerDashboardSidebar from "../../find-opportunity/VolunteerDashboardSidebar";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PaginationWrapper } from "@/components/PaginationWrapper";
 import { Users } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Application {
     _id: string;
@@ -128,70 +128,107 @@ export default function ManageOpportunities() {
     ];
 
     return (
-        <div className="min-h-screen bg-white">
-            <div className="container max-w-[1280px] mx-auto px-4 py-6 md:py-8">
-                <div className="flex flex-col lg:flex-row gap-8">
+        <div className="min-h-[calc(100vh-72px)] lg:h-[calc(100vh-72px)] flex flex-col">
+            <div className="container max-w-[1280px] mx-auto px-4 pt-6 flex flex-col flex-1 min-h-0 lg:overflow-hidden">
+                <div className="flex-1 flex flex-col lg:flex-row gap-8 min-h-0">
                     {/* Main Content Area */}
-                    <main className="flex-1 min-w-0">
-                        {/* Header Section */}
-                        <div className="mb-6">
-                            <h1 className="text-2xl md:text-3xl font-semibold text-[#101828] mb-2">
-                                My Opportunities
-                            </h1>
-                            <p className="text-gray-500">
-                                Manage your applications and track your volunteer journey.
-                            </p>
-                        </div>
+                    <main className="flex-1 min-w-0 flex flex-col min-h-0">
+                        {/* Fixed Header Section */}
+                        <div className="shrink-0">
+                            {/* Header Section */}
+                            <div className="mb-4">
+                                <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-2">
+                                    My Opportunities
+                                </h1>
+                                <p className="text-muted-foreground">
+                                    Manage your applications and track your volunteer journey.
+                                </p>
+                            </div>
 
-                        {/* Main Content Container */}
-                        <div className="overflow-hidden">
                             {/* Tabs Section */}
-                            <div className="pt-2 border-b border-[#E9EAEB]">
+                            <div className="pt-2 border-b border-border">
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                    <Tabs
-                                        value={activeTab}
-                                        onValueChange={(value) => {
+                                    <CustomTabs
+                                        tabs={tabs}
+                                        activeTab={activeTab}
+                                        onTabChange={(value) => {
                                             setActiveTab(value);
                                             setCurrentPage(1);
                                         }}
-                                        className="w-full sm:w-auto"
-                                    >
-                                        <TabsList className="bg-transparent p-0 h-auto rounded-none w-full justify-start border-none shadow-none">
-                                            {tabs.map((tab) => (
-                                                <TabsTrigger
-                                                    key={tab.value}
-                                                    value={tab.value}
-                                                    className="px-5 py-2 text-sm text-[#5E6D55] font-medium data-[state=active]:text-[#101828] rounded-none bg-transparent border-b-[3px] border-transparent data-[state=active]:border-b-[#1570EF] shadow-none hover:text-[#101828] focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:shadow-none transition-all"
-                                                >
-                                                    {tab.label}
-                                                </TabsTrigger>
-                                            ))}
-                                        </TabsList>
-                                    </Tabs>
+                                    />
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Applications List */}
-                            <div className="divide-y divide-[#E9EAEB]">
+                        {/* Scrollable Cards Section */}
+                        <div className="flex-1 overflow-y-auto min-h-0 mt-6 no-scrollbar">
+                            <div className="divide-y divide-border">
                                 {isLoading ? (
-                                    <div className="p-6 space-y-6">
+                                    <div>
                                         {/* Loading Skeletons */}
                                         {Array.from({ length: 3 }).map((_, index) => (
-                                            <div
-                                                key={index}
-                                                className="h-[200px] bg-gray-50 rounded-lg animate-pulse"
-                                            />
+                                            <div key={index} className="px-4 py-6">
+                                                {/* Posted time + status + heart */}
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <Skeleton className="h-3.5 w-24" />
+                                                    <div className="flex items-center gap-2">
+                                                        <Skeleton className="h-5 w-20 rounded-full" />
+                                                        <Skeleton className="h-9 w-9 rounded-full" />
+                                                    </div>
+                                                </div>
+
+                                                {/* Title */}
+                                                <Skeleton className="h-6 w-3/4 mb-4" />
+
+                                                {/* Metadata line */}
+                                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4">
+                                                    <Skeleton className="h-3.5 w-20" />
+                                                    <Skeleton className="h-3.5 w-2 rounded-full" />
+                                                    <Skeleton className="h-3.5 w-14" />
+                                                    <Skeleton className="h-3.5 w-2 rounded-full" />
+                                                    <Skeleton className="h-3.5 w-24" />
+                                                </div>
+
+                                                {/* Description */}
+                                                <div className="space-y-2 mb-4">
+                                                    <Skeleton className="h-4 w-full" />
+                                                    <Skeleton className="h-4 w-full" />
+                                                    <Skeleton className="h-4 w-2/3" />
+                                                </div>
+
+                                                {/* Category badges */}
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <Skeleton className="h-6 w-20 rounded-full" />
+                                                    <Skeleton className="h-6 w-16 rounded-full" />
+                                                    <Skeleton className="h-6 w-24 rounded-full" />
+                                                </div>
+
+                                                {/* Footer: location + proposals */}
+                                                <div className="flex items-center justify-between">
+                                                    <Skeleton className="h-3.5 w-32" />
+                                                    <Skeleton className="h-3.5 w-20" />
+                                                </div>
+                                            </div>
                                         ))}
+
+                                        {/* Pagination Skeleton */}
+                                        <div className="p-6 border-t border-border flex justify-center gap-2">
+                                            <Skeleton className="h-9 w-9 rounded-md" />
+                                            <Skeleton className="h-9 w-9 rounded-md" />
+                                            <Skeleton className="h-9 w-9 rounded-md" />
+                                            <Skeleton className="h-9 w-9 rounded-md" />
+                                            <Skeleton className="h-9 w-9 rounded-md" />
+                                        </div>
                                     </div>
                                 ) : activeTab === "mentor" ? (
                                     <>
                                         {mentorOpportunities.length === 0 ? (
                                             <div className="text-center py-20">
-                                                <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                                <p className="text-[#667085] text-lg font-medium mb-2">
+                                                <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                                                <p className="text-muted-foreground text-lg font-medium mb-2">
                                                     No Mentor Assignments
                                                 </p>
-                                                <p className="text-[#667085] text-sm">
+                                                <p className="text-muted-foreground text-sm">
                                                     You haven't been assigned as a mentor for any opportunities yet.
                                                 </p>
                                             </div>
@@ -208,7 +245,7 @@ export default function ManageOpportunities() {
 
                                                 {/* Pagination */}
                                                 {totalPages > 1 && (
-                                                    <div className="p-6 border-t border-[#E9EAEB] flex justify-center mt-6">
+                                                    <div className="p-6 border-t border-border flex justify-center mt-6">
                                                         <PaginationWrapper
                                                             currentPage={currentPage}
                                                             totalPages={totalPages}
@@ -222,7 +259,7 @@ export default function ManageOpportunities() {
                                     </>
                                 ) : applications.length === 0 ? (
                                     <div className="text-center py-20">
-                                        <p className="text-[#667085]">No applications found in this category.</p>
+                                        <p className="text-muted-foreground">No applications found in this category.</p>
                                     </div>
                                 ) : (
                                     <>
@@ -239,7 +276,7 @@ export default function ManageOpportunities() {
 
                                         {/* Pagination */}
                                         {totalPages > 1 && (
-                                            <div className="p-6 border-t border-[#E9EAEB] flex justify-center">
+                                            <div className="p-6 border-t border-border flex justify-center">
                                                 <PaginationWrapper
                                                     currentPage={currentPage}
                                                     totalPages={totalPages}
@@ -255,9 +292,7 @@ export default function ManageOpportunities() {
                     </main>
 
                     {/* Right Sidebar - Reusing Dashboard Sidebar */}
-                    <aside className="w-full lg:w-[320px] flex-shrink-0">
-                        <VolunteerDashboardSidebar />
-                    </aside>
+                    <VolunteerDashboardSidebar className="w-full lg:w-[320px] flex-shrink-0 lg:sticky lg:top-6" />
                 </div>
             </div>
         </div>

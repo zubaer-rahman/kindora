@@ -37,7 +37,7 @@ const VolunteerCarousel = ({
   <div className="relative ">
     <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 hidden sm:block">
       <button
-        className="border border-blue-600 text-blue-700 bg-white rounded-full p-2 hover:bg-blue-100 flex items-center justify-center transition-colors shadow"
+        className="border border-primary text-primary bg-background rounded-full p-2 hover:bg-muted flex items-center justify-center transition-colors shadow"
         title="Scroll left"
         id="vol-swiper-prev"
       >
@@ -46,7 +46,7 @@ const VolunteerCarousel = ({
     </div>
     <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 hidden sm:block">
       <button
-        className="border border-blue-600 text-blue-700 bg-white rounded-full p-2 hover:bg-blue-100 flex items-center justify-center transition-colors shadow"
+        className="border border-primary text-primary bg-background rounded-full p-2 hover:bg-muted flex items-center justify-center transition-colors shadow"
         title="Scroll right"
         id="vol-swiper-next"
       >
@@ -101,7 +101,7 @@ const VolunteerCarousel = ({
               className="!flex !justify-center"
             >
               <div className="w-full">
-                <div className="hover:shadow-lg transition-all duration-300 rounded-lg overflow-hidden w-full py-0 cursor-pointer relative bg-white">
+                <div className="hover:shadow-lg transition-all duration-300 rounded-lg overflow-hidden w-full py-0 cursor-pointer relative bg-card border border-border">
                   <div className="p-4">
                     <div className="flex flex-col">
                       <div className="flex justify-between items-center mb-4">
@@ -111,7 +111,7 @@ const VolunteerCarousel = ({
                       <Skeleton className="h-6 w-32 mb-2" />
                       <div className="flex items-center gap-3 mb-3">
                         <Skeleton className="h-4 w-24" />
-                        <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                        <div className="w-1 h-1 bg-muted-foreground/30 rounded-full"></div>
                         <Skeleton className="h-4 w-20" />
                       </div>
                       <div className="flex gap-2 mb-4">

@@ -6,6 +6,7 @@ import { AppProvider } from '@/config/Provider';
 import { Session } from 'next-auth';
 import { PresenceProvider } from '@/components/providers/PresenceProvider';
 import { CookieGuard } from '@/components/auth/CookieGuard';
+import { ThemeProvider } from '@/config/ThemeProvider';
 
 export function ClientProviders({
   children,
@@ -18,9 +19,11 @@ export function ClientProviders({
     <SessionProvider session={session || null}>
       <CookieGuard />
       <AppProvider>
-        <PresenceProvider>
-          {children}
-        </PresenceProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <PresenceProvider>
+            {children}
+          </PresenceProvider>
+        </ThemeProvider>
       </AppProvider>
     </SessionProvider>
   );

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
+import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import Avatar from "./Avatar";
 import type { Group } from "@/types/message";
@@ -63,7 +64,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
       });
       onGroupCreated();
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       toast.error(error?.response?.data?.message || "Failed to create group");
     },
   });
@@ -86,7 +87,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600 text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3">
+        <Button variant="ghost" size="sm" className="hover:bg-accent hover:text-accent-foreground text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3">
           <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
           <span className="hidden sm:inline">New Group</span>
           <span className="sm:hidden">Group</span>
@@ -112,11 +113,11 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
           {selectedUsersList.length > 0 && (
             <div className="space-y-2">
               <Label className="text-sm font-medium">Selected Members ({selectedUsersList.length})</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-2 sm:p-3 border rounded-lg bg-gray-50/50">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-2 sm:p-3 border rounded-lg bg-muted/50">
                 {selectedUsersList.map((user) => (
                   <div 
                     key={`selected-${user._id}`} 
-                    className="flex items-center justify-between p-2 bg-white rounded-md shadow-sm border"
+                    className="flex items-center justify-between p-2 bg-card rounded-md shadow-sm border-border"
                   >
                     <div className="flex items-center space-x-2 min-w-0 flex-1">
                       <Avatar name={user.name} image={user.image} size={24} />
@@ -125,9 +126,9 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
                     <button
                       type="button"
                       onClick={() => removeUser(user._id)}
-                      className="p-1 hover:bg-red-50 rounded-full transition-colors flex-shrink-0 ml-2"
+                      className="p-1 hover:bg-destructive/10 rounded-full transition-colors flex-shrink-0 ml-2"
                     >
-                      <X className="h-3 w-3 text-gray-500 hover:text-red-500" />
+                      <X className="h-3 w-3 text-muted-foreground hover:text-destructive" />
                     </button>
                   </div>
                 ))}
@@ -144,11 +145,11 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
                 placeholder="Search members to add..."
                 className="h-9 sm:h-10 pl-9 text-sm sm:text-base"
               />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
             <div className="mt-2 border rounded-lg divide-y max-h-[200px] sm:max-h-[250px] overflow-y-auto">
               {filteredUsers?.length === 0 ? (
-                <div className="p-4 text-center text-sm text-gray-500">
+                <div className="p-4 text-center text-sm text-muted-foreground">
                   No users found
                 </div>
               ) : (
@@ -156,8 +157,8 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
                   <div 
                     key={user._id} 
                     className={cn(
-                      "flex items-center space-x-3 p-2 sm:p-3 hover:bg-gray-50 transition-colors",
-                      selectedUsers.includes(user._id) && "bg-blue-50"
+                      "flex items-center space-x-3 p-2 sm:p-3 hover:bg-muted transition-colors",
+                      selectedUsers.includes(user._id) && "bg-accent"
                     )}
                   >
                     <input
@@ -171,13 +172,13 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
                           setSelectedUsers(selectedUsers.filter(id => id !== user._id));
                         }
                       }}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary/40 flex-shrink-0"
                     />
                     <label htmlFor={user._id} className="flex items-center space-x-2 sm:space-x-3 cursor-pointer flex-1 min-w-0">
                       <Avatar name={user.name} image={user.image} size={28} />
                       <div className="min-w-0 flex-1">
                         <span className="block text-sm font-medium truncate">{user.name}</span>
-                        <span className="block text-xs text-gray-500 truncate">{user.role}</span>
+                        <span className="block text-xs text-muted-foreground truncate">{user.role}</span>
                       </div>
                     </label>
                   </div>

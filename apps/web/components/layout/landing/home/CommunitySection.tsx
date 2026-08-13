@@ -75,13 +75,13 @@ export default function CommunitySection() {
   })();
 
   return (
-    <section className="py-16 md:py-24 bg-white overflow-hidden">
+    <section className="py-16 md:py-24 bg-background overflow-hidden">
       <div className="container max-w-[1440px] mx-auto px-4">
         <div className="flex flex-col items-center justify-center mb-8 md:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-[40px] text-center font-semibold leading-tight text-[#0A0D12] mb-4 max-w-[674px]">
+          <h2 className="text-2xl sm:text-3xl md:text-[40px] text-center font-semibold leading-tight text-foreground mb-4 max-w-[674px]">
             Meet the People Powering Our Community
           </h2>
-          <p className="text-base sm:text-lg text-[#414651] max-w-[700px] mx-auto text-center leading-relaxed">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-[700px] mx-auto text-center leading-relaxed">
             Our mentors and volunteers bring passion, skills, and heart to everything we do. From mentoring and logistics to events and outreach, they make real impact every day.
           </p>
         </div>
@@ -90,7 +90,7 @@ export default function CommunitySection() {
           {isLoading ? (
             <div className="flex gap-5 overflow-hidden px-4 md:px-0 [&_.swiper-wrapper]:!ml-[-140px] md:[&_.swiper-wrapper]:!ml-[-169px]">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-[350px] md:h-[418px] w-[280px] md:w-[338px] flex-shrink-0 rounded-2xl bg-gray-100 animate-pulse" />
+                <div key={i} className="h-[350px] md:h-[418px] w-[280px] md:w-[338px] flex-shrink-0 rounded-2xl bg-muted animate-pulse" />
               ))}
             </div>
           ) : (
@@ -114,11 +114,11 @@ export default function CommunitySection() {
                       />
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
-                      <div className="bg-[#FFFFFF99] backdrop-blur-2xl rounded-lg py-2 px-4 md:py-3 md:px-5">
-                        <h3 className="font-medium text-[#252B37] text-lg md:text-[22px]">
+                      <div className="bg-background/60 backdrop-blur-2xl rounded-lg py-2 px-4 md:py-3 md:px-5">
+                        <h3 className="font-medium text-foreground text-lg md:text-[22px]">
                           {person.name}
                         </h3>
-                        <p className="text-sm md:text-lg text-[#717680]">{person.role}</p>
+                        <p className="text-sm md:text-lg text-muted-foreground">{person.role}</p>
                       </div>
                     </div>
                   </div>

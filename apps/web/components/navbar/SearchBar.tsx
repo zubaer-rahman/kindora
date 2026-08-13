@@ -109,7 +109,7 @@ export function SearchBar({ role, disableOverlay = false }: SearchBarProps) {
               animate={{ height: PANEL_HEIGHT, opacity: 1 }}
               exit={{ height: 160, opacity: 0 }}
               transition={{ duration: 0.6, ease: "easeInOut" }}
-              className="fixed top-0 left-0 w-full z-50 bg-white origin-top overflow-hidden"
+              className="fixed top-0 left-0 w-full z-50 bg-background origin-top overflow-hidden"
             >
               <div className="w-full h-full flex flex-col overflow-hidden">
                 <MobileSearch

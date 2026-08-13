@@ -95,7 +95,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
               />
             </div>
             <h3
-              className="text-lg font-semibold cursor-pointer hover:text-blue-600"
+              className="text-lg font-semibold cursor-pointer hover:text-primary line-clamp-2"
               onClick={() =>
                 router.push(
                   `/organisation/opportunities/${opportunity._id}`
@@ -114,7 +114,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
           />
         </div>
 
-        <div className="flex items-center text-sm text-gray-500 mb-3">
+        <div className="flex items-center text-sm text-muted-foreground mb-3">
           <MapPin className="w-4 h-4 mr-1 text-blue-500" />
           <span>{opportunity.location}</span>
         </div>
@@ -140,18 +140,18 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
             )
           )}
           {opportunity.category.length > 1 && (
-            <Badge
-              variant="secondary"
-              className="text-xs font-normal text-gray-500"
-            >
-              +{opportunity.category.length - 1} more
-            </Badge>
+          <Badge
+            variant="secondary"
+            className="text-xs font-normal text-muted-foreground"
+          >
+            +{opportunity.category.length - 1} more
+          </Badge>
           )}
         </div>
 
         <div className="flex-1">
           <div
-            className="text-sm text-gray-600 line-clamp-3"
+            className="text-sm text-muted-foreground line-clamp-3"
             dangerouslySetInnerHTML={{
               __html: opportunity.description,
             }}
@@ -159,14 +159,14 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
         </div>
 
         <div className="mt-auto pt-4">
-          <div className="text-xs text-gray-500 mb-2">
+          <div className="text-xs text-muted-foreground mb-2">
             Posted{" "}
             {formatDistanceToNow(opportunity.createdAt, {
               addSuffix: true,
             })}
           </div>
           {opportunity.date?.start_date && (
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-muted-foreground">
               Starts: {new Date(opportunity.date.start_date).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric'

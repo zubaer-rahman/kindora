@@ -154,14 +154,14 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
       case 'fontSize':
         return (
           <div 
-            className="fixed p-2 bg-white rounded shadow-lg border z-[9999] flex flex-col gap-1 min-w-[60px] sm:min-w-[80px]" 
+            className="fixed p-2 bg-popover text-popover-foreground rounded shadow-lg border border-border z-[9999] flex flex-col gap-1 min-w-[60px] sm:min-w-[80px]" 
             style={dropdownStyles}
           >
             {FONT_SIZES.map((size) => (
               <button
                 key={size}
                 type="button"
-                className="text-xs py-1 px-2 hover:bg-gray-100 rounded w-full text-left cursor-pointer transition-colors"
+                className="text-xs py-1 px-2 hover:bg-accent hover:text-accent-foreground rounded w-full text-left cursor-pointer transition-colors"
                 onClick={() => {
                   setFontSize(size);
                   setOpenDropdown(null);
@@ -176,14 +176,14 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
       case 'textStyle':
         return (
           <div 
-            className="fixed p-2 bg-white rounded shadow-lg border z-[9999] flex flex-col gap-1 min-w-[100px] sm:min-w-[120px]" 
+            className="fixed p-2 bg-popover text-popover-foreground rounded shadow-lg border border-border z-[9999] flex flex-col gap-1 min-w-[100px] sm:min-w-[120px]" 
             style={dropdownStyles}
           >
             {TEXT_STYLES.map((style) => (
               <button
                 key={style.value}
                 type="button"
-                className="text-xs py-1 px-2 hover:bg-gray-100 rounded w-full text-left cursor-pointer transition-colors"
+                className="text-xs py-1 px-2 hover:bg-accent hover:text-accent-foreground rounded w-full text-left cursor-pointer transition-colors"
                 onClick={() => {
                   setTextStyle(style.value);
                   setOpenDropdown(null);
@@ -198,14 +198,14 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
       case 'color':
         return (
           <div 
-            className="fixed p-2 bg-white rounded shadow-lg border z-[9999] flex gap-1 flex-wrap max-w-[120px] sm:max-w-[140px]" 
+            className="fixed p-2 bg-popover text-popover-foreground rounded shadow-lg border border-border z-[9999] flex gap-1 flex-wrap max-w-[120px] sm:max-w-[140px]" 
             style={dropdownStyles}
           >
             {COLORS.map((color) => (
               <button
                 key={color}
                 type="button"
-                className="w-5 h-5 sm:w-6 sm:h-6 rounded border border-gray-200 hover:border-gray-400 hover:scale-110 transition-transform"
+                className="w-5 h-5 sm:w-6 sm:h-6 rounded border border-border hover:border-primary hover:scale-110 transition-transform"
                 style={{ backgroundColor: color }}
                 onClick={() => {
                   console.log('Setting color:', color);
@@ -224,7 +224,7 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
   };
 
   return (
-    <div className="tiptap-toolbar relative z-10 flex items-center w-full px-2 sm:px-3 py-1 bg-[#F0F1F2] flex-nowrap space-x-0.5 sm:space-x-1 overflow-x-auto overflow-y-visible">
+    <div className="tiptap-toolbar relative z-10 flex items-center w-full px-2 sm:px-3 py-1 bg-muted flex-nowrap space-x-0.5 sm:space-x-1 overflow-x-auto overflow-y-visible">
        <div className="relative">
         <ToolbarButton
           onClick={() => handleDropdownToggle('fontSize')}
@@ -261,7 +261,7 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
         >
           <div data-dropdown-trigger="color">
             <div
-              className="w-4 h-4 sm:w-5 sm:h-5 rounded border border-gray-300"
+              className="w-4 h-4 sm:w-5 sm:h-5 rounded border border-border"
               style={{
                 backgroundColor: editor.getAttributes("textStyle").color || "#000",
               }}
@@ -271,7 +271,7 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
         {renderDropdown('color')}
       </div>
 
-       <div className="w-px h-6 bg-gray-300 mx-1 sm:mx-2"></div>
+       <div className="w-px h-6 bg-border mx-1 sm:mx-2"></div>
 
        <ToolbarButton
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -323,7 +323,7 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
         <AlignRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
       </ToolbarButton>
 
-       <div className="w-px h-6 bg-gray-300 mx-1 sm:mx-2"></div>
+       <div className="w-px h-6 bg-border mx-1 sm:mx-2"></div>
 
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -340,7 +340,7 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
         <ListOrdered className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
       </ToolbarButton>
 
-       <div className="w-px h-6 bg-gray-300 mx-1 sm:mx-2"></div>
+       <div className="w-px h-6 bg-border mx-1 sm:mx-2"></div>
 
        <ToolbarButton
         onClick={() => {

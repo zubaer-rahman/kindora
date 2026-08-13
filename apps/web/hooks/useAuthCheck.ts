@@ -56,6 +56,13 @@ export function useAuthCheck() {
     }
 
     const isSessionAuthenticated = status === "authenticated" && !!session?.user && !!session?.user?.email;
+    const userRole = (session?.user as any)?.role;
+
+    // System admins have no profile — treat them as always authenticated
+    if (isSessionAuthenticated && userRole === 'system_admin') {
+      return { isLoading: false, isAuthenticated: true, hasProfile: true };
+    }
+
     const hasValidProfile = Boolean(profileCheck?.hasVolunteerProfile || profileCheck?.hasOrganizationProfile || profileCheck?.hasMentorProfile);
 
     return {

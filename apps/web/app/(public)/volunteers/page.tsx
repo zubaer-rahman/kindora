@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import SignupModal from "@/components/layout/opportunities/SignupModal";
@@ -56,7 +57,7 @@ export default function PublicVolunteersPage() {
 
     return (
         <PublicLayout>
-            <div className="bg-white flex flex-col min-h-screen">
+            <div className="bg-background flex flex-col min-h-screen text-foreground">
                 <main className="flex-1">
                     <PublicPageHero 
                         title="Meet our volunteers"
@@ -66,34 +67,34 @@ export default function PublicVolunteersPage() {
                     />
 
                     {/* Volunteers Grid Section */}
-                    <section className="py-24 md:py-32 bg-slate-50/50">
+                    <section className="py-12 sm:py-16 md:py-24 lg:py-32 bg-muted/30">
                         <div className="container max-w-[1170px] mx-auto px-4 md:px-8">
                             {isLoading ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
                                     {Array.from({ length: 9 }).map((_, index) => (
                                         <div
                                             key={index}
-                                            className="h-[430px] bg-white border border-slate-100 rounded-[40px] animate-pulse shadow-sm"
+                                            className="h-[340px] bg-card border border-border rounded-xl animate-pulse shadow-sm"
                                         />
                                     ))}
                                 </div>
                             ) : volunteers.length === 0 ? (
-                                <div className="text-center py-40 bg-white rounded-[48px] border border-slate-100 shadow-xl shadow-slate-200/50">
-                                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8">
-                                      <RotateCcw className="w-10 h-10 text-slate-300" />
+                                <div className="text-center py-16 sm:py-24 md:py-32 lg:py-40 bg-card rounded-2xl sm:rounded-3xl md:rounded-[48px] border border-border shadow-xl shadow-foreground/5 px-4 sm:px-6">
+                                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8">
+                                      <RotateCcw className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-slate-800 mb-2">No volunteers found</h3>
-                                    <p className="text-slate-500 text-lg mb-8">Try adjusting your search or location to find more amazing people.</p>
+                                    <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">No volunteers found</h3>
+                                    <p className="text-muted-foreground text-base sm:text-lg mb-6 sm:mb-8">Try adjusting your search or location to find more amazing people.</p>
                                     <Button 
                                       onClick={handleRefresh}
-                                      className="bg-primary text-white px-8 py-6 rounded-full font-bold shadow-lg shadow-primary/20"
+                                      className="bg-primary text-primary-foreground px-6 sm:px-8 py-5 sm:py-6 rounded-full font-bold shadow-lg shadow-primary/20"
                                     >
                                       Clear all filters
                                     </Button>
                                 </div>
                             ) : (
                                 <>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
                                         {volunteers.map((volunteer) => (
                                             <div key={volunteer._id} className="transition-transform duration-500 hover:scale-[1.03] hover:-translate-y-2">
                                                 <VolunteerCard
@@ -106,16 +107,18 @@ export default function PublicVolunteersPage() {
                                         ))}
                                     </div>
 
-                                    <div className="mt-28 flex flex-col items-center gap-10">
+                                    <div className="mt-16 sm:mt-20 md:mt-28 flex flex-col items-center gap-6 sm:gap-8 md:gap-10 px-4">
                                         <div className="h-1.5 w-24 bg-primary/10 rounded-full" />
-                                        <div className="text-center space-y-6">
-                                          <h3 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Expand your impact</h3>
-                                          <p className="text-slate-500 max-w-md mx-auto font-medium">Join our growing community and connect with nonprofits that value your unique skills.</p>
+                                        <div className="text-center space-y-4 sm:space-y-6">
+                                          <h3 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Expand your impact</h3>
+                                          <p className="text-muted-foreground max-w-md mx-auto font-medium text-sm sm:text-base">Join our growing community and connect with nonprofits that value your unique skills.</p>
                                           <Button
-                                              onClick={() => setIsSignupModalOpen(true)}
-                                              className="bg-primary hover:bg-primary/95 text-white px-12 h-16 rounded-full text-lg font-bold shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+                                              asChild
+                                              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-11 rounded-full text-sm sm:text-base font-semibold shadow-md shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                                           >
-                                              Sign Up to Explore More
+                                              <Link href="/signup?role=organisation">
+                                                  Sign Up to Explore More
+                                              </Link>
                                           </Button>
                                         </div>
                                     </div>

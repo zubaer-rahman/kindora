@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
+import { allowRoles, requireVolunteer } from '../middleware/role-guard.js';
 import {
   getVolunteerApplications,
   getApplicationStatus,
@@ -37,7 +38,7 @@ router.get('/me/approved', getCurrentUserApprovedApplications);
 router.get('/me/recent', getCurrentUserRecentApplications);
 router.get('/me', getCurrentUserApplications);
 
-router.post('/apply', applyToOpportunity);
-router.delete('/:opportunityId', revokeApplication);
+router.post('/apply', requireVolunteer, applyToOpportunity);
+router.delete('/:opportunityId', requireVolunteer, revokeApplication);
 
 export default router;

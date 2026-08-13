@@ -1,13 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
 
 import Link from "next/link";
 import {
   FaLinkedin,
-  FaFacebook,
   FaInstagram,
-  FaTwitter,
-  FaYoutube,
 } from "react-icons/fa";
 import KindoraLogo from "@/components/common/KindoraLogo";
 
@@ -21,46 +17,26 @@ export default function NewFooter({
   paddingClassName = "px-4 sm:px-6 lg:px-8",
 }: NewFooterProps) {
   const footerLinks = {
-    menu: [
+    platform: [
       { label: "About", href: "/about" },
-      { label: "Services", href: "#" },
-      { label: "Donations", href: "#" },
-      { label: "Testimonials", href: "#" },
       { label: "Volunteers", href: "/find-volunteer" },
     ],
     resources: [
-      { label: "Company", href: "#" },
-      { label: "Annual Reports", href: "#" },
       { label: "Volunteers", href: "/find-volunteer" },
       { label: "FAQs", href: "/faq" },
     ],
-    partners: [
-      { label: "Current Campaigns", href: "#" },
-      { label: "Donate", href: "#" },
-      { label: "Become A Partner", href: "#" },
-      { label: "Blog", href: "#" },
-    ],
-    company: [
-      { label: "About Kindora", href: "/about" },
-      { label: "Impact Stories", href: "#" },
-      { label: "Our Teams", href: "#" },
-    ],
+    company: [{ label: "About Kindora", href: "/about" }],
     contact_us: [
       { label: "info@kindora.org", href: "mailto:info@kindora.org" },
       { label: "(123) 456-7890", href: "tel:+11234567890" },
     ],
   };
 
-  const [description, setDescription] = useState("");
-
-  useEffect(() => {
-    setDescription(
-      "Kindora is a global platform dedicated to bringing meaningful positive change through social impact initiatives. We empower causes and volunteers to build sustainable social change through seamless collaboration."
-    );
-  }, []);
+  const description =
+    "Kindora is a global platform dedicated to bringing meaningful positive change through social impact initiatives. We empower causes and volunteers to build sustainable social change through seamless collaboration.";
 
   return (
-    <footer className="bg-secondary/50 border-t border-border mt-20">
+    <footer className="bg-secondary/50 border-t border-border">
       <div className={`py-16 ${paddingClassName} ${containerClassName}`}>
         <div className="flex flex-col lg:flex-row lg:justify-between gap-16 border-b border-border pb-16">
           {/* Logo & Description */}
@@ -69,22 +45,19 @@ export default function NewFooter({
             <p className="text-lg text-muted-foreground leading-relaxed">
               {description}
             </p>
-            
+
             {/* Social Icons */}
             <div className="flex items-center gap-4 mt-8">
               {[
-                { icon: FaTwitter, href: "#", label: "Twitter" },
                 { icon: FaInstagram, href: "https://www.instagram.com/kindora", label: "Instagram" },
-                { icon: FaYoutube, href: "#", label: "YouTube" },
                 { icon: FaLinkedin, href: "https://www.linkedin.com/company/kindora/", label: "LinkedIn" },
-                { icon: FaFacebook, href: "#", label: "Facebook" },
               ].map((social, idx) => (
                 <Link
                   key={idx}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-border text-muted-foreground hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-background border border-border text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300"
                   aria-label={social.label}
                 >
                   <social.icon className="h-5 w-5" />
@@ -96,10 +69,10 @@ export default function NewFooter({
           {/* Links Grid */}
           <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-8">
             {Object.entries({
-              Platform: footerLinks.menu,
+              Platform: footerLinks.platform,
               Resources: footerLinks.resources,
               Company: footerLinks.company,
-              Contact: footerLinks.contact_us
+              Contact: footerLinks.contact_us,
             }).map(([title, links]) => (
               <div key={title}>
                 <h3 className="text-sm font-bold uppercase tracking-wider text-foreground mb-6">
@@ -124,11 +97,6 @@ export default function NewFooter({
 
         {/* Bottom Bar */}
         <div className="pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-8 text-sm text-muted-foreground">
-            <Link href="#" className="hover:text-primary transition-colors">Terms of Service</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Cookies</Link>
-          </div>
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Kindora. All rights reserved.
           </p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -24,8 +24,14 @@ const EditOpportunityPage = () => {
   const totalSteps = 2;
 
   const steps = [
-    { title: "Opportunity Details", description: "General information and role description" },
-    { title: "Logistics & Contact", description: "Schedule, requirements and contact info" },
+    {
+      title: "Opportunity Details",
+      description: "General information and role description",
+    },
+    {
+      title: "Logistics & Contact",
+      description: "Schedule, requirements and contact info",
+    },
   ];
 
   const {
@@ -39,7 +45,9 @@ const EditOpportunityPage = () => {
   const form = useForm<OpportunityFormValues>({
     defaultValues: getDefaultValues(),
     mode: "onChange",
-    resolver: zodResolver(opportunityValidationSchema),
+    resolver: zodResolver(
+      opportunityValidationSchema,
+    ) as Resolver<OpportunityFormValues>,
   });
 
   // Update form values when opportunity data is loaded
@@ -52,13 +60,21 @@ const EditOpportunityPage = () => {
 
   const nextStep = async () => {
     if (currentStep === 1) {
-      const fieldsToValidate: any[] = ["title", "description", "category", "required_skills", "location"];
+      const fieldsToValidate: any[] = [
+        "title",
+        "description",
+        "category",
+        "required_skills",
+        "location",
+      ];
       const isValid = await form.trigger(fieldsToValidate);
       if (isValid) {
         window.scrollTo({ top: 0, behavior: "smooth" });
         setCurrentStep(2);
       } else {
-        toast.error("Please fill in all required fields correctly before proceeding.");
+        toast.error(
+          "Please fill in all required fields correctly before proceeding.",
+        );
       }
     }
   };
@@ -93,9 +109,9 @@ const EditOpportunityPage = () => {
   if (isLoadingOpportunity) {
     return (
       <ProtectedLayout>
-        <div className="bg-[#F5F7FA] min-h-screen flex items-center justify-center">
+        <div className=" min-h-screen flex items-center justify-center">
           <Loading size="large">
-            <p className="text-gray-600 mt-4">Loading opportunity...</p>
+            <p className="text-muted-foreground mt-4">Loading opportunity...</p>
           </Loading>
         </div>
       </ProtectedLayout>
@@ -105,7 +121,7 @@ const EditOpportunityPage = () => {
   if (!opportunity) {
     return (
       <ProtectedLayout>
-        <div className="bg-[#F5F7FA] min-h-screen flex items-center justify-center">
+        <div className=" min-h-screen flex items-center justify-center">
           <NotFound />
         </div>
       </ProtectedLayout>
@@ -114,13 +130,13 @@ const EditOpportunityPage = () => {
 
   return (
     <ProtectedLayout>
-      <div className="min-h-screen bg-gray-50/30">
-        <div className="max-w-[1240px] mx-auto pt-6 px-4">
+      <div className="min-h-screen ">
+        <div className="max-w-[1280px] mx-auto pt-6 px-4">
           <BackButton />
         </div>
 
-        <div className="max-w-[1240px] mx-auto px-2 sm:px-4 pb-12">
-          <Card className="p-4 sm:p-8 border-none shadow-sm bg-white">
+        <div className="max-w-[1280px] mx-auto px-2 sm:px-4 pb-12">
+          <Card className="p-4 sm:p-8 border-none shadow-sm bg-card">
             <StepIndicator
               currentStep={currentStep}
               totalSteps={totalSteps}

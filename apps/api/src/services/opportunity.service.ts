@@ -5,6 +5,7 @@ import User from '../db/models/user';
 import VolunteerApplication from '../db/models/volunteer-application';
 import OrganisationRecruitment from '../db/models/organisation-recruitment';
 import OpportunityMentor from '../db/models/opportunity-mentor';
+import FavoriteOpportunity from '../db/models/favorite-opportunity';
 import { AppError } from '../lib/errors.js';
 import { CreateOpportunityInput, ListOpportunitiesQuery } from '../validators/opportunity.validator.js';
 import { notificationService } from './notification-sender.service.js';
@@ -15,6 +16,7 @@ const UserModel = User as any;
 const AppModel = VolunteerApplication as any;
 const RecModel = OrganisationRecruitment as any;
 const MentorModel = OpportunityMentor as any;
+const FavOppModel = FavoriteOpportunity as any;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -163,6 +165,22 @@ export async function createOpportunity(userId: string, body: CreateOpportunityI
 
 export async function getAllOpportunities(userId: string | undefined, input: ListOpportunitiesQuery) {
   const query = buildListQuery(input);
+
+  if (input.saved && userId) {
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return { opportunities: [], total: 0, totalPages: 0, currentPage: input.page, hasNextPage: false, hasPrevPage: false };
+    }
+    const favorites = await FavOppModel.find({ user: user._id })
+      .select('opportunity')
+      .lean()
+      .exec();
+    const favoriteIds = favorites.map((fav: any) => fav.opportunity);
+    if (favoriteIds.length === 0) {
+      return { opportunities: [], total: 0, totalPages: 0, currentPage: input.page, hasNextPage: false, hasPrevPage: false };
+    }
+    query._id = { $in: favoriteIds };
+  }
 
   if (input.sortBy === 'best_matches' && userId) {
     const user = await UserModel.findById(userId).populate('volunteer_profile');

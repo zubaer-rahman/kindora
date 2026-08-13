@@ -15,6 +15,7 @@ import {
 } from "@/lib/auth-api";
 import toast from "react-hot-toast";
 import { OrgSignupStep } from "./OrgSignupStep";
+import { SignupActionBar } from "./SignupActionBar";
 import { Loader2 } from "lucide-react";
 import { UserRole } from "@/server/db/interfaces/user";
 
@@ -125,7 +126,7 @@ export default function OrganizationSignup() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8 pb-32">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 pb-32">
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <OrgSignupStep
@@ -136,26 +137,9 @@ export default function OrganizationSignup() {
             setTermsError={setTermsError}
           />
 
-          <div className="fixed bottom-0 left-0 right-0 bg-gray-50 py-4 px-6 border-t border-gray-200">
-            <div className="container mx-auto px-4">
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  disabled={isSignupLoading}
-                  className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
-                >
-                  {isSignupLoading ? (
-                    <div className="flex items-center">
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      Creating account...
-                    </div>
-                  ) : (
-                    "Create Account"
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
+          <SignupActionBar isLoading={isSignupLoading}>
+            Create Account
+          </SignupActionBar>
         </form>
       </div>
     </div>

@@ -101,7 +101,7 @@ export function ApplicantsCard({
 
   const recruitMutation = useMutation({
     mutationFn: async () => {
-      const res = await axiosAuth.post('/api/v1/recruitment', {
+      const res = await axiosAuth.post('/api/v1/recruitments', {
         applicationId: applicant.applicationId,
       });
       return res.data.data;
@@ -165,7 +165,7 @@ export function ApplicantsCard({
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="bg-white rounded-lg p-4 sm:p-6 border space-y-4 cursor-pointer hover:shadow-md transition-shadow relative">
+      <div className="bg-card rounded-lg p-4 sm:p-6 border border-border space-y-4 cursor-pointer hover:shadow-md transition-shadow relative">
         {/* Dropdown Menu */}
         {showMarkAsMentor && canMarkAsMentor && (
           <ApplicantActionsDropdown
@@ -199,7 +199,7 @@ export function ApplicantsCard({
                 )}
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <MapPin className="w-4 h-4 flex-shrink-0" />
                   <span className="truncate">{applicant.location}</span>
@@ -207,7 +207,7 @@ export function ApplicantsCard({
                 {((dynamicCompletedCount?.count !== undefined && dynamicCompletedCount.count > 0) || 
                   (dynamicCompletedCount?.count === undefined && applicant.completedProjects > 0)) && (
                   <div className="flex items-center gap-1">
-                    <HiClipboardDocumentList className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <HiClipboardDocumentList className="w-4 h-4 text-primary flex-shrink-0" />
                                       <span>
                     {dynamicCompletedCount?.count !== undefined 
                       ? `${dynamicCompletedCount.count} ${dynamicCompletedCount.count === 1 ? 'opportunity' : 'opportunities'} completed`
@@ -222,14 +222,14 @@ export function ApplicantsCard({
                 {applicant.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="text-xs bg-gray-100 px-2 py-1 rounded"
+                    className="text-xs bg-muted px-2 py-1 rounded text-muted-foreground"
                   >
                     {skill}
                   </span>
                 ))}
               </div>
 
-              <p className="text-sm text-gray-600 mt-3 line-clamp-2">
+              <p className="text-sm text-muted-foreground/80 mt-3 line-clamp-2">
                 {applicant.bio}
               </p>
             </div>
@@ -243,8 +243,8 @@ export function ApplicantsCard({
               size="lg"
               className={`rounded-[6px] px-4 sm:px-6 font-normal w-full sm:w-auto ${
                 isRecruited
-                  ? "bg-green-50 text-green-600 hover:bg-green-100"
-                  : "bg-gray-100 hover:bg-gray-200"
+                  ? "bg-green-500/10 text-green-600 hover:bg-green-500/20"
+                  : "bg-muted hover:bg-accent text-foreground"
               }`}
               onClick={handleRecruit}
               disabled={recruitMutation.isPending || isRecruited}
@@ -267,7 +267,7 @@ export function ApplicantsCard({
 
           <Button
             size="lg"
-            className="bg-[#246BFD] hover:bg-[#246BFD]/90 text-white px-4 sm:px-6 rounded-[6px] w-full sm:w-auto disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 sm:px-6 rounded-[6px] w-full sm:w-auto disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
             onClick={onMessageClick}
             disabled={isCurrentUser}
           >

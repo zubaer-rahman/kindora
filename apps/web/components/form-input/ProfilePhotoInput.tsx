@@ -81,7 +81,7 @@ export function ProfilePhotoInput<Ev extends Record<string, any>>({
     <div
       onClick={() => fileInputRef.current?.click()}
       className={cn(
-        "flex items-center justify-between w-full p-2 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors group",
+        "flex items-center justify-between w-full p-2 border border-border rounded-lg cursor-pointer hover:bg-muted transition-colors group",
         uploadMutation.isPending && "opacity-60 cursor-not-allowed pointer-events-none",
         customClassName
       )}
@@ -94,10 +94,10 @@ export function ProfilePhotoInput<Ev extends Record<string, any>>({
         className="hidden"
       />
 
-      <div className="flex items-center gap-3">
-        <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border border-gray-200">
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted flex items-center justify-center border border-border flex-shrink-0">
           {uploadMutation.isPending ? (
-            <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+            <Loader2 className="w-5 h-5 text-primary animate-spin" />
           ) : imageSrc ? (
             <Image
               src={imageSrc}
@@ -106,16 +106,16 @@ export function ProfilePhotoInput<Ev extends Record<string, any>>({
               className="object-cover"
             />
           ) : (
-            <User className="w-5 h-5 text-gray-400" />
+            <User className="w-5 h-5 text-muted-foreground" />
           )}
         </div>
-        <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-700">Profile Photo</span>
-          <span className="text-xs text-gray-500">Click to change</span>
+        <div className="flex flex-col min-w-0">
+          <span className="text-sm font-medium text-foreground truncate">Profile Photo</span>
+          <span className="text-xs text-muted-foreground">Click to change</span>
         </div>
       </div>
 
-      <div className="text-gray-400 group-hover:text-blue-500 transition-colors">
+      <div className="text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0">
         <Camera className="w-5 h-5" />
       </div>
     </div>

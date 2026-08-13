@@ -11,6 +11,7 @@ interface FilterState {
     startDate: string;
     endDate: string;
   } | null;
+  saved: boolean;
 }
 
 interface SearchContextType {
@@ -20,6 +21,7 @@ interface SearchContextType {
   setCommitmentType: (type: "all" | "workbased" | "eventbased") => void;
   setLocation: (location: string) => void;
   setAvailability: (availability: { startDate: string; endDate: string } | null) => void;
+  setSaved: (saved: boolean) => void;
   clearAllFilters: () => void;
   // Legacy support
   searchQuery: string;
@@ -31,6 +33,7 @@ const defaultFilters: FilterState = {
   commitmentType: "all",
   location: "",
   availability: null,
+  saved: false,
 };
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -73,6 +76,13 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const setSaved = useCallback((saved: boolean) => {
+    setFilters(prev => {
+      if (prev.saved === saved) return prev;
+      return { ...prev, saved };
+    });
+  }, []);
+
   const clearAllFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
@@ -86,6 +96,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
       setCommitmentType,
       setLocation,
       setAvailability,
+      setSaved,
       clearAllFilters,
       // Legacy support
       searchQuery: filters.searchQuery,

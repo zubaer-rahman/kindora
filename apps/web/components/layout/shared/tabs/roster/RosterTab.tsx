@@ -53,7 +53,7 @@ function StatCard({
   accent: string;
 }) {
   return (
-    <div className="bg-white border border-[#e5e7eb] rounded-xl px-4 py-3 flex items-center gap-3">
+    <div className="bg-card border border-border rounded-xl px-4 py-3 flex items-center gap-3">
       <div
         className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
         style={{ background: accent + "1A" }}
@@ -61,8 +61,8 @@ function StatCard({
         <span style={{ color: accent }}>{icon}</span>
       </div>
       <div>
-        <p className="text-xl font-bold text-gray-900 leading-none">{value}</p>
-        <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+        <p className="text-xl font-bold text-foreground leading-none">{value}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
       </div>
     </div>
   );
@@ -174,20 +174,18 @@ export function RosterTab({
 
   return (
     <div className="space-y-5">
-      <div className="w-full border-b border-[#F1F1F1]" />
-
       {/* Top bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-gray-900">Roster</h2>
+        <h2 className="text-base font-semibold text-foreground">Roster</h2>
 
         {/* View toggle */}
-        <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+        <div className="flex items-center bg-muted rounded-lg p-0.5">
           <button
             onClick={() => setView("list")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
               view === "list"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <List className="w-3.5 h-3.5" />
@@ -197,8 +195,8 @@ export function RosterTab({
             onClick={() => setView("calendar")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
               view === "calendar"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Calendar className="w-3.5 h-3.5" />
@@ -242,10 +240,10 @@ export function RosterTab({
           {view === "list" && (
             <div className="space-y-4">
               {shifts.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-[#e5e7eb] rounded-xl">
-                  <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">No shifts created yet.</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                <div className="text-center py-12 border border-dashed border-border rounded-xl">
+                  <AlertCircle className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">No shifts created yet.</p>
+                  <p className="text-xs text-muted-foreground/80 mt-1">
                     Click &quot;Add new shift&quot; below to get started.
                   </p>
                 </div>
@@ -267,7 +265,7 @@ export function RosterTab({
 
               <button
                 onClick={() => openCreateShift()}
-                className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-[#e5e7eb] rounded-xl text-sm text-gray-500 hover:border-[#2563EB] hover:text-[#2563EB] hover:bg-blue-50 transition-colors font-medium"
+                className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-border rounded-xl text-sm text-muted-foreground hover:border-primary hover:text-primary hover:bg-accent transition-colors font-medium"
               >
                 <Plus className="w-4 h-4" />
                 Add new shift
@@ -285,7 +283,7 @@ export function RosterTab({
                   </Button>
                   <Button
                     onClick={onSendReminders}
-                    className="flex items-center gap-2 sm:flex-1 bg-[#2563EB] hover:bg-[#1d4fd8] text-white"
+                    className="flex items-center gap-2 sm:flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                   >
                     <Bell className="w-4 h-4" />
                     Send Reminders
@@ -316,9 +314,9 @@ export function RosterTab({
           {view === "list" && (
             <div className="space-y-4">
               {shifts.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-[#e5e7eb] rounded-xl">
-                  <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">
+                <div className="text-center py-12 border border-dashed border-border rounded-xl">
+                  <AlertCircle className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">
                     No shifts available yet. Check back soon.
                   </p>
                 </div>

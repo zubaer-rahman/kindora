@@ -2,6 +2,7 @@
 
 import { PostSidebar } from "../../shared/PostSidebar";
 import { PostContent } from "./PostContent";
+import { OpportunityActions } from "./OpportunityActions";
 
 type Opportunity = {
   _id: string;
@@ -58,8 +59,9 @@ export function OpportunityDetail({ opportunity }: OpportunityDetailProps) {
         </div>
 
         {/* Sidebar */}
-        <div className="hidden lg:block w-[1px] bg-gray-200"></div>
-        <div className="lg:w-[350px] lg:flex-shrink-0">
+        <div className="hidden lg:block w-[1px] bg-border"></div>
+        <div className="lg:w-[350px] lg:flex-shrink-0 flex flex-col gap-6">
+          <OpportunityActions opportunity={opportunity} />
           <PostSidebar
             organization_profile={
               opportunity.organization_profile as unknown as import("@/server/db/interfaces/organization-profile").IOrgnizationPofile

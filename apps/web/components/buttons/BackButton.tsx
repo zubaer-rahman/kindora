@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 import { useSearchParams } from "next/navigation";
 
-const BackButton = ({ className, fallbackUrl }: { className?: string; fallbackUrl?: string }) => {
+const BackButton = ({ className, fallbackUrl, buttonText = "Back" }: { className?: string; fallbackUrl?: string; buttonText?: string }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [canGoBack, setCanGoBack] = React.useState(false);
@@ -42,12 +42,12 @@ const BackButton = ({ className, fallbackUrl }: { className?: string; fallbackUr
       variant="ghost"
       size="sm"
       className={cn(
-        "group flex my-4 items-center gap-2 text-[#475467] cursor-pointer hover:text-[#101828] hover:bg-gray-50 transition-all duration-200 h-9 px-3 rounded-lg",
+        "group flex my-4 items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground hover:bg-muted transition-all duration-200 h-9 px-3 rounded-lg",
         className
       )}
     >
       <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1" />
-      <span className="text-sm font-medium">Back</span>
+      <span className="text-sm font-medium">{buttonText}</span>
     </Button>
   );
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
@@ -8,9 +9,13 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
 import { MapPin, User, Heart, FileText } from "lucide-react";
-import Loading from "@/app/loading";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function VolunteerDashboardSidebar() {
+interface VolunteerDashboardSidebarProps {
+    className?: string;
+}
+
+export default function VolunteerDashboardSidebar({ className }: VolunteerDashboardSidebarProps) {
     const { data: session } = useSession();
     const axiosAuth = useAxiosAuth();
     const { data: volunteer, isLoading: isLoadingVolunteer } = useQuery({
@@ -32,10 +37,55 @@ export default function VolunteerDashboardSidebar() {
 
     if (isLoadingVolunteer || isLoadingApplications) {
         return (
-            <div className="w-full lg:w-[350px] space-y-6">
-                <div className="h-[200px] bg-gray-100 animate-pulse rounded-2xl" />
-                <div className="h-[150px] bg-gray-100 animate-pulse rounded-2xl" />
-                <div className="h-[250px] bg-gray-100 animate-pulse rounded-2xl" />
+            <div className={cn("bg-background rounded-[24px] border border-border p-6", className)}>
+                {/* Profile */}
+                <div className="flex items-center gap-4 mb-6">
+                    <Skeleton className="w-16 h-16 rounded-2xl" />
+                    <div className="space-y-2 flex-1">
+                        <Skeleton className="h-5 w-32" />
+                        <Skeleton className="h-3.5 w-24" />
+                        <Skeleton className="h-3.5 w-20" />
+                    </div>
+                </div>
+
+                {/* Bio */}
+                <div className="space-y-2 mb-6">
+                    <Skeleton className="h-3.5 w-full" />
+                    <Skeleton className="h-3.5 w-full" />
+                    <Skeleton className="h-3.5 w-2/3" />
+                </div>
+
+                {/* Preferences */}
+                <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Skeleton className="h-5 w-5" />
+                        <Skeleton className="h-5 w-28" />
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        <Skeleton className="h-6 w-20 rounded-full" />
+                        <Skeleton className="h-6 w-24 rounded-full" />
+                        <Skeleton className="h-6 w-16 rounded-full" />
+                    </div>
+                </div>
+
+                {/* Proposals */}
+                <div>
+                    <div className="flex items-center gap-2 mb-4">
+                        <Skeleton className="h-5 w-5" />
+                        <Skeleton className="h-5 w-28" />
+                    </div>
+                    <div className="space-y-4">
+                        {Array.from({ length: 3 }).map((_, index) => (
+                            <div key={index}>
+                                <Skeleton className="h-4 w-full mb-2" />
+                                <div className="flex items-center justify-between">
+                                    <Skeleton className="h-4 w-16 rounded-full" />
+                                    <Skeleton className="h-3 w-14" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -55,40 +105,36 @@ export default function VolunteerDashboardSidebar() {
     };
 
     return (
-        <div className="w-full lg:w-[350px] flex flex-col gap-6">
+        <div className={cn("bg-background rounded-[24px] border border-border p-6 flex flex-col gap-6", className)}>
             {/* Volunteer Profile Section */}
-            <div className="bg-[#F5FAFF] rounded-[24px] p-6 border border-[#E9EAEB]">
-                <div className="flex items-center gap-4 mb-6">
-                    <UserAvatar user={volunteer} size={64} className="w-16 h-16 rounded-2xl" />
-                    <div>
-                        <h3 className="text-lg font-semibold text-[#0A0D12]">{volunteer.name}</h3>
-                        <div className="flex items-center gap-1 text-sm text-[#6A7282] mt-1">
-                            <User className="w-3.5 h-3.5" />
-                            <span>{getStudentStatusDisplay()}</span>
+            <div className="flex items-center gap-4">
+                <UserAvatar user={volunteer} size={64} className="w-16 h-16 rounded-2xl" />
+                <div>
+                    <h3 className="text-lg font-semibold text-foreground">{volunteer.name}</h3>
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                        <User className="w-3.5 h-3.5 text-primary" />
+                        <span>{getStudentStatusDisplay()}</span>
+                    </div>
+                    {(volunteer.area || volunteer.state) && (
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground mt-0.5">
+                            <MapPin className="w-3.5 h-3.5" />
+                            <span>{volunteer.area}{volunteer.area && volunteer.state ? ", " : ""}{volunteer.state}</span>
                         </div>
-                        {(volunteer.area || volunteer.state) && (
-                            <div className="flex items-center gap-1 text-sm text-[#6A7282] mt-0.5">
-                                <MapPin className="w-3.5 h-3.5" />
-                                <span>{volunteer.area}{volunteer.area && volunteer.state ? ", " : ""}{volunteer.state}</span>
-                            </div>
-                        )}
-                    </div>
+                    )}
                 </div>
-
-                {volunteer.bio && (
-                    <div className="mt-4">
-                        <p className="text-sm text-[#414651] line-clamp-3 leading-relaxed">
-                            {volunteer.bio}
-                        </p>
-                    </div>
-                )}
             </div>
 
+            {volunteer.bio && (
+                <p className="text-sm text-foreground line-clamp-3 leading-relaxed">
+                    {volunteer.bio}
+                </p>
+            )}
+
             {/* Preferences Section */}
-            <div className="bg-white rounded-[24px] p-6 border border-[#E9EAEB]">
+            <div>
                 <div className="flex items-center gap-2 mb-4">
-                    <Heart className="w-5 h-5 text-[#1570EF]" />
-                    <h3 className="text-base font-semibold text-[#0A0D12]">Preferences</h3>
+                    <Heart className="w-5 h-5 text-primary" />
+                    <h3 className="text-base font-semibold text-foreground">Preferences</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {volunteer.interested_categories && volunteer.interested_categories.length > 0 ? (
@@ -96,48 +142,48 @@ export default function VolunteerDashboardSidebar() {
                             <Badge
                                 key={index}
                                 variant="secondary"
-                                className="bg-[#F5FAFF] text-[#1570EF] border-none px-3 py-1 text-xs font-medium rounded-full"
+                                className="bg-accent text-primary border-none px-3 py-1 text-xs font-medium rounded-full"
                             >
                                 {category}
                             </Badge>
                         ))
                     ) : (
-                        <p className="text-sm text-[#6A7282]">No preferences set</p>
+                        <p className="text-sm text-muted-foreground">No preferences set</p>
                     )}
                 </div>
             </div>
 
             {/* Proposals Section */}
-            <div className="bg-white rounded-[24px] p-6 border border-[#E9EAEB] flex-1">
+            <div>
                 <div className="flex items-center gap-2 mb-4">
-                    <FileText className="w-5 h-5 text-[#1570EF]" />
-                    <h3 className="text-base font-semibold text-[#0A0D12]">My Proposals</h3>
+                    <FileText className="w-5 h-5 text-primary" />
+                    <h3 className="text-base font-semibold text-foreground">My Proposals</h3>
                 </div>
                 <ScrollArea className="h-[300px] pr-4">
                     <div className="space-y-4">
                         {applicationsData?.applications && applicationsData.applications.length > 0 ? (
                             applicationsData.applications.map((app: any) => (
                                 <div key={app._id} className="group cursor-pointer">
-                                    <h4 className="text-sm font-medium text-[#0A0D12] group-hover:text-[#1570EF] transition-colors line-clamp-1">
+                                    <h4 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
                                         {app.opportunity?.title || "Untitled Opportunity"}
                                     </h4>
                                     <div className="flex items-center justify-between mt-1">
-                                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${app.status === 'approved' ? 'bg-green-50 text-green-700' :
-                                                app.status === 'rejected' ? 'bg-red-50 text-red-700' :
-                                                    'bg-yellow-50 text-yellow-700'
+                                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${app.status === 'approved' ? 'bg-success/10 text-success' :
+                                                app.status === 'rejected' ? 'bg-destructive/10 text-destructive' :
+                                                    'bg-amber-100 text-amber-700'
                                             }`}>
                                             {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
                                         </span>
-                                        <span className="text-[10px] text-[#6A7282]">
+                                        <span className="text-[10px] text-muted-foreground">
                                             {formatDistanceToNow(new Date(app.createdAt), { addSuffix: true })}
                                         </span>
                                     </div>
-                                    <div className="mt-3 border-b border-[#E9EAEB] group-last:border-none" />
+                                    <div className="mt-3 border-b border-border group-last:border-none" />
                                 </div>
                             ))
                         ) : (
                             <div className="text-center py-8">
-                                <p className="text-sm text-[#6A7282]">No proposals yet</p>
+                                <p className="text-sm text-muted-foreground">No proposals yet</p>
                             </div>
                         )}
                     </div>

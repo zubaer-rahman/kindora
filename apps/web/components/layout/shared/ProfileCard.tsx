@@ -11,6 +11,7 @@ interface ProfileCardProps {
   onCancelClick: () => void;
   children: React.ReactNode;
   className?: string;
+  noBg?: boolean;
 }
 
 export function ProfileCard({
@@ -20,12 +21,13 @@ export function ProfileCard({
   onCancelClick,
   children,
   className = "",
+  noBg = false,
 }: Partial<ProfileCardProps>) {
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
+    <div className={`${noBg ? "" : "bg-card rounded-lg shadow-sm border border-border"} p-4 sm:p-6 ${className}`}>
       {(title || editMode) && (
-        <div className="flex items-center justify-between mb-6">
-          {title && <h2 className="text-lg font-semibold text-gray-900">{title}</h2>}
+        <div className="flex items-center justify-between gap-3 mb-6">
+          {title && <h2 className="text-base sm:text-lg font-semibold text-foreground">{title}</h2>}
           {editMode === "inactive" && onEditClick && (
             <Button
               variant="ghost"

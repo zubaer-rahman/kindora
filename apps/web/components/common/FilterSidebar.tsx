@@ -172,12 +172,12 @@ export default function FilterSidebar({
 
   if (variant === "search") {
     return (
-      <div className={cn("w-full min-h-[calc(100vh-200px)] bg-[#F7F7F7] rounded-2xl p-4", className)}>
+      <div className={cn("w-full h-full bg-muted rounded-2xl p-4", className)}>
         <Accordion type="multiple" defaultValue={["categories", "experience"]} className="w-full border-none">
           {/* Categories Section */}
           <AccordionItem value="categories" className="border-none">
             <AccordionTrigger className="hover:no-underline py-2">
-              <span className="text-base font-semibold text-[#101828]">Category</span>
+              <span className="text-base font-semibold text-foreground">Category</span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4">
               <Select
@@ -187,7 +187,7 @@ export default function FilterSidebar({
                   }
                 }}
               >
-                <SelectTrigger className="w-full border-[#D0D5DD] rounded-lg h-11">
+                <SelectTrigger className="w-full border-input rounded-lg h-11">
                   <SelectValue placeholder="Select Categories" />
                 </SelectTrigger>
                 <SelectContent>
@@ -206,12 +206,12 @@ export default function FilterSidebar({
                     return (
                       <div
                         key={catValue}
-                        className="flex items-center gap-1 px-2 py-1 bg-[#F2F4F7] rounded-md text-xs font-medium text-[#344054]"
+                        className="flex items-center gap-1 px-2 py-1 bg-muted rounded-md text-xs font-medium text-foreground"
                       >
                         {label}
                         <button
                           onClick={() => handleCategoryChange(catValue)}
-                          className="hover:text-[#101828]"
+                          className="hover:text-foreground"
                         >
                           <ChevronRight className="h-3 w-3 rotate-45" />
                         </button>
@@ -223,12 +223,12 @@ export default function FilterSidebar({
             </AccordionContent>
           </AccordionItem>
 
-          <Separator className="bg-[#E9EAEB] my-2" />
+          <Separator className="bg-border my-2" />
 
           {/* Experience Level (Commitment Type) Section */}
           <AccordionItem value="experience" className="border-none">
             <AccordionTrigger className="hover:no-underline py-2">
-              <span className="text-base font-semibold text-[#101828]">Experience level</span>
+              <span className="text-base font-semibold text-foreground">Experience level</span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4 space-y-3">
               <div className="flex items-center space-x-3">
@@ -236,11 +236,11 @@ export default function FilterSidebar({
                   id="search-work-based"
                   checked={filters.commitmentType === "workbased"}
                   onCheckedChange={handleWorkBasedChange}
-                  className="h-5 w-5 border-[#D0D5DD] data-[state=checked]:bg-[#1570EF] data-[state=checked]:border-[#1570EF] rounded"
+                  className="h-5 w-5 border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded"
                 />
                 <Label
                   htmlFor="search-work-based"
-                  className="text-sm text-[#344054] font-normal cursor-pointer"
+                  className="text-sm text-foreground font-normal cursor-pointer"
                 >
                   Work based
                 </Label>
@@ -250,11 +250,11 @@ export default function FilterSidebar({
                   id="search-event-based"
                   checked={filters.commitmentType === "eventbased"}
                   onCheckedChange={handleEventBasedChange}
-                  className="h-5 w-5 border-[#D0D5DD] data-[state=checked]:bg-[#1570EF] data-[state=checked]:border-[#1570EF] rounded"
+                  className="h-5 w-5 border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded"
                 />
                 <Label
                   htmlFor="search-event-based"
-                  className="text-sm text-[#344054] font-normal cursor-pointer"
+                  className="text-sm text-foreground font-normal cursor-pointer"
                 >
                   Event based
                 </Label>
@@ -271,12 +271,12 @@ export default function FilterSidebar({
     const activeLocations = volunteerFilters.locations;
 
     return (
-      <div className={cn("w-full min-h-[calc(100vh-200px)] bg-[#F7F7F7] rounded-lg p-4", className)}>
+      <div className={cn("w-full min-h-[calc(100vh-180px)] bg-muted rounded-lg p-4", className)}>
         <Accordion type="multiple" defaultValue={["location", "categories"]} className="w-full border-none">
           {/* Location Section */}
           <AccordionItem value="location" className="border-none">
             <AccordionTrigger className="hover:no-underline py-2">
-              <span className="text-base font-semibold text-[#101828]">Location</span>
+              <span className="text-base font-semibold text-foreground">Location</span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4">
               <Select
@@ -286,7 +286,7 @@ export default function FilterSidebar({
                   }
                 }}
               >
-                <SelectTrigger className="w-full bg-white border-[#D0D5DD] rounded-lg h-11">
+                <SelectTrigger className="w-full bg-background border-input rounded-lg h-11">
                   <SelectValue placeholder="Select Location" />
                 </SelectTrigger>
                 <SelectContent>
@@ -305,12 +305,12 @@ export default function FilterSidebar({
                     return (
                       <div
                         key={locValue}
-                        className="flex items-center gap-1 px-2 py-1 bg-[#F2F4F7] rounded-md text-xs font-medium text-[#344054]"
+                        className="flex items-center gap-1 px-2 py-1 bg-muted rounded-md text-xs font-medium text-foreground"
                       >
                         {label}
                         <button
                           onClick={() => handleLocationChange(locValue)}
-                          className="hover:text-[#101828]"
+                          className="hover:text-foreground"
                         >
                           <ChevronRight className="h-3 w-3 rotate-45" />
                         </button>
@@ -322,12 +322,12 @@ export default function FilterSidebar({
             </AccordionContent>
           </AccordionItem>
 
-          <Separator className="bg-[#E9EAEB] my-2" />
+          <Separator className="bg-border my-2" />
 
           {/* Categories Section */}
           <AccordionItem value="categories" className="border-none">
             <AccordionTrigger className="hover:no-underline py-2">
-              <span className="text-base font-semibold text-[#101828]">Category</span>
+              <span className="text-base font-semibold text-foreground">Category</span>
             </AccordionTrigger>
             <AccordionContent className="pt-2 pb-4">
               <Select
@@ -337,7 +337,7 @@ export default function FilterSidebar({
                   }
                 }}
               >
-                <SelectTrigger className="w-full bg-white border-[#D0D5DD] rounded-lg h-11">
+                <SelectTrigger className="w-full bg-background border-input rounded-lg h-11">
                   <SelectValue placeholder="Select Categories" />
                 </SelectTrigger>
                 <SelectContent>
@@ -356,12 +356,12 @@ export default function FilterSidebar({
                     return (
                       <div
                         key={catValue}
-                        className="flex items-center gap-1 px-2 py-1 bg-[#F2F4F7] rounded-md text-xs font-medium text-[#344054]"
+                        className="flex items-center gap-1 px-2 py-1 bg-muted rounded-md text-xs font-medium text-foreground"
                       >
                         {label}
                         <button
                           onClick={() => handleCategoryChange(catValue)}
-                          className="hover:text-[#101828]"
+                          className="hover:text-foreground"
                         >
                           <ChevronRight className="h-3 w-3 rotate-45" />
                         </button>
@@ -380,28 +380,28 @@ export default function FilterSidebar({
   return (
 
     <div
-      className={cn("w-full sm:w-[320px] flex flex-col gap-[10px] p-[24px_25px_32px_20px] rounded-[24px] bg-[#F5FAFF]", className)}
+      className={cn("w-full sm:w-[320px] flex flex-col gap-[10px] p-[24px_25px_32px_20px] rounded-[24px] bg-accent", className)}
     >
-      <div className="w-full pb-4 border-b border-[#E9EAEB]">
-        <h3 className="font-semibold text-base text-[#414651]">Filter</h3>
+      <div className="w-full pb-4 border-b border-border">
+        <h3 className="font-semibold text-base text-foreground">Filter</h3>
       </div>
 
       <ScrollArea className="h-[calc(100vh-200px)] w-full flex-1">
         <div className="space-y-6 pt-4 w-full">
           {/* Commitment Type */}
           <div>
-            <h4 className="font-medium text-xs text-[#414651] mb-4">Commitment Type</h4>
+            <h4 className="font-medium text-xs text-foreground mb-4">Commitment Type</h4>
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="work-based"
                   checked={filters.commitmentType === "workbased"}
                   onCheckedChange={handleWorkBasedChange}
-                  className="border-[#A4A7AE] data-[state=checked]:bg-[#2563EB] data-[state=checked]:border-[#2563EB]"
+                  className="border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
                 <Label
                   htmlFor="work-based"
-                  className="text-xs text-[#414651] font-normal cursor-pointer"
+                  className="text-xs text-foreground font-normal cursor-pointer"
                 >
                   Work based
                 </Label>
@@ -411,11 +411,11 @@ export default function FilterSidebar({
                   id="event-based"
                   checked={filters.commitmentType === "eventbased"}
                   onCheckedChange={handleEventBasedChange}
-                  className="border-[#A4A7AE] data-[state=checked]:bg-[#2563EB] data-[state=checked]:border-[#2563EB]"
+                  className="border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
                 <Label
                   htmlFor="event-based"
-                  className="text-xs text-[#414651] font-normal cursor-pointer"
+                  className="text-xs text-foreground font-normal cursor-pointer"
                 >
                   Event based
                 </Label>
@@ -423,11 +423,11 @@ export default function FilterSidebar({
             </div>
           </div>
 
-          <Separator className="bg-[#E9EAEB]" />
+          <Separator className="bg-border" />
 
           {/* Categories */}
           <div className="w-full">
-            <h4 className="font-medium text-xs text-[#414651] mb-3">Categories</h4>
+            <h4 className="font-medium text-xs text-foreground mb-3">Categories</h4>
             <div className="flex flex-col gap-2">
               {CATEGORIES_OPTIONS.map((category) => {
                 const isSelected = filters.categories.includes(category.value);
@@ -441,11 +441,11 @@ export default function FilterSidebar({
                       id={category.value}
                       checked={isSelected}
                       onCheckedChange={() => handleCategoryChange(category.value)}
-                      className="border-[#A4A7AE] data-[state=checked]:bg-[#2563EB] data-[state=checked]:border-[#2563EB]"
+                      className="border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                     <Label
                       htmlFor={category.value}
-                      className="text-xs text-[#414651] font-normal cursor-pointer flex-1"
+                      className="text-xs text-foreground font-normal cursor-pointer flex-1"
                     >
                       {category.label}
                     </Label>

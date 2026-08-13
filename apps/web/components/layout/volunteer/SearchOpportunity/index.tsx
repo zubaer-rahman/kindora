@@ -26,9 +26,9 @@ import Link from "next/link";
 export default function SearchOpportunity() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { setSearchQuery, setLocation, filters } = useSearch();
+  const { setSearchQuery, setLocation, setSaved, filters } = useSearch();
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState<"best_matches" | "most_recent">("best_matches");
+  const [sortBy, setSortBy] = useState<"best_matches" | "most_recent">("most_recent");
 
 
   const searchParams = useSearchParams();
@@ -50,6 +50,7 @@ export default function SearchOpportunity() {
     filters.categories,
     filters.commitmentType,
     filters.location,
+    filters.saved,
     sortBy,
   ]);
 
@@ -68,6 +69,7 @@ export default function SearchOpportunity() {
           commitmentType: filters.commitmentType,
           location: filters.location || undefined,
           sortBy: sortBy === "most_recent" ? "recently_added" : "best_matches",
+          saved: filters.saved || undefined,
         }
       });
       return res.data.data;
@@ -99,10 +101,10 @@ export default function SearchOpportunity() {
 
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container max-w-[1280px] mx-auto px-4 py-6 md:py-8">
-        {/* Top Search Bar Row */}
-        <div className="flex items-center gap-4 mb-8">
+    <div className="h-screen flex flex-col bg-white">
+      {/* Fixed Search Bar */}
+      <div className="flex-shrink-0 px-4 py-6 md:py-8">
+        <div className="flex items-center gap-4">
           <div className="flex-1 max-w-2xl">
             <SearchBar
               onSearch={handleSearch}
@@ -114,32 +116,39 @@ export default function SearchOpportunity() {
             />
           </div>
         </div>
+      </div>
 
+      {/* Fixed Sidebar + Scrollable Cards */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Sidebar - fixed on desktop, hidden on mobile */}
+        <aside className="hidden lg:block w-[280px] flex-shrink-0 overflow-hidden p-4 pt-0">
+          <FilterSidebar variant="search" />
+        </aside>
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left Sidebar - Filter */}
-          <aside className="w-full lg:w-[280px] flex-shrink-0">
-            <FilterSidebar variant="search" />
-          </aside>
-
-
-          {/* Main Content Area */}
-          <main className="flex-1 min-w-0">
-            {/* Controls Row */}
+        {/* Main Content Area */}
+        <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          {/* Fixed Controls Row */}
+          <div className="flex-shrink-0 px-4 pb-4">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#E9EAEB]">
               <div className="flex items-center gap-6">
                 {/* Left side empty or for future use */}
               </div>
 
-
               <div className="flex items-center gap-4">
-                <Link
-                  href="/find-opportunity/saved"
-                  className="flex items-center gap-2 text-[#1570EF] font-medium hover:underline text-sm"
+                <button
+                  onClick={() => setSaved(!filters.saved)}
+                  className={cn(
+                    "flex items-center gap-2 text-sm font-medium transition-colors",
+                    filters.saved
+                      ? "text-[#1570EF]"
+                      : "text-[#667085] hover:text-[#1570EF]"
+                  )}
                 >
-                  <Heart className="h-4 w-4" />
+                  <Heart
+                    className={cn("h-4 w-4", filters.saved && "fill-[#1570EF]")}
+                  />
                   Saved jobs
-                </Link>
+                </button>
 
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-[#667085]">Sort by:</span>
@@ -159,49 +168,49 @@ export default function SearchOpportunity() {
 
               </div>
             </div>
+          </div>
 
-            {/* Opportunities List */}
-            <div className="divide-y divide-[#E9EAEB]">
-              {isLoading ? (
-                <div className="p-6 space-y-6">
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="h-[300px] bg-gray-50 rounded-lg animate-pulse"
+          {/* Scrollable Opportunity Cards */}
+          <div className="flex-1 overflow-y-auto px-4 pb-6">
+            {isLoading ? (
+              <div className="p-6 space-y-6">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="h-[300px] bg-gray-50 rounded-lg animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : visibleItems.length === 0 ? (
+              <div className="text-center py-20">
+                <p className="text-[#667085]">No opportunities found.</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-col">
+                  {visibleItems.map((item) => (
+                    <VolunteerOpportunityCard
+                      key={item.opportunity._id}
+                      opportunity={item.opportunity}
                     />
                   ))}
                 </div>
-              ) : visibleItems.length === 0 ? (
-                <div className="text-center py-20">
-                  <p className="text-[#667085]">No opportunities found.</p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex flex-col">
-                    {visibleItems.map((item) => (
-                      <VolunteerOpportunityCard
-                        key={item.opportunity._id}
-                        opportunity={item.opportunity}
-                      />
-                    ))}
-                  </div>
 
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <div className="p-6 border-t border-[#E9EAEB] flex justify-center">
-                      <PaginationWrapper
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                        maxVisiblePages={5}
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </main>
-        </div>
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="p-6 border-t border-[#E9EAEB] flex justify-center">
+                    <PaginationWrapper
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                      maxVisiblePages={5}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </main>
       </div>
     </div>
   );

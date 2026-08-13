@@ -42,10 +42,10 @@ export default function PopularSearchSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-white overflow-hidden">
+    <section className="py-16 md:py-24 bg-background overflow-hidden">
       <div className="container max-w-[1170px] mx-auto px-4 text-center">
         {/* Title */}
-        <h2 className="text-3xl md:text-[40px] font-semibold text-[#0A0D12] mb-12 md:mb-16 tracking-tight">
+        <h2 className="text-3xl md:text-[40px] font-semibold text-foreground mb-12 md:mb-16 tracking-tight">
           Popular Search
         </h2>
         
@@ -57,9 +57,9 @@ export default function PopularSearchSection() {
               <Button
                 key={index}
                 variant="outline"
-                className="h-[46px] md:h-12 border border-[#E9EAEB] px-5 md:px-7 flex bg-white rounded-full items-center gap-2.5 md:gap-3 text-[#414651] hover:border-primary/40 hover:bg-slate-50 hover:text-primary transition-all duration-300 group shadow-none"
+                className="h-[46px] md:h-12 border border-border px-5 md:px-7 flex bg-background rounded-full items-center gap-2.5 md:gap-3 text-muted-foreground hover:border-primary/40 hover:bg-muted hover:text-primary transition-all duration-300 group shadow-none"
               >
-                <Icon className="h-4 w-4 md:h-5 md:w-5 text-[#99A1AF] group-hover:text-primary transition-colors" />
+                <Icon className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                 <span className="text-[13px] font-medium whitespace-nowrap">
                   {category.label}
                 </span>

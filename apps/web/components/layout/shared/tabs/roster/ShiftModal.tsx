@@ -96,7 +96,7 @@ export function ShiftModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-base font-semibold text-gray-900">
+          <DialogTitle className="text-base font-semibold text-foreground">
             {isEdit ? "Edit Shift" : "Create New Shift"}
           </DialogTitle>
         </DialogHeader>
@@ -104,88 +104,88 @@ export function ShiftModal({
         <div className="space-y-4 pt-1">
           {/* Title */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Shift Title <span className="text-red-500">*</span>
+            <label className="block text-xs font-medium text-foreground mb-1">
+              Shift Title <span className="text-destructive">*</span>
             </label>
             <Input
               placeholder="e.g. Morning Orientation"
               value={form.title}
               onChange={(e) => set("title", e.target.value)}
-              className={errors.title ? "border-red-400" : ""}
+              className={errors.title ? "border-destructive" : ""}
             />
             {errors.title && (
-              <p className="text-xs text-red-500 mt-1">{errors.title}</p>
+              <p className="text-xs text-destructive mt-1">{errors.title}</p>
             )}
           </div>
 
           {/* Date */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Date <span className="text-red-500">*</span>
+            <label className="block text-xs font-medium text-foreground mb-1">
+              Date <span className="text-destructive">*</span>
             </label>
             <Input
               type="date"
               value={form.date}
               onChange={(e) => set("date", e.target.value)}
-              className={errors.date ? "border-red-400" : ""}
+              className={errors.date ? "border-destructive" : ""}
             />
             {errors.date && (
-              <p className="text-xs text-red-500 mt-1">{errors.date}</p>
+              <p className="text-xs text-destructive mt-1">{errors.date}</p>
             )}
           </div>
 
           {/* Times */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Start Time <span className="text-red-500">*</span>
+              <label className="block text-xs font-medium text-foreground mb-1">
+                Start Time <span className="text-destructive">*</span>
               </label>
               <Input
                 type="time"
                 value={form.startTime}
                 onChange={(e) => set("startTime", e.target.value)}
-                className={errors.startTime ? "border-red-400" : ""}
+                className={errors.startTime ? "border-destructive" : ""}
               />
               {errors.startTime && (
-                <p className="text-xs text-red-500 mt-1">{errors.startTime}</p>
+                <p className="text-xs text-destructive mt-1">{errors.startTime}</p>
               )}
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                End Time <span className="text-red-500">*</span>
+              <label className="block text-xs font-medium text-foreground mb-1">
+                End Time <span className="text-destructive">*</span>
               </label>
               <Input
                 type="time"
                 value={form.endTime}
                 onChange={(e) => set("endTime", e.target.value)}
-                className={errors.endTime ? "border-red-400" : ""}
+                className={errors.endTime ? "border-destructive" : ""}
               />
               {errors.endTime && (
-                <p className="text-xs text-red-500 mt-1">{errors.endTime}</p>
+                <p className="text-xs text-destructive mt-1">{errors.endTime}</p>
               )}
             </div>
           </div>
 
           {/* Role */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Role Label <span className="text-red-500">*</span>
+            <label className="block text-xs font-medium text-foreground mb-1">
+              Role Label <span className="text-destructive">*</span>
             </label>
             <Input
               placeholder="e.g. Front-end Dev"
               value={form.role}
               onChange={(e) => set("role", e.target.value)}
-              className={errors.role ? "border-red-400" : ""}
+              className={errors.role ? "border-destructive" : ""}
             />
             {errors.role && (
-              <p className="text-xs text-red-500 mt-1">{errors.role}</p>
+              <p className="text-xs text-destructive mt-1">{errors.role}</p>
             )}
           </div>
 
           {/* Max volunteers */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Max Volunteers <span className="text-red-500">*</span>
+            <label className="block text-xs font-medium text-foreground mb-1">
+              Max Volunteers <span className="text-destructive">*</span>
             </label>
             <Input
               type="number"

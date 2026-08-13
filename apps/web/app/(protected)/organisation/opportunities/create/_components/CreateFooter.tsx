@@ -52,7 +52,7 @@ export default function CreateFooter({
               e.stopPropagation();
               onNext();
             }}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 h-11 min-w-[120px] flex items-center gap-2"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-2 h-11 min-w-[120px] flex items-center gap-2"
           >
             Next
             <ChevronRight className="w-4 h-4" />
@@ -60,7 +60,7 @@ export default function CreateFooter({
         ) : (
           <Button
             key="submit-button"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 h-11 min-w-[160px]"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-2 h-11 min-w-[160px]"
             type="submit"
             disabled={isLoading}
           >

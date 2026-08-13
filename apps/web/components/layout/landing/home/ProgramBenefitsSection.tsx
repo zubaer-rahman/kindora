@@ -95,7 +95,7 @@ export default function ProgramBenefitsSection() {
     return (
       <Card
         key={index}
-        className="shadow-none h-full !rounded-2xl border-none bg-[#F5F5F5] flex-1 pt-0 pb-8"
+        className="shadow-none h-full !rounded-2xl border-none bg-muted flex-1 pt-0 pb-8"
       >
         <CardContent
           className={`h-full flex justify-center items-end ${index === 0 ? "items-center" : index === 1 ? "mt-6" : ""
@@ -123,17 +123,17 @@ export default function ProgramBenefitsSection() {
               </div>
             )}
             <h3
-              className={`font-semibold text-[#000000] mb-4 px-4 ${benefit.noImage ? "text-2xl sm:text-3xl md:text-[40px] text-[#0A0D12] mb-6 md:mb-8" : "text-lg md:text-xl"
+              className={`font-semibold text-foreground mb-4 px-4 ${benefit.noImage ? "text-2xl sm:text-3xl md:text-[40px] text-foreground mb-6 md:mb-8" : "text-lg md:text-xl"
                 }`}
             >
               {benefit.title}
             </h3>
-            <p className={`text-[#414651] text-base md:text-lg px-4 ${benefit.despWidth || "w-full"}`}>
+            <p className={`text-muted-foreground text-base md:text-lg px-4 ${benefit.despWidth || "w-full"}`}>
               {benefit.description}
             </p>
             {benefit.showButton && (
               <Button
-                className={`bg-[#1570EF] h-[49px] px-[30px] py-[15px] rounded-full hover:bg-[#1d4ed8] text-[#F5FAFF] mt-8 text-base md:text-lg ${benefit.centerContent ? "mx-auto" : ""
+                className={`bg-primary h-[49px] px-[30px] py-[15px] rounded-full hover:bg-primary/90 text-primary-foreground mt-8 text-base md:text-lg ${benefit.centerContent ? "mx-auto" : ""
                   }`}
               >
                 Join now
@@ -146,7 +146,7 @@ export default function ProgramBenefitsSection() {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="py-16 md:py-24 bg-background">
       <div className="container max-w-[1170px] mx-auto">
         <div className="flex flex-col gap-[30px]">
           {/* First row - flex with 670px and 470px */}

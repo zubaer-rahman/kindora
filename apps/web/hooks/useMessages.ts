@@ -57,6 +57,13 @@ export const useMessages = (selectedUserId: string | null, isGroup: boolean) => 
     },
   });
 
+  // Refetch group messages whenever the selected group changes
+  useEffect(() => {
+    if (selectedUserId && isGroup) {
+      queryClient.invalidateQueries({ queryKey: ["groupMessages"] });
+    }
+  }, [selectedUserId, isGroup]);
+
   // Subscribe to real-time events (including typing) via SSE
   useEffect(() => {
     if (!selectedUserId || !(session?.user as any)?.api_token) return;

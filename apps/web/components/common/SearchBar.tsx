@@ -123,7 +123,7 @@ export default function SearchBar({
         <div ref={containerRef} className={cn("relative w-full", className)}>
             <form onSubmit={handleSubmit} className="relative">
                 <div className="relative flex items-center">
-                    <Search className="absolute left-4 h-5 w-5 text-[#101828]" />
+                    <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
                     <Input
                         type="text"
                         placeholder={placeholder}
@@ -131,7 +131,7 @@ export default function SearchBar({
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onFocus={() => setShowHistory(true)}
                         className={cn(
-                            "w-full pl-12 pr-12 py-3 h-[48px] bg-white border border-[#101828] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-[#101828] text-[#101828] placeholder:text-[#667085] text-base",
+                            "w-full pl-12 pr-12 py-3 h-[48px] bg-background border border-input focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-input text-foreground placeholder:text-muted-foreground text-base",
                             className
                         )}
                         style={{ borderRadius }}
@@ -140,9 +140,9 @@ export default function SearchBar({
                         <button
                             type="button"
                             onClick={handleClear}
-                            className="absolute right-4 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                            className="absolute right-4 p-1 hover:bg-muted rounded-full transition-colors"
                         >
-                            <X className="h-4 w-4 text-[#667085]" />
+                            <X className="h-4 w-4 text-muted-foreground" />
                         </button>
                     )}
                 </div>
@@ -150,16 +150,16 @@ export default function SearchBar({
             </form>
 
             {showHistory && history.length > 0 && (
-                <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white border border-[#E9EAEB] rounded-xl shadow-[0px_12px_16px_-4px_rgba(16,24,40,0.08),0px_4px_6px_-2px_rgba(16,24,40,0.03)] z-50 overflow-hidden py-2">
+                <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-background border border-border rounded-xl shadow-[0px_12px_16px_-4px_rgba(16,24,40,0.08),0px_4px_6px_-2px_rgba(16,24,40,0.03)] z-50 overflow-hidden py-2">
                     {history.map((item, index) => (
                         <button
                             key={index}
                             type="button"
                             onClick={() => handleHistoryClick(item)}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F9FAFB] transition-colors text-left group"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-muted transition-colors text-left group"
                         >
-                            <History className="h-4 w-4 text-[#667085] group-hover:text-[#101828]" />
-                            <span className="text-sm font-medium text-[#344054] group-hover:text-[#101828]">{item}</span>
+                            <History className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
+                            <span className="text-sm font-medium text-foreground group-hover:text-foreground">{item}</span>
                         </button>
                     ))}
                 </div>
