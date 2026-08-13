@@ -98,7 +98,6 @@ export default function ShowcaseVideoSection() {
             loop
             muted
             playsInline
-            poster="/images/video-poster.jpg"
           >
             <source src="/videos/kindora-landing.mp4" type="video/mp4" />
             Your browser does not support the video tag.
