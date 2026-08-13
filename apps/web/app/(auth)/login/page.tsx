@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { signIn } from "next-auth/react";
-import { Loader2, Lock, Mail } from "lucide-react";
+import { Loader2, Lock, Mail, Building2, User, Sparkles } from "lucide-react";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -35,10 +35,17 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
   });
+
+  const handleGuestLogin = (email: string) => {
+    setValue("email", email);
+    setValue("password", "guestpassword");
+    handleSubmit(onSubmit)();
+  };
 
   useEffect(() => {
     if (!isLoading && !hasRedirected.current) {
@@ -129,6 +136,62 @@ export default function LoginPage() {
                 <p className="text-sm">{error}</p>
               </div>
             )}
+
+            <div className="mb-6 p-5 rounded-xl border border-border border-t-2 border-t-primary bg-card shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                <Sparkles size={64} />
+              </div>
+              <div className="mb-4 text-center relative z-10">
+                <h3 className="text-sm font-bold flex items-center justify-center gap-2">
+                  <Sparkles size={16} className="text-primary" />
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+                    Want to explore as a guest?
+                  </span>
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">Experience the platform instantly without creating an account.</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={() => handleGuestLogin('guest_org@kindora.com')}
+                  className="group relative flex items-center gap-3 p-3 rounded-lg border border-primary/10 bg-card hover:bg-accent hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden text-left"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shrink-0">
+                    <Building2 size={16} />
+                  </div>
+                  <div>
+                    <span className="block font-semibold text-sm text-foreground">Organisation</span>
+                    <span className="block text-[10px] text-muted-foreground">Guest Access</span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={() => handleGuestLogin('guest_vol@kindora.com')}
+                  className="group relative flex items-center gap-3 p-3 rounded-lg border border-primary/10 bg-card hover:bg-accent hover:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden text-left"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shrink-0">
+                    <User size={16} />
+                  </div>
+                  <div>
+                    <span className="block font-semibold text-sm text-foreground">Volunteer</span>
+                    <span className="block text-[10px] text-muted-foreground">Guest Access</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-card text-muted-foreground font-medium">Or continue manually</span>
+              </div>
+            </div>
 
             <div className="flex items-center gap-2 mb-6">
               <span className="text-sm text-muted-foreground font-medium">New to Kindora?</span>
@@ -225,6 +288,7 @@ export default function LoginPage() {
                 Log in
               </button>
             </form>
+
           </div>
 
           <div className="px-8 py-4 border-t border-border text-center text-sm text-muted-foreground">

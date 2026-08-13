@@ -18,9 +18,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const MONGODB_URI = process.env.MONGODB_URI;
-const ADMIN_EMAIL = process.env.SYSTEM_ADMIN_EMAIL || 'admin@system.kindora.com';
+const ADMIN_EMAIL = process.env.SYSTEM_ADMIN_EMAIL!;
 const ADMIN_PASSWORD = process.env.SYSTEM_ADMIN_PASSWORD;
-const ADMIN_NAME = process.env.SYSTEM_ADMIN_NAME || 'Kindora System Admin';
+const ADMIN_NAME = process.env.SYSTEM_ADMIN_NAME!;
 
 if (!MONGODB_URI) {
   console.error('❌ MONGODB_URI is not set in .env');
