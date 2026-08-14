@@ -18,13 +18,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import { UserMenu } from "@/components/navbar/UserMenu";
-import { NotificationBell } from "@/components/ui/notification-bell";
+import { NotificationBell } from "@/components/navbar/NotificationBell";
 import { SessionUser } from "@/types/navigation";
 import { MobileMenu } from "@/components/navbar/MobileMenu";
 import { isAuthPath, isProtectedPath } from "@/utils/helpers/pathCheck";
 import { toast } from "react-hot-toast";
-import KindoraLogo from "@/components/features/common/KindoraLogo";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import KindoraLogo from "@/components/common/KindoraLogo";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 export default function ProtectedNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

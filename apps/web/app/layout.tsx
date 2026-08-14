@@ -1,9 +1,9 @@
 import { Outfit } from "next/font/google";
 import "./globals.css";
-import { ClientProviders } from "@/config/ClientProviders";
+import { ClientProviders } from "@/components/providers/ClientProviders";
 import { auth } from "@/auth";
 import { Toaster } from "react-hot-toast";
-import { SearchProvider } from "@/contexts/SearchContext";
+import { SearchProvider } from "@/components/providers/SearchProvider";
 import { OpportunityDrawerProvider } from "@/components/features/opportunities/OpportunityDrawerProvider";
 
 const outfit = Outfit({ subsets: ["latin"] });

@@ -4,7 +4,7 @@ import { signOut } from "next-auth/react";
 import { SessionUser } from "@/types/navigation";
 
 import { Switch } from "../ui/switch";
-import UserAvatar from "@/components/ui/UserAvatar";
+import UserAvatar from "@/components/common/UserAvatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import {
   DropdownMenu,

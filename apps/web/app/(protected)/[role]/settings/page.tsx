@@ -11,7 +11,7 @@ import {
   ChevronRight,
   UserMinus,
 } from "lucide-react";
-import InviteMentorDialog from "@/components/layout/organisation/dashboard/InviteMentorDialog";
+import InviteMentorDialog from "@/components/features/organization/dashboard/InviteMentorDialog";
 import {
   Card,
   CardContent,
@@ -22,12 +22,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-import UserManagementTable from "@/components/layout/organisation/dashboard/UserManagementTable";
+import UserManagementTable from "@/components/features/organization/dashboard/UserManagementTable";
 import { ProfilePictureUpload } from "@/components/form-input/ProfilePictureUpload";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Loading from "@/app/loading";
-import UserAvatar from "@/components/ui/UserAvatar";
+import UserAvatar from "@/components/common/UserAvatar";
 
 export default function OrganizationSettingsPage() {
   const [activeSection, setActiveSection] = useState("users");

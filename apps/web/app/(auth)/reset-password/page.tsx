@@ -14,7 +14,7 @@ import Loading from "@/app/loading";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthCard } from "@/components/layout/auth/AuthCard";
-import { LoadingButton } from "@/components/ui/LoadingButton";
+import { LoadingButton } from "@/components/buttons/LoadingButton";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";

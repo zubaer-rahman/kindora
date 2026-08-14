@@ -2,8 +2,8 @@
 
 import { useParams } from "next/navigation";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-import OrganizationProfileView from "@/components/layout/organisation/OrganizationProfileView";
-import { VolunteerProfile } from "@/components/layout/volunteer/profile/VolunteerProfile";
+import OrganizationProfileView from "@/components/features/organization/OrganizationProfileView";
+import { VolunteerProfile } from "@/components/features/volunteer/profile/VolunteerProfile";
 import NotFound from "@/app/not-found";
 
 export default function ProfileDetailPage() {

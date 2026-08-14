@@ -3,7 +3,7 @@ import { useVolunteerApplication } from "@/hooks/useVolunteerApplication";
 import { Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
-import { OpportunityDetails } from "@/components/layout/volunteer/home-page/HomePageCategories";
+import { OpportunityDetails } from "@/components/features/volunteer/home-page/HomePageCategories";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

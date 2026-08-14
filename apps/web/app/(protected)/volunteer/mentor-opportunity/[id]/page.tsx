@@ -8,19 +8,19 @@ import {
   Search,
   Users,
 } from "lucide-react";
-import { OpportunityDetail } from "@/components/layout/volunteer/home-page/OpportunityDetail";
+import { OpportunityDetail } from "@/components/features/volunteer/home-page/OpportunityDetail";
 import { useParams, useRouter } from "next/navigation";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DynamicTabs, TabItem } from "@/components/layout/shared/DynamicTabs";
+import { DynamicTabs, TabItem } from "@/components/common/DynamicTabs";
 import {
   Applicant,
   ApplicantsCard,
-} from "@/components/layout/organisation/opportunities/ApplicantsCard";
-import MessageApplicantModal from "@/components/layout/organisation/opportunities/MessageApplicantModal";
+} from "@/components/features/organization/opportunities/ApplicantsCard";
+import MessageApplicantModal from "@/components/features/organization/opportunities/MessageApplicantModal";
 import Image from "next/image";
 import BackButton from "@/components/buttons/BackButton";
 import { useSession } from "next-auth/react";

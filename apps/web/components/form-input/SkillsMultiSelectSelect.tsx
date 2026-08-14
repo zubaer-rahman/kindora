@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { MultiSelect } from "@/components/form-input/MultiSelect";
 import { SKILL_OPTIONS } from "@/utils/constants";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";

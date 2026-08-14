@@ -1,9 +1,9 @@
 "use client";
 
-import HeroSection from "../../../../components/layout/landing/kindora/about/HeroSection";
-import WhatIsKINDORA from "../../../../components/layout/landing/kindora/about/WhatIsKINDORA";
-import ProgramBenefits from "../../../../components/layout/landing/kindora/about/ProgramBenefits";
-import RegistrationBannerNew from "../../../../components/layout/landing/home/RegistrationBannerNew";
+import HeroSection from "@/components/features/landing-page/kindora/about/HeroSection";
+import WhatIsKINDORA from "@/components/features/landing-page/kindora/about/WhatIsKINDORA";
+import ProgramBenefits from "@/components/features/landing-page/kindora/about/ProgramBenefits";
+import RegistrationBannerNew from "@/components/features/landing-page/home/RegistrationBannerNew";
 import PublicLayout from "@/components/layout/PublicLayout";
 
 export default function KINDORAAboutPage() {

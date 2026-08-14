@@ -2,7 +2,7 @@
 
 import { FieldValues, Path, UseFormRegister, UseFormSetValue, PathValue } from "react-hook-form";
 import { Label } from "@/components/ui/label";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { MultiSelect } from "@/components/form-input/MultiSelect";
 import { cn } from "@/lib/utils";
 
 interface Option {

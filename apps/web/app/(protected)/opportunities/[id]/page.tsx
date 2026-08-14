@@ -1,6 +1,6 @@
 "use client";
 
-import OpportunityDetailContainer from "@/components/layout/shared/OpportunityDetailContainer";
+import OpportunityDetailContainer from "@/components/features/shared/OpportunityDetailContainer";
 import { useSession } from "next-auth/react";
 
 export default function OpportunityDetailPage() {

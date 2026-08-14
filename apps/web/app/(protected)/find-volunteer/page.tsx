@@ -1,4 +1,4 @@
-import SearchVolunteer from "@/components/layout/organisation/searchVolunteer";
+import SearchVolunteer from "@/components/features/organization/search-volunteer/SearchVolunteer";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 import React from "react";
 

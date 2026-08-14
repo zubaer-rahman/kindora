@@ -1,4 +1,4 @@
-import FindOrganisation from "@/components/layout/find-organisation";
+import FindOrganisation from "@/components/features/organization/find-organization/FindOrganization";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 
 const FindOrganisationPage = () => {

@@ -7,7 +7,7 @@ import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { AuthCard } from "@/components/layout/auth/AuthCard";
-import { LoadingButton } from "@/components/ui/LoadingButton";
+import { LoadingButton } from "@/components/buttons/LoadingButton";
 import toast from "react-hot-toast";
 import { signOut } from "next-auth/react";
 

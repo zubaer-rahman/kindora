@@ -2,9 +2,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
-import VolunteerSignup from "@/components/layout/auth/VolunteerSignup";
-import OrganizationSignup from "@/components/layout/auth/OrganizationSignup";
-import MentorSignup from "@/components/layout/auth/MentorSignup";
+import VolunteerSignup from "@/components/features/auth/VolunteerSignup";
+import OrganizationSignup from "@/components/features/auth/OrganizationSignup";
+import MentorSignup from "@/components/features/auth/MentorSignup";
 import Loading from "@/app/loading";
 
 export default function SignupPage() {

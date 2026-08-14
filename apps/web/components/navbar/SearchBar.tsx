@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchInput, MobileSearch, DesktopSearch } from "./search";
-import { useSearch } from "@/contexts/SearchContext";
+import { useSearch } from "@/components/providers/SearchProvider";
 
 interface SearchBarProps {
   role: "mentor" | "volunteer" | "admin" | "organization";

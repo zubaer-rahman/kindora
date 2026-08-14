@@ -44,7 +44,7 @@ import {
   Smile,
   Handshake,
 } from "lucide-react";
-import { useSearch } from "@/contexts/SearchContext";
+import { useSearch } from "@/components/providers/SearchProvider";
 import { useState, useEffect } from "react";
 
 // Map categories to icons

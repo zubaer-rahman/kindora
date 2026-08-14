@@ -1,9 +1,9 @@
 "use client";
 
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-import OrganizationProfile from "../../../../components/layout/organisation/OrganizationProfile";
-import { VolunteerProfileForm } from "../../../../components/layout/volunteer/VolunteerProfileForm";
-import { MentorProfileForm } from "../../../../components/layout/mentor/MentorProfileForm";
+import OrganizationProfile from "@/components/features/organization/OrganizationProfile";
+import { VolunteerProfileForm } from "@/components/features/volunteer/VolunteerProfileForm";
+import { MentorProfileForm } from "@/components/features/mentor/MentorProfileForm";
 import { useParams } from "next/navigation";
 import NotFound from "@/app/not-found";
 

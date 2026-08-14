@@ -7,7 +7,7 @@ import { z } from "zod";
 import Link from "next/link";
 import { FormField } from "@/components/form-input/FormField";
 import { AuthCard } from "@/components/layout/auth/AuthCard";
-import { LoadingButton } from "@/components/ui/LoadingButton";
+import { LoadingButton } from "@/components/buttons/LoadingButton";
 import { AlertCircle, CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";

@@ -14,7 +14,7 @@ import {
   BlogSection,
   RegistrationBannerNew,
   ShowcaseVideoSection
-} from "@/components/layout/landing/home";
+} from "@/components/features/landing-page/home";
 import Loading from "@/app/loading";
 import PublicLayout from "@/components/layout/PublicLayout";
 
@@ -43,8 +43,7 @@ export default function HomePage() {
     );
   }
 
-  // If authenticated, we return null while the redirect happens to avoid flashing the landing page
-  if (isAuthenticated) return null;
+   if (isAuthenticated) return null;
 
   return (
     <PublicLayout>

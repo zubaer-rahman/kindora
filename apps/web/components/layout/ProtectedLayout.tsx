@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import ProtectedNavbar from "@/components/navbar/ProtectedNavbar";
 import Loading from "@/app/loading";
-import { FeedbackButton } from "@/components/FeedbackButton";
+import { FeedbackButton } from "@/components/buttons/FeedbackButton";
 
 interface ProtectedLayoutProps {
   children: React.ReactNode;

@@ -1,5 +1,5 @@
 "use client";
-import MessageUI from "@/components/layout/messages/MessageUI";
+import MessageUI from "@/components/features/messages/MessageUI";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 import { useSearchParams } from "next/navigation";
 
