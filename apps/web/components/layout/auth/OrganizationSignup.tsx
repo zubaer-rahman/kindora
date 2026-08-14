@@ -2,9 +2,8 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { OrgSignupFormData, orgSignupSchema } from "@/types/auth";
 import { useRouter } from "next/navigation";
+import { OrgSignupFormData, orgSignupSchema } from "@/types/auth";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import { useEmailUniqueness } from "@/hooks/useEmailUniqueness";
 import {
@@ -14,10 +13,11 @@ import {
   getApiError,
 } from "@/lib/auth-api";
 import toast from "react-hot-toast";
-import { OrgSignupStep } from "./OrgSignupStep";
-import { SignupActionBar } from "./SignupActionBar";
-import { Loader2 } from "lucide-react";
 import { UserRole } from "@/server/db/interfaces/user";
+import { Form } from "@/components/ui/form";
+import { SignupStep } from "@/components/layout/auth/SignupStep";
+import { SignupActionBar } from "@/components/layout/auth/SignupActionBar";
+import Loading from "@/app/loading";
 
 const EMAIL_TAKEN_MESSAGE =
   "This email is already registered. Please use a different email or log in.";
@@ -33,12 +33,7 @@ export default function OrganizationSignup() {
   const form = useForm<OrgSignupFormData>({
     resolver: zodResolver(orgSignupSchema),
     mode: "onChange",
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirm_password: "",
-    },
+    defaultValues: { name: "", email: "", password: "", confirm_password: "" },
   });
 
   const email = form.watch("email");
@@ -46,41 +41,41 @@ export default function OrganizationSignup() {
 
   useEffect(() => {
     if (isTaken) {
-      form.setError("email", {
-        type: "manual",
-        message: EMAIL_TAKEN_MESSAGE,
-      });
+      form.setError("email", { type: "manual", message: EMAIL_TAKEN_MESSAGE });
+    } else {
+      const current = form.formState.errors.email;
+      if (current?.type === "manual" && current?.message === EMAIL_TAKEN_MESSAGE) {
+        form.clearErrors("email");
+      }
     }
   }, [isTaken, form]);
 
   useEffect(() => {
-    if (!isLoading) {
-      if (isAuthenticated && session?.user?.role) {
-        const role = session.user.role.toLowerCase();
-        router.replace(
-          (role === "admin" || role === "organisation" || role === "organization")
-            ? "/organisation/dashboard"
-            : "/find-opportunity/most-recent"
-        );
-      }
+    if (!isLoading && isAuthenticated && session?.user?.role) {
+      const role = session.user.role.toLowerCase();
+      const destination =
+        role === "admin" || role === "organisation" || role === "organization"
+          ? "/organisation/dashboard"
+          : "/find-opportunity/most-recent";
+      router.replace(destination);
     }
   }, [isLoading, isAuthenticated, session, router]);
 
-  const onSubmit = async (data: OrgSignupFormData) => {
-    if (isSignupLoading) return;
-
+  const handleSignup = async () => {
     if (!termsAccepted) {
       setTermsError("You must accept the terms and conditions");
       return;
     }
 
     if (isTaken) {
-      form.setError("email", {
-        type: "manual",
-        message: EMAIL_TAKEN_MESSAGE,
-      });
+      form.setError("email", { type: "manual", message: EMAIL_TAKEN_MESSAGE });
       return;
     }
+
+    const isValid = await form.trigger(["name", "email", "password", "confirm_password"]);
+    if (!isValid) return;
+
+    const data = form.getValues();
 
     try {
       setIsSignupLoading(true);
@@ -93,25 +88,19 @@ export default function OrganizationSignup() {
       });
 
       if (response.data?.code === SIGNUP_SUCCESS_UNVERIFIED) {
-        toast.success(
-          "Account created! Please check your email to verify your account."
-        );
+        toast.success("Account created! Please check your email to verify your account.");
         router.push("/login");
         return;
       }
 
       toast.error("Something went wrong. Please try again.");
     } catch (err) {
-      console.error("Signup error:", err);
       const apiError = getApiError(err);
       if (apiError.code === EMAIL_ALREADY_REGISTERED) {
-        form.setError("email", {
-          type: "manual",
-          message: EMAIL_TAKEN_MESSAGE,
-        });
+        form.setError("email", { type: "manual", message: EMAIL_TAKEN_MESSAGE });
         return;
       }
-      toast.error(apiError.message || "Something went wrong. Please try again.");
+      toast.error(apiError.message ?? "Something went wrong. Please try again.");
     } finally {
       setIsSignupLoading(false);
     }
@@ -119,28 +108,29 @@ export default function OrganizationSignup() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
+      <Loading size="medium">
+        <p className="text-muted-foreground mt-2">Wait a sec...</p>
+      </Loading>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 pb-32">
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
-        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-          <OrgSignupStep
-            form={form}
-            termsAccepted={termsAccepted}
-            setTermsAccepted={setTermsAccepted}
-            termsError={termsError}
-            setTermsError={setTermsError}
-          />
-
-          <SignupActionBar isLoading={isSignupLoading}>
-            Create Account
-          </SignupActionBar>
-        </form>
+        <Form {...form}>
+          <form className="space-y-6">
+            <SignupStep
+              form={form as any}
+              isOrg
+              termsAccepted={termsAccepted}
+              setTermsAccepted={setTermsAccepted}
+              termsError={termsError}
+              setTermsError={setTermsError}
+              role="organization"
+            />
+            <SignupActionBar onClick={handleSignup} isLoading={isSignupLoading} />
+          </form>
+        </Form>
       </div>
     </div>
   );

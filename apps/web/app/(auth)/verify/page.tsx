@@ -6,10 +6,10 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import Loading from "@/app/loading";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AuthCard } from "@/components/layout/auth/AuthCard";
 
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
@@ -46,74 +46,55 @@ export default function VerifyEmailPage() {
       return;
     }
     verifyMutation.mutate({ token });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once when token is present
-  }, [token]);
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!token) {
     return (
-      <div className="flex justify-center items-center min-h-screen p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Invalid link</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              No verification token was provided. Please use the link from your
-              email or request a new verification email.
-            </p>
-            <Button asChild>
-              <Link href="/login">Go to login</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <AuthCard title="Invalid link">
+        <p className="text-muted-foreground mb-4">
+          No verification token was provided. Please use the link from your
+          email or request a new verification email.
+        </p>
+        <Button asChild>
+          <Link href="/login">Go to login</Link>
+        </Button>
+      </AuthCard>
     );
   }
 
   if (verifyMutation.isPending || status === "idle") {
     return (
       <Loading size="medium">
-        <p className="text-gray-600 mt-2">Verifying your email...</p>
+        <p className="text-muted-foreground mt-2">Verifying your email...</p>
       </Loading>
     );
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {status === "success" ? (
-              <>
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                Email verified
-              </>
-            ) : (
-              <>
-                <AlertCircle className="h-5 w-5 text-destructive" />
-                Verification failed
-              </>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+    <AuthCard
+      title={
+        <span className="flex items-center gap-2">
           {status === "success" ? (
-            <p className="text-muted-foreground">
-              Redirecting you to login...
-            </p>
+            <><CheckCircle className="h-5 w-5 text-green-600" />Email verified</>
           ) : (
-            <>
-              <p className="text-muted-foreground mb-4">
-                The link may be invalid or expired. You can try logging in or
-                sign up again to receive a new verification email.
-              </p>
-              <Button asChild>
-                <Link href="/login">Go to login</Link>
-              </Button>
-            </>
+            <><AlertCircle className="h-5 w-5 text-destructive" />Verification failed</>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </span>
+      }
+    >
+      {status === "success" ? (
+        <p className="text-muted-foreground">Redirecting you to login...</p>
+      ) : (
+        <>
+          <p className="text-muted-foreground mb-4">
+            The link may be invalid or expired. You can try logging in or
+            sign up again to receive a new verification email.
+          </p>
+          <Button asChild>
+            <Link href="/login">Go to login</Link>
+          </Button>
+        </>
+      )}
+    </AuthCard>
   );
 }
