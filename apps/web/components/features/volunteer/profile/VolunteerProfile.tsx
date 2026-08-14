@@ -11,6 +11,8 @@ import countryList from "react-select-country-list";
 import { formatText } from "@/utils/helpers/formatText";
 import QueryStateWrapper from "@/components/common/QueryStateWrapper";
 import VolunteerProfileBanner from "./VolunteerProfileBanner";
+import { profileService } from "@/services/profile.service";
+import { applicationService } from "@/services/application.service";
 
 interface VolunteerProfileProps {
   volunteerId: string;
@@ -36,18 +38,12 @@ export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
   const axiosAuth = useAxiosAuth();
   const { data: volunteer, isLoading } = useQuery({
     queryKey: ['volunteer', volunteerId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/volunteer-profiles/${volunteerId}`);
-      return res.data.data;
-    },
+    queryFn: () => profileService.getVolunteerProfileById(axiosAuth, volunteerId),
     enabled: !!volunteerId,
   });
   const { data: applications, isLoading: isLoadingApplications } = useQuery({
     queryKey: ['volunteerApplications', volunteerId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/applications/volunteer/${volunteerId}`);
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getVolunteerApplications(axiosAuth, volunteerId),
     enabled: !!volunteerId,
   });
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);

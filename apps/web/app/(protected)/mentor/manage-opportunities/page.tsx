@@ -11,6 +11,7 @@ import OpportunityList from "@/components/features/organization/opportunities/Op
 import { PaginationWrapper } from "@/components/common/PaginationWrapper";
 import { usePagination } from "@/hooks/usePagination";
 import type { Opportunity } from "@/types/opportunities";
+import { opportunityService } from "@/services/opportunity.service";
 
 export default function MentorManageOpportunitiesPage() {
   const router = useRouter();
@@ -19,10 +20,7 @@ export default function MentorManageOpportunitiesPage() {
 
   const { data: opportunities, isLoading, refetch } = useQuery<Opportunity[]>({
     queryKey: ["mentorOpportunitiesAll"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/opportunities/mentor/all");
-      return res.data.data;
-    },
+    queryFn: () => opportunityService.getAllMentorOpportunities(axiosAuth),
   });
 
   useEffect(() => {

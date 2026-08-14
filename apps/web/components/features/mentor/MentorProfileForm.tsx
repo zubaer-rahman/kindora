@@ -15,10 +15,9 @@ import {
 import { MultiSelectField } from "@/components/form-input/MultiSelectField";
 import { PhoneField } from "@/components/form-input/PhoneField";
 import { suburbs } from "@/utils/constants/suburb";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import BackButton from "@/components/buttons/BackButton";
 import { useSession } from "next-auth/react";
 import { formatText } from "@/utils/helpers/formatText";
@@ -35,45 +34,17 @@ import {
 import { SkillsMultiSelect } from "@/components/form-input/SkillsMultiSelectSelect";
 import RandomAvatar from "@/components/common/RandomAvatar";
 import { ProfilePhotoInput } from "@/components/form-input/ProfilePhotoInput";
+import { useMentorProfile } from "@/hooks/useMentorProfile";
+import { skillService } from "@/services/skill.service";
 
 export function MentorProfileForm() {
   const [editMode, setEditMode] = useState<"none" | "personal">("none");
   const [isImageUploading, setIsImageUploading] = useState(false);
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
-  const { data: mentorProfile, isLoading } = useQuery({
-    queryKey: ["mentorProfile"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/mentor-profiles/me");
-      return res.data.data;
-    },
-  });
+  const { profile: mentorProfile, isLoading, updateProfileMutation } = useMentorProfile();
   const { data: session, update: updateSession } = useSession();
-
   const countryOptions = useMemo(() => countryList().getData(), []);
-
-  const mentorProfileUpdateMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      const res = await axiosAuth.patch("/api/v1/mentor-profiles/me", payload);
-      return res.data.data;
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["mentorProfile"] });
-      await updateSession();
-      toast.success("Mentor profile updated successfully!");
-      setEditMode("none");
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to update profile");
-    },
-  });
-
-  const createSkillMutation = useMutation({
-    mutationFn: async (payload: { name: string }) => {
-      const res = await axiosAuth.post("/api/v1/skills", payload);
-      return res.data.data;
-    },
-  });
 
   const form = useForm<MentorProfileUpdateData>({
     resolver: zodResolver(MentorProfileUpdateSchema),
@@ -147,7 +118,7 @@ export function MentorProfileForm() {
 
       for (const skillName of newSkills) {
         try {
-          await createSkillMutation.mutateAsync({ name: skillName });
+          await skillService.createSkill(axiosAuth, skillName);
         } catch (error) {
           console.error("Failed to create skill:", error);
         }
@@ -158,7 +129,8 @@ export function MentorProfileForm() {
         area: data.area?.replace(/_/g, " "),
       };
 
-      await mentorProfileUpdateMutation.mutateAsync(formattedData);
+      await updateProfileMutation.mutateAsync(formattedData);
+      setEditMode("none");
     } catch {}
   };
 
@@ -540,7 +512,7 @@ export function MentorProfileForm() {
 
                   <SubmitButton
                     isPending={
-                      mentorProfileUpdateMutation.isPending || isImageUploading
+                      updateProfileMutation.isPending || isImageUploading
                     }
                   />
                 </form>
@@ -619,9 +591,7 @@ export function MentorProfileForm() {
                             <InfoField
                               label="Currently Studying"
                               value={
-                                mentorProfile.is_currently_studying === "yes"
-                                  ? "Yes"
-                                  : mentorProfile.is_currently_studying === "no"
+                                mentorProfile.is_currently_studying === "no"
                                   ? "No"
                                   : "Not specified"
                               }

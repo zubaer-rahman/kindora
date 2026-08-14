@@ -1,6 +1,8 @@
 
 export interface IMentorProfile {
   _id: string;
+  name?: string;
+  image?: string;
     bio?: string;
     interested_on: string[];
     interested_categories: string[];

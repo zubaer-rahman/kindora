@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import UserAvatar from "@/components/common/UserAvatar";
 import { LayoutDashboard, Briefcase, MessageSquare, Settings, User } from "lucide-react";
+import { profileService } from "@/services/profile.service";
 
 export default function MentorDashboardSidebar() {
   const pathname = usePathname();
@@ -14,10 +15,7 @@ export default function MentorDashboardSidebar() {
 
   const { data: mentor, isLoading } = useQuery({
     queryKey: ["mentorProfile"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/users/me/mentor-profile");
-      return res.data.data;
-    },
+    queryFn: () => profileService.getMentorProfile(axiosAuth),
   });
 
   const links = [

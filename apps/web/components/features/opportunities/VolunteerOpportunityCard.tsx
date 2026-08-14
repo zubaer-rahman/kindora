@@ -16,9 +16,9 @@ import {
     ChevronLeft,
     ChevronRight
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
+import { favoriteService } from "@/services/favorite.service";
 
 interface VolunteerOpportunityCardProps {
     opportunity: Opportunity;
@@ -46,19 +46,15 @@ export default function VolunteerOpportunityCard({
     const axiosAuth = useAxiosAuth();
     const { data: favoriteData } = useQuery({
         queryKey: ["favoriteStatus", opportunity._id],
-        queryFn: async () => {
+        queryFn: () => {
             if (!opportunity._id) return { isFavorite: false };
-            const res = await axiosAuth.get(`/api/v1/applications/favorite-status/${opportunity._id}`);
-            return res.data.data;
+            return favoriteService.getStatus(axiosAuth, opportunity._id);
         },
         enabled: !!session?.user && !!opportunity._id,
     });
 
     const toggleFavoriteMutation = useMutation({
-        mutationFn: async (payload: { opportunityId: string }) => {
-            const res = await axiosAuth.put(`/api/v1/applications/favorite/${payload.opportunityId}`);
-            return res.data.data;
-        },
+        mutationFn: (payload: { opportunityId: string }) => favoriteService.toggle(axiosAuth, payload.opportunityId),
         onSuccess: () => {
             utils.invalidateQueries({ queryKey: ["favoriteStatus", opportunity._id] });
         },

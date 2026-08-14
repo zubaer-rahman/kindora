@@ -65,4 +65,39 @@ export const messageService = {
     const res = await axios.patch(`/api/v1/messages/conversation/${conversationId}/read`);
     return res.data.data;
   },
+
+  createGroup: async (axios: AxiosInstance, payload: { name: string; members: string[]; opportunityId?: string }) => {
+    const res = await axios.post("/api/v1/messages/groups", payload);
+    return res.data.data;
+  },
+
+  addMemberToGroup: async (axios: AxiosInstance, groupId: string, memberId: string) => {
+    const res = await axios.post(`/api/v1/messages/groups/${groupId}/members`, { memberId });
+    return res.data.data;
+  },
+
+  removeMemberFromGroup: async (axios: AxiosInstance, groupId: string, memberId: string) => {
+    const res = await axios.delete(`/api/v1/messages/groups/${groupId}/members/${memberId}`);
+    return res.data.data;
+  },
+
+  promoteMember: async (axios: AxiosInstance, groupId: string, memberId: string) => {
+    const res = await axios.post(`/api/v1/messages/groups/${groupId}/members/${memberId}/promote`);
+    return res.data.data;
+  },
+
+  demoteMember: async (axios: AxiosInstance, groupId: string, memberId: string) => {
+    const res = await axios.delete(`/api/v1/messages/groups/${groupId}/members/${memberId}/admin`);
+    return res.data.data;
+  },
+
+  deleteGroup: async (axios: AxiosInstance, groupId: string) => {
+    const res = await axios.delete(`/api/v1/messages/groups/${groupId}`);
+    return res.data.data;
+  },
+
+  deleteConversation: async (axios: AxiosInstance, conversationId: string) => {
+    const res = await axios.delete(`/api/v1/messages/conversation/${conversationId}`);
+    return res.data.data;
+  },
 };

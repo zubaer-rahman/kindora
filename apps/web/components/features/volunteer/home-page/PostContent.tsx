@@ -9,6 +9,7 @@ import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { toast } from "react-hot-toast";
 import ConfirmationDialog from "@/components/modals/ConfirmationDialog";
 import { useState, useMemo } from "react";
+import { applicationService } from "@/services/application.service";
 
 type Opportunity = {
   _id: string;
@@ -72,17 +73,11 @@ export function PostContent({ opportunity, }: PostContentProps) {
 
   const { data: applicationStatus, refetch: refetchStatus, isLoading: isStatusLoading } = useQuery({
     queryKey: ["applicationStatus", opportunity._id],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/applications/status/${opportunity._id}`);
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getStatus(axiosAuth, opportunity._id),
     enabled: !!session?.user?.id
   });
   const revokeMutation = useMutation({
-    mutationFn: async (payload: { opportunityId: string }) => {
-      const res = await axiosAuth.delete(`/api/v1/applications/${payload.opportunityId}`);
-      return res.data.data;
-    },
+    mutationFn: (payload: { opportunityId: string }) => applicationService.withdraw(axiosAuth, payload.opportunityId),
     onSuccess: () => {
       toast.success("Application withdrawn successfully");
       queryClient.invalidateQueries({ queryKey: ["activeApplications"] });

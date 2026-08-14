@@ -20,6 +20,8 @@ import StepTwo from "./_components/StepTwo";
 import BackButton from "@/components/buttons/BackButton";
 import { Card } from "@/components/ui/card";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
+import { opportunityService } from "@/services/opportunity.service";
+import { skillService } from "@/services/skill.service";
 
 export default function CreateOpportunityPage() {
   const { data: session } = useSession();
@@ -45,16 +47,10 @@ export default function CreateOpportunityPage() {
   ];
 
   const createSkillMutation = useMutation({
-    mutationFn: async (payload: { name: string }) => {
-      const res = await axiosAuth.post("/api/v1/skills", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { name: string }) => skillService.createSkill(axiosAuth, payload.name),
   });
   const createOpportunity = useMutation({
-    mutationFn: async (payload: OpportunityFormValues) => {
-      const res = await axiosAuth.post("/api/v1/opportunities", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: OpportunityFormValues) => opportunityService.create(axiosAuth, payload),
     onSuccess: () => {
       toast.success("Opportunity created successfully!");
       queryClient.invalidateQueries({ queryKey: ["organizationOpportunities"] });

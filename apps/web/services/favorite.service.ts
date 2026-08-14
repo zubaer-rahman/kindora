@@ -14,4 +14,16 @@ export const favoriteService = {
     const res = await axios.put<{ data: FavoriteStatus }>(`/api/v1/applications/favorite/${opportunityId}`);
     return res.data.data;
   },
+
+  getPaginatedFavorites: async (axios: AxiosInstance, page: number, limit: number) => {
+    const res = await axios.get("/api/v1/volunteer-profiles/favorites/paginated", {
+      params: { page, limit },
+    });
+    return res.data.data;
+  },
+
+  getAllFavorites: async (axios: AxiosInstance) => {
+    const res = await axios.get("/api/v1/volunteer-profiles/favorites");
+    return res.data.data;
+  },
 };

@@ -11,6 +11,8 @@ import OpportunityList from "@/components/features/organization/opportunities/Op
 import { PaginationWrapper } from "@/components/common/PaginationWrapper";
 import { usePagination } from "@/hooks/usePagination";
 import type { Opportunity } from "@/types/opportunities";
+import { opportunityService } from "@/services/opportunity.service";
+import { notificationService } from "@/services/notification.service";
 
 export default function OpportunitiesPage() {
   const [activeTab, setActiveTab] = useState("open");
@@ -22,19 +24,13 @@ export default function OpportunitiesPage() {
     refetch,
   } = useQuery<Opportunity[]>({
     queryKey: ["organizationOpportunities"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/opportunities/my-org");
-      return res.data.data;
-    },
+    queryFn: () => opportunityService.getMyOrgOpportunities(axiosAuth),
   });
 
   // Listen for notification changes and refetch opportunities
   const { data: unreadCount } = useQuery({
     queryKey: ["notificationsUnreadCount"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/notifications/unread-count");
-      return res.data.data;
-    },
+    queryFn: () => notificationService.getUnreadCount(axiosAuth),
     refetchInterval: 30000,
   });
 

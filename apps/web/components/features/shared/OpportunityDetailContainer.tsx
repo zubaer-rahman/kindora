@@ -22,6 +22,10 @@ import QueryStateWrapper from "@/components/common/QueryStateWrapper";
 import OpportunityHeaderBanner from "./OpportunityHeaderBanner";
 import { RosterTab } from "./tabs/roster/RosterTab";
 import type { Volunteer, Shift } from "./tabs/roster/rosterUtils";
+import { opportunityService } from "@/services/opportunity.service";
+import { organizationService } from "@/services/organization.service";
+import { applicationService } from "@/services/application.service";
+import { rosterService } from "@/services/roster.service";
 
 interface OpportunityDetailContainerProps {
   userRole: "volunteer" | "organisation";
@@ -55,56 +59,36 @@ export default function OpportunityDetailContainer({
     error,
   } = useQuery({
     queryKey: ["opportunity", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/opportunities/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => opportunityService.getById(axiosAuth, opportunityId),
     enabled: !!opportunityId,
   });
 
   const { data: opportunityMentors } = useQuery({
     queryKey: ["opportunityMentors", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/organization-mentors/opportunity/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => organizationService.getOpportunityMentors(axiosAuth, opportunityId),
     enabled: !!opportunityId,
   });
 
   const { data: applicants } = useQuery({
     queryKey: ["applicants", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/applications/applicants/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getApplicants(axiosAuth, opportunityId),
     enabled: !!opportunityId,
   });
 
   const { data: recruitedApplicants } = useQuery({
     queryKey: ["recruitments", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/recruitments", {
-        params: { opportunityId },
-      });
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getRecruitments(axiosAuth, opportunityId),
     enabled: !!opportunityId,
   });
 
   const { data: myApplicationStatus } = useQuery({
     queryKey: ["applicationStatus", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/applications/status/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getStatus(axiosAuth, opportunityId),
     enabled: !!opportunityId && !!session?.user,
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await axiosAuth.delete(`/api/v1/opportunities/${id}`);
-      return res.data.data;
-    },
+    mutationFn: (id: string) => opportunityService.delete(axiosAuth, id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["organizationOpportunities"] });
       setIsDeleteDialogOpen(false);
@@ -122,66 +106,47 @@ export default function OpportunityDetailContainer({
   };
 
   const createShiftMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      const res = await axiosAuth.post("/api/v1/rosters/shifts", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: any) => rosterService.createShift(axiosAuth, payload),
     onSuccess: invalidateRoster,
   });
 
   const updateShiftMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      const res = await axiosAuth.patch(`/api/v1/rosters/shifts/${payload.shiftId}`, payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: any) => rosterService.updateShift(axiosAuth, payload.shiftId, payload),
     onSuccess: invalidateRoster,
   });
 
   const deleteShiftMutation = useMutation({
-    mutationFn: async (payload: { shiftId: string }) => {
-      const res = await axiosAuth.delete(`/api/v1/rosters/shifts/${payload.shiftId}`);
-      return res.data.data;
-    },
+    mutationFn: (payload: { shiftId: string }) => rosterService.deleteShift(axiosAuth, payload.shiftId),
     onSuccess: invalidateRoster,
   });
 
   const assignVolunteerMutation = useMutation({
-    mutationFn: async (payload: { shiftId: string; volunteerId: string }) => {
-      const res = await axiosAuth.post(`/api/v1/rosters/shifts/${payload.shiftId}/assign`, { volunteerId: payload.volunteerId });
-      return res.data.data;
-    },
+    mutationFn: (payload: { shiftId: string; volunteerId: string }) =>
+      rosterService.assignVolunteer(axiosAuth, payload.shiftId, payload.volunteerId),
     onSuccess: invalidateRoster,
   });
 
   const unassignVolunteerMutation = useMutation({
-    mutationFn: async (payload: { shiftId: string; volunteerId: string }) => {
-      const res = await axiosAuth.delete(`/api/v1/rosters/shifts/${payload.shiftId}/assign`, { data: { volunteerId: payload.volunteerId } });
-      return res.data.data;
-    },
+    mutationFn: (payload: { shiftId: string; volunteerId: string }) =>
+      rosterService.removeVolunteer(axiosAuth, payload.shiftId, payload.volunteerId),
     onSuccess: invalidateRoster,
   });
 
   const updateVolunteerStatusMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      const res = await axiosAuth.patch(`/api/v1/rosters/shifts/${payload.shiftId}/status`, payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: any) =>
+      rosterService.updateShiftStatus(axiosAuth, payload.shiftId, payload.status),
     onSuccess: invalidateRoster,
   });
 
   const signupForShiftMutation = useMutation({
-    mutationFn: async (payload: { shiftId: string }) => {
-      const res = await axiosAuth.post(`/api/v1/rosters/shifts/${payload.shiftId}/signup`);
-      return res.data.data;
-    },
+    mutationFn: (payload: { shiftId: string }) =>
+      rosterService.signupShift(axiosAuth, payload.shiftId),
     onSuccess: invalidateRoster,
   });
 
   const withdrawFromShiftMutation = useMutation({
-    mutationFn: async (payload: { shiftId: string }) => {
-      const res = await axiosAuth.post(`/api/v1/rosters/shifts/${payload.shiftId}/withdraw`);
-      return res.data.data;
-    },
+    mutationFn: (payload: { shiftId: string }) =>
+      rosterService.withdrawShift(axiosAuth, payload.shiftId),
     onSuccess: invalidateRoster,
   });
 
@@ -210,10 +175,7 @@ export default function OpportunityDetailContainer({
 
   const { data: rosterShiftsFromDb } = useQuery({
     queryKey: ["rosterShifts", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/rosters/opportunity/${opportunityId}/shifts`);
-      return res.data.data;
-    },
+    queryFn: () => rosterService.getShiftsForOpportunity(axiosAuth, opportunityId),
     enabled: !!opportunityId && !!canAccessRoster,
   });
 

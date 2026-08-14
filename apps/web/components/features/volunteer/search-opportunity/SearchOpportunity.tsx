@@ -10,6 +10,7 @@ import { FilterSidebar, SearchBar, VolunteerOpportunityCard } from "@/components
 import { useSearch } from "@/components/providers/SearchProvider";
 import { PaginationWrapper } from "@/components/common/PaginationWrapper";
 import { Heart, ChevronDown } from "lucide-react";
+import { opportunityService } from "@/services/opportunity.service";
 
 import { cn } from "@/lib/utils";
 import {
@@ -59,21 +60,16 @@ export default function SearchOpportunity() {
   const axiosAuth = useAxiosAuth();
   const { data: opportunitiesData, isLoading: isLoadingOpportunities } = useQuery({
     queryKey: ['opportunities', 'search', currentPage, filters, sortBy],
-    queryFn: async () => {
-      const res = await axiosAuth.get('/api/v1/opportunities', {
-        params: {
-          page: currentPage,
-          limit: 6,
-          search: filters.searchQuery || undefined,
-          categories: filters.categories.length > 0 ? filters.categories : undefined,
-          commitmentType: filters.commitmentType,
-          location: filters.location || undefined,
-          sortBy: sortBy === "most_recent" ? "recently_added" : "best_matches",
-          saved: filters.saved || undefined,
-        }
-      });
-      return res.data.data;
-    },
+    queryFn: () => opportunityService.getAll(axiosAuth, {
+      page: currentPage,
+      limit: 6,
+      search: filters.searchQuery || undefined,
+      categories: filters.categories.length > 0 ? filters.categories : undefined,
+      commitmentType: filters.commitmentType,
+      location: filters.location || undefined,
+      sortBy: sortBy === "most_recent" ? "recently_added" : "best_matches",
+      saved: filters.saved || undefined,
+    }),
   });
 
 

@@ -26,6 +26,9 @@ import BackButton from "@/components/buttons/BackButton";
 import { useSession } from "next-auth/react";
 import Loading from "@/app/loading";
 import placeholderCoverImage from "../../../../../public/images/banners/cover_placeholder.png"
+import { opportunityService } from "@/services/opportunity.service";
+import { organizationService } from "@/services/organization.service";
+import { applicationService } from "@/services/application.service";
 
 export default function MentorOpportunityDetailsPage() {
   const params = useParams();
@@ -46,40 +49,26 @@ export default function MentorOpportunityDetailsPage() {
     error,
   } = useQuery({
     queryKey: ["opportunity", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/opportunities/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => opportunityService.getById(axiosAuth, opportunityId),
     enabled: !!opportunityId,
   });
 
   // Check if current user is a mentor for this opportunity
   const { data: opportunityMentors } = useQuery({
     queryKey: ["opportunityMentors", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/organization-mentors/opportunity/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => organizationService.getOpportunityMentors(axiosAuth, opportunityId),
     enabled: !!opportunityId,
   });
 
   const { data: applicants, isLoading: isLoadingApplicants } = useQuery({
     queryKey: ["applicants", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/applications/applicants/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getApplicants(axiosAuth, opportunityId),
     enabled: !!opportunityId,
   });
 
   const { data: recruitedApplicants, isLoading: isLoadingRecruitedApplicants } = useQuery({
     queryKey: ["recruitedApplicants", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/recruitments", {
-        params: { opportunityId },
-      });
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getRecruitments(axiosAuth, opportunityId),
     enabled: !!opportunityId,
   });
 

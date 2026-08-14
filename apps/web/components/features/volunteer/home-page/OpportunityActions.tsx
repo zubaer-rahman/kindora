@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ApplyButton } from "@/components/buttons/ApplyButton";
 import ConfirmationDialog from "@/components/modals/ConfirmationDialog";
 import { useFavorite } from "@/hooks/useFavorite";
+import { applicationService } from "@/services/application.service";
 
 export function OpportunityActions({ opportunity }: { opportunity: any }) {
   const { data: session } = useSession();
@@ -24,18 +25,12 @@ export function OpportunityActions({ opportunity }: { opportunity: any }) {
 
   const { data: applicationStatus, isLoading: isStatusLoading } = useQuery({
     queryKey: ["applicationStatus", opportunity._id],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/applications/status/${opportunity._id}`);
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getStatus(axiosAuth, opportunity._id),
     enabled: !!session?.user?.id
   });
 
   const revokeMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosAuth.delete(`/api/v1/applications/${opportunity._id}`);
-      return res.data.data;
-    },
+    mutationFn: () => applicationService.withdraw(axiosAuth, opportunity._id),
     onSuccess: () => {
       toast.success("Application withdrawn successfully");
       queryClient.invalidateQueries({ queryKey: ["activeApplications"] });

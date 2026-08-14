@@ -15,6 +15,8 @@ import { useSearch } from "@/components/providers/SearchProvider";
 import VolunteerDashboardSidebar from "./VolunteerDashboardSidebar";
 import { PaginationWrapper } from "@/components/common/PaginationWrapper";
 import { Skeleton } from "@/components/ui/skeleton";
+import { opportunityService } from "@/services/opportunity.service";
+import { favoriteService } from "@/services/favorite.service";
 
 export default function FindOpportunity() {
   const router = useRouter();
@@ -47,41 +49,29 @@ export default function FindOpportunity() {
   const { data: opportunitiesData, isLoading: isLoadingOpportunities } =
     useQuery({
       queryKey: ["allOpportunities", isGenericTab ? currentPage : 1, filters, activeTab],
-      queryFn: async () => {
-        const res = await axiosAuth.get(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/opportunities`,
-          {
-            params: {
-              page: isGenericTab ? currentPage : 1,
-              limit: isGenericTab ? 6 : 1,
-              search: filters.searchQuery || undefined,
-              categories:
-                filters.categories.length > 0
-                  ? filters.categories.join(",")
-                  : undefined,
-              commitmentType: filters.commitmentType,
-              location: filters.location || undefined,
-              sortBy:
-                activeTab === "best-matches"
-                  ? "best_matches"
-                  : "recently_added",
-            },
-          },
-        );
-        return res.data.data;
-      },
+      queryFn: () =>
+        opportunityService.getAll(axiosAuth, {
+          page: isGenericTab ? currentPage : 1,
+          limit: isGenericTab ? 6 : 1,
+          search: filters.searchQuery || undefined,
+          categories:
+            filters.categories.length > 0
+              ? filters.categories.join(",")
+              : undefined,
+          commitmentType: filters.commitmentType,
+          location: filters.location || undefined,
+          sortBy:
+            activeTab === "best-matches"
+              ? "best_matches"
+              : "recently_added",
+        }),
       enabled: isGenericTab,
     });
 
   // Fetch total count for "Most recent" tab
   const { data: allCountData } = useQuery({
     queryKey: ["allOpportunitiesCount"],
-    queryFn: async () => {
-      const res = await axiosAuth.get(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/opportunities/count`,
-      );
-      return res.data.data;
-    },
+    queryFn: () => opportunityService.getCount(axiosAuth),
   });
 
   // Fetch user's favorite/saved opportunities (for "saved" tab)
@@ -90,18 +80,12 @@ export default function FindOpportunity() {
       "favoriteOpportunities",
       activeTab === "saved" ? currentPage : 1,
     ],
-    queryFn: async () => {
-      const res = await axiosAuth.get(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/volunteer-profiles/favorites/paginated`,
-        {
-          params: {
-            page: activeTab === "saved" ? currentPage : 1,
-            limit: activeTab === "saved" ? 6 : 1,
-          },
-        },
-      );
-      return res.data.data;
-    },
+    queryFn: () =>
+      favoriteService.getPaginatedFavorites(
+        axiosAuth,
+        activeTab === "saved" ? currentPage : 1,
+        activeTab === "saved" ? 6 : 1
+      ),
     enabled: !!session?.user,
   });
 

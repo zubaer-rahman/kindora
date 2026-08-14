@@ -34,6 +34,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Trash2, Key, Ban, CheckCircle, Search, Pencil } from "lucide-react";
 import toast from "react-hot-toast";
 import Loading from "@/app/loading";
+import { adminService } from "@/services/admin.service";
 
 const LIMIT = 15;
 
@@ -69,12 +70,7 @@ export default function SystemAdminDashboard() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["adminUsers", search, page],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/admin/users", {
-        params: { search, limit: LIMIT, page },
-      });
-      return res.data.data;
-    },
+    queryFn: () => adminService.getUsers(axiosAuth, search, LIMIT, page),
     enabled: isSystemAdmin,
   });
 
@@ -82,9 +78,7 @@ export default function SystemAdminDashboard() {
   const totalPages: number = data?.totalPages ?? 1;
 
   const deleteMutation = useMutation({
-    mutationFn: async (userId: string) => {
-      await axiosAuth.delete(`/api/v1/admin/users/${userId}`);
-    },
+    mutationFn: (userId: string) => adminService.deleteUser(axiosAuth, userId),
     onSuccess: () => {
       toast.success("User deleted.");
       queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
@@ -93,17 +87,8 @@ export default function SystemAdminDashboard() {
   });
 
   const passwordMutation = useMutation({
-    mutationFn: async ({
-      userId,
-      password,
-    }: {
-      userId: string;
-      password: string;
-    }) => {
-      await axiosAuth.patch(`/api/v1/admin/users/${userId}/password`, {
-        newPassword: password,
-      });
-    },
+    mutationFn: ({ userId, password }: { userId: string; password: string }) =>
+      adminService.updatePassword(axiosAuth, userId, password),
     onSuccess: () => {
       toast.success("Password updated.");
       setPasswordModalOpen(false);
@@ -114,31 +99,15 @@ export default function SystemAdminDashboard() {
   });
 
   const blockMutation = useMutation({
-    mutationFn: async ({
-      userId,
-      is_blocked,
-    }: {
-      userId: string;
-      is_blocked: boolean;
-    }) => {
-      await axiosAuth.patch(`/api/v1/admin/users/${userId}/block`, {
-        is_blocked,
-      });
-    },
+    mutationFn: ({ userId, is_blocked }: { userId: string; is_blocked: boolean }) =>
+      adminService.updateBlockStatus(axiosAuth, userId, is_blocked),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["adminUsers"] }),
     onError: () => toast.error("Failed to update block status."),
   });
 
   const editMutation = useMutation({
-    mutationFn: async ({
-      userId,
-      name,
-    }: {
-      userId: string;
-      name: string;
-    }) => {
-      await axiosAuth.patch(`/api/v1/admin/users/${userId}`, { name });
-    },
+    mutationFn: ({ userId, name }: { userId: string; name: string }) =>
+      adminService.updateUser(axiosAuth, userId, name),
     onSuccess: () => {
       toast.success("User updated.");
       setEditModalOpen(false);

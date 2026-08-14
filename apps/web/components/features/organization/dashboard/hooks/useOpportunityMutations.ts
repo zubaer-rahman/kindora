@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { toast } from "react-hot-toast";
 import { AxiosError } from "axios";
+import { opportunityService } from "@/services/opportunity.service";
 
 type OpportunityAction = "archive" | "unarchive" | "delete";
 
@@ -21,8 +22,14 @@ function useOpportunityAction(action: OpportunityAction) {
 
   return useMutation({
     mutationFn: async (opportunityId: string) => {
-      const res = await axiosAuth[config.method](config.path(opportunityId));
-      return res.data.data;
+      if (action === "delete") {
+        await opportunityService.delete(axiosAuth, opportunityId);
+      } else if (action === "archive") {
+        await opportunityService.archive(axiosAuth, opportunityId);
+      } else if (action === "unarchive") {
+        await opportunityService.unarchive(axiosAuth, opportunityId);
+      }
+      return true;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["organizationOpportunities"] });

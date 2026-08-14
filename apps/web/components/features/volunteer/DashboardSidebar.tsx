@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import UserAvatar from "@/components/common/UserAvatar";
 import { LayoutDashboard, Briefcase, MessageSquare, Settings, User } from "lucide-react";
+import { profileService } from "@/services/profile.service";
 
 export default function VolunteerDashboardSidebar() {
   const pathname = usePathname();
@@ -14,10 +15,7 @@ export default function VolunteerDashboardSidebar() {
 
   const { data: volunteer, isLoading } = useQuery({
     queryKey: ["volunteerProfile"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/users/me/volunteer-profile");
-      return res.data.data;
-    },
+    queryFn: () => profileService.getVolunteerProfile(axiosAuth),
   });
 
   const links = [

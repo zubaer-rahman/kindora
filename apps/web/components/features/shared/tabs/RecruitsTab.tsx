@@ -9,6 +9,7 @@ import MessageApplicantModal from "@/components/features/organization/opportunit
 import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
+import { applicationService } from "@/services/application.service";
 
 interface RecruitsTabProps {
   opportunityId: string;
@@ -37,12 +38,7 @@ export function RecruitsTab({
 
   const { data: recruitedApplicants, isLoading } = useQuery({
     queryKey: ["recruitments", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/recruitments", {
-        params: { opportunityId },
-      });
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getRecruitments(axiosAuth, opportunityId),
     enabled: !!opportunityId
   });
 

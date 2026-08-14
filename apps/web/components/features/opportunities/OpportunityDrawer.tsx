@@ -17,6 +17,7 @@ import { useFavorite } from "@/hooks/useFavorite";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { OpportunityInfoGrid } from "@/components/features/opportunities/opportunity-details/OpportunityInfoGrid";
 import { OpportunityContactInfo } from "@/components/features/opportunities/opportunity-details/OpportunityContactInfo";
+import { opportunityService } from "@/services/opportunity.service";
 
 interface OpportunityDrawerProps {
   opportunityId: string | null;
@@ -45,10 +46,7 @@ export default function OpportunityDrawer({
     error,
   } = useQuery({
     queryKey: ["opportunity", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/opportunities/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => opportunityService.getById(axiosAuth, opportunityId!),
     enabled: !!opportunityId && isOpen,
   });
 

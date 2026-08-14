@@ -10,6 +10,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
 import { MapPin, User, Heart, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { profileService } from "@/services/profile.service";
+import { applicationService } from "@/services/application.service";
 
 interface VolunteerDashboardSidebarProps {
     className?: string;
@@ -20,19 +22,11 @@ export default function VolunteerDashboardSidebar({ className }: VolunteerDashbo
     const axiosAuth = useAxiosAuth();
     const { data: volunteer, isLoading: isLoadingVolunteer } = useQuery({
         queryKey: ["volunteerProfile"],
-        queryFn: async () => {
-            const res = await axiosAuth.get("/api/v1/volunteer-profiles/me");
-            return res.data.data;
-        },
+        queryFn: () => profileService.getVolunteerProfile(axiosAuth),
     });
     const { data: applicationsData, isLoading: isLoadingApplications } = useQuery({
         queryKey: ["applications", "currentUser"],
-        queryFn: async () => {
-            const res = await axiosAuth.get("/api/v1/applications/me", {
-                params: { page: 1, limit: 5 },
-            });
-            return res.data.data;
-        },
+        queryFn: () => applicationService.getMyApplications(axiosAuth, 1, 5),
     });
 
     if (isLoadingVolunteer || isLoadingApplications) {

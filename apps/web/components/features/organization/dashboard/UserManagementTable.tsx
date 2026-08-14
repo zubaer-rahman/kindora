@@ -31,6 +31,7 @@ import ConfirmationDialog from "@/components/modals/ConfirmationDialog";
 import UserAvatar from "@/components/common/UserAvatar";
 import { UserActionMenu } from "./UserActionMenu";
 import { useUserMutations } from "@/hooks/useUserMutations";
+import { userService } from "@/services/user.service";
 
 interface User {
   _id: string;
@@ -52,10 +53,7 @@ export default function UserManagementTable({
   const axiosAuth = useAxiosAuth();
   const { data: users, isLoading } = useQuery({
     queryKey: ["organizationUsers"],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/users/organization/${organizationId}`);
-      return res.data.data;
-    },
+    queryFn: () => userService.getOrganizationUsers(axiosAuth, organizationId),
     enabled: !!organizationId
   });
 

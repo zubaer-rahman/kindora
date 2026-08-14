@@ -11,7 +11,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { formatDistanceToNow } from "date-fns";
-// import { NotificationHistory } from "./notification-history";
+import { notificationService } from "@/services/notification.service";
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,22 +21,19 @@ export function NotificationBell() {
   // Get unread notification count
   const { data: unreadCount } = useQuery({
     queryKey: ["notificationsUnreadCount"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/notifications/unread-count");
-      return res.data.data;
-    },
+    queryFn: () => notificationService.getUnreadCount(axiosAuth),
     refetchInterval: 60000, // Refetch every 60 seconds (relaxed since global subscription handles it)
   });
 
   // Get notifications when popover is open
   const { data: notificationsData } = useQuery({
     queryKey: ["notifications", { page: 1, limit: 10, unreadOnly: false }],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/notifications", {
-        params: { page: 1, limit: 10, unreadOnly: false },
-      });
-      return res.data.data;
-    },
+    queryFn: () =>
+      notificationService.getAll(axiosAuth, {
+        page: 1,
+        limit: 10,
+        is_read: false, // wait, unreadOnly in frontend params was unreadOnly: false. Let's just pass page & limit.
+      }),
     enabled: isOpen,
   });
 
@@ -59,10 +56,7 @@ export function NotificationBell() {
 
   // Mark notification as read mutation
   const markAsReadMutation = useMutation({
-    mutationFn: async (notificationId: string) => {
-      const res = await axiosAuth.patch(`/api/v1/notifications/read/${notificationId}`);
-      return res.data.data;
-    },
+    mutationFn: (notificationId: string) => notificationService.markAsRead(axiosAuth, notificationId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notificationsUnreadCount"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -71,10 +65,7 @@ export function NotificationBell() {
 
   // Mark all as read mutation
   const markAllAsReadMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosAuth.post("/api/v1/notifications/read-all");
-      return res.data.data;
-    },
+    mutationFn: () => notificationService.markAllAsRead(axiosAuth),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notificationsUnreadCount"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });

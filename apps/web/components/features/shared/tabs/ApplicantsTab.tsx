@@ -7,6 +7,7 @@ import { Applicant, ApplicantsCard } from "@/components/features/organization/op
 import MessageApplicantModal from "@/components/features/organization/opportunities/MessageApplicantModal";
 import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
+import { applicationService } from "@/services/application.service";
 
 interface ApplicantsTabProps {
   opportunityId: string;
@@ -32,10 +33,7 @@ export function ApplicantsTab({
 
   const { data: applicants, isLoading } = useQuery({
     queryKey: ["applicants", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/applications/applicants/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getApplicants(axiosAuth, opportunityId),
     enabled: !!opportunityId
   });
 

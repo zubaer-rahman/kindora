@@ -7,6 +7,7 @@ import MentorDashboardSidebar from "@/components/features/mentor/DashboardSideba
 import { MentorOpportunityCard } from "@/components/features/mentor/MentorOpportunityCard";
 import { PaginationWrapper } from "@/components/common/PaginationWrapper";
 import { Users } from "lucide-react";
+import { opportunityService } from "@/services/opportunity.service";
 
 export default function MentorDashboard() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -15,12 +16,7 @@ export default function MentorDashboard() {
 
     const { data, isLoading } = useQuery({
         queryKey: ["mentorOpportunities", currentPage, limit],
-        queryFn: async () => {
-            const res = await axiosAuth.get("/api/v1/opportunities/mentor", {
-                params: { page: currentPage, limit },
-            });
-            return res.data.data;
-        },
+        queryFn: () => opportunityService.getMentorOpportunitiesPaginated(axiosAuth, currentPage, limit),
     });
 
     const opportunities = data?.opportunities || [];

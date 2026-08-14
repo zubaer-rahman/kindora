@@ -15,10 +15,9 @@ import {
 import { MultiSelectField } from "@/components/form-input/MultiSelectField";
 import { PhoneField } from "@/components/form-input/PhoneField";
 import { suburbs } from "@/utils/constants/suburb";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { formatText } from "@/utils/helpers/formatText";
 import countryList from "react-select-country-list";
@@ -34,6 +33,8 @@ import { SkillsMultiSelect } from "@/components/form-input/SkillsMultiSelectSele
 import RandomAvatar from "@/components/common/RandomAvatar";
 import { ProfilePhotoInput } from "@/components/form-input/ProfilePhotoInput";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useVolunteerProfile } from "@/hooks/useVolunteerProfile";
+import { skillService } from "@/services/skill.service";
 
 export function VolunteerProfileForm() {
   const [editMode, setEditMode] = useState<"none" | "personal">("none");
@@ -42,37 +43,8 @@ export function VolunteerProfileForm() {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const { data: volunteerProfile, isLoading } = useQuery({
-    queryKey: ['volunteerProfile'],
-    queryFn: async () => {
-      const res = await axiosAuth.get('/api/v1/volunteer-profiles/me');
-      return res.data.data;
-    },
-  });
-
+  const { profile: volunteerProfile, isLoading, updateProfileMutation } = useVolunteerProfile();
   const countryOptions = useMemo(() => countryList().getData(), []);
-
-  const volunteerProfileUpdateMutation = useMutation({
-    mutationFn: async (data: VolunteerProfileUpdateData) => {
-      const res = await axiosAuth.patch('/api/v1/volunteer-profiles/me', data);
-      return res.data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['volunteerProfile'] });
-      toast.success("Volunteer profile updated successfully!");
-      setEditMode("none");
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to update profile");
-    },
-  });
-
-  const createSkillMutation = useMutation({
-    mutationFn: async (payload: { name: string }) => {
-      const res = await axiosAuth.post('/api/v1/skills', payload);
-      return res.data.data;
-    },
-  });
 
   const form = useForm<VolunteerProfileUpdateData>({
     resolver: zodResolver(VolunteerProfileUpdateSchema),
@@ -156,9 +128,8 @@ export function VolunteerProfileForm() {
 
       for (const skillName of newSkills) {
         try {
-          await createSkillMutation.mutateAsync({ name: skillName });
+          await skillService.createSkill(axiosAuth, skillName);
         } catch (error) {
-          // Skills creation now returns existing skill instead of throwing error
           console.error("Failed to create skill:", error);
         }
       }
@@ -168,7 +139,8 @@ export function VolunteerProfileForm() {
         area: data.area?.replace(/_/g, " "),
       };
 
-      await volunteerProfileUpdateMutation.mutateAsync(formattedData);
+      await updateProfileMutation.mutateAsync(formattedData);
+      setEditMode("none");
     } catch {
     }
   };
@@ -604,7 +576,7 @@ export function VolunteerProfileForm() {
                     </div>
       
                     <SubmitButton
-                      isPending={volunteerProfileUpdateMutation.isPending || isImageUploading}
+                      isPending={updateProfileMutation.isPending || isImageUploading}
                     />
                   </form>
                 </Form>
@@ -690,11 +662,9 @@ export function VolunteerProfileForm() {
                               <InfoField
                                 label="Currently Studying"
                                 value={
-                                  volunteerProfile.is_currently_studying === "yes"
-                                    ? "Yes"
-                                    : volunteerProfile.is_currently_studying === "no"
-                                      ? "No"
-                                      : "Not specified"
+                                  volunteerProfile.is_currently_studying === "no"
+                                    ? "No"
+                                    : "Not specified"
                                 }
                               />
                             )}

@@ -12,6 +12,9 @@ import toast from "react-hot-toast";
 import Avatar from "./Avatar";
 import type { Group } from "@/types/message";
 import { useSession } from "next-auth/react";
+import { organizationService } from "@/services/organization.service";
+import { userService } from "@/services/user.service";
+import { messageService } from "@/services/message.service";
 
 interface GroupMemberManagementProps {
   group: Group;
@@ -34,10 +37,7 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
   // Check if current user is an opportunity mentor for this specific opportunity
   const { data: opportunityMentors } = useQuery({
     queryKey: ["opportunityMentors", opportunityId || group.opportunityId || ""],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/organization-mentors/opportunity/${opportunityId || group.opportunityId || ""}`);
-      return res.data.data;
-    },
+    queryFn: () => organizationService.getOpportunityMentors(axiosAuth, opportunityId || group.opportunityId || ""),
     enabled: !!(opportunityId || group.opportunityId),
   });
 
@@ -57,17 +57,7 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
   // Get available users for adding to group (volunteers and mentors)
   const { data: availableUsersData } = useQuery({
     queryKey: ["availableUsers", searchQuery],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/users/available", {
-        params: {
-          page: 1,
-          limit: 50,
-          search: searchQuery || undefined,
-          includeMentors: true,
-        },
-      });
-      return res.data.data;
-    },
+    queryFn: () => userService.getAvailableUsers(axiosAuth, searchQuery),
     enabled: open,
   });
 
@@ -84,10 +74,8 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
 
   // Mutations
   const addMemberMutation = useMutation({
-    mutationFn: async (payload: { groupId: string; memberId: string }) => {
-      const res = await axiosAuth.post(`/api/v1/messages/groups/${payload.groupId}/members`, { memberId: payload.memberId });
-      return res.data.data;
-    },
+    mutationFn: (payload: { groupId: string; memberId: string }) => 
+      messageService.addMemberToGroup(axiosAuth, payload.groupId, payload.memberId),
     onSuccess: () => {
       setSelectedUsers([]);
       onGroupUpdated();
@@ -99,10 +87,8 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
   });
 
   const removeMemberMutation = useMutation({
-    mutationFn: async (payload: { groupId: string; memberId: string }) => {
-      const res = await axiosAuth.delete(`/api/v1/messages/groups/${payload.groupId}/members/${payload.memberId}`);
-      return res.data.data;
-    },
+    mutationFn: (payload: { groupId: string; memberId: string }) => 
+      messageService.removeMemberFromGroup(axiosAuth, payload.groupId, payload.memberId),
     onSuccess: () => {
       toast.success("Member removed successfully");
       onGroupUpdated();
@@ -114,10 +100,8 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
   });
 
   const promoteToAdminMutation = useMutation({
-    mutationFn: async (payload: { groupId: string; memberId: string }) => {
-      const res = await axiosAuth.post(`/api/v1/messages/groups/${payload.groupId}/members/${payload.memberId}/promote`);
-      return res.data.data;
-    },
+    mutationFn: (payload: { groupId: string; memberId: string }) => 
+      messageService.promoteMember(axiosAuth, payload.groupId, payload.memberId),
     onSuccess: () => {
       toast.success("Member promoted to admin successfully");
       onGroupUpdated();
@@ -129,10 +113,8 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
   });
 
   const demoteFromAdminMutation = useMutation({
-    mutationFn: async (payload: { groupId: string; memberId: string }) => {
-      const res = await axiosAuth.delete(`/api/v1/messages/groups/${payload.groupId}/members/${payload.memberId}/admin`);
-      return res.data.data;
-    },
+    mutationFn: (payload: { groupId: string; memberId: string }) => 
+      messageService.demoteMember(axiosAuth, payload.groupId, payload.memberId),
     onSuccess: () => {
       toast.success("Admin demoted successfully");
       onGroupUpdated();
