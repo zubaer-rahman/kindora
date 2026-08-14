@@ -112,7 +112,6 @@ export default function PublicOpportunitiesPage() {
                           onCardClick={() =>
                             router.push(`/view/opportunity/${opportunity._id}`)
                           }
-                          onApplyClick={() => setIsSignupModalOpen(true)}
                         />
                       </div>
                     ))}

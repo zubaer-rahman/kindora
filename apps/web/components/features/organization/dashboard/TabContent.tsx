@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import EmptyState from '@/components/common/EmptyState';
 import ActiveContractCard from './ActiveContractCard';
-import OpportunityCard from './OpportunityCard';
+import OpportunityCard from './OrganizationDashboardOpportunityCard';
 import { Opportunity } from '@/types/opportunities';
 import { OrganisationDashboardTabKey } from '@/utils/constants/organization-dashboard-tabs';
 import { DASHBOARD_GRID_LAYOUT, DASHBOARD_MIN_HEIGHT } from './constants';
