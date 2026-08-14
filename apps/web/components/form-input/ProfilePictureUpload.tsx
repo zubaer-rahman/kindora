@@ -1,7 +1,7 @@
 import React from 'react';
 import { Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import RandomAvatar from '@/components/ui/random-avatar';
+import RandomAvatar from '@/components/common/RandomAvatar';
 
 type ProfilePictureUploadProps = {
   currentImage?: string;

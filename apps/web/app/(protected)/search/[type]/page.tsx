@@ -1,9 +1,9 @@
 "use client";
 
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-import SearchOpportunity from "@/components/layout/volunteer/SearchOpportunity"; import { useParams } from "next/navigation";
+import SearchOpportunity from "@/components/features/volunteer/search-opportunity/SearchOpportunity"; import { useParams } from "next/navigation";
 import React, { Suspense } from "react";
-import SearchVolunteer from "@/components/layout/organisation/searchVolunteer";
+import SearchVolunteer from "@/components/features/organization/search-volunteer/SearchVolunteer";
 
 const SearchTypePage = () => {
     const params = useParams();

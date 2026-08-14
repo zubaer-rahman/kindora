@@ -12,7 +12,7 @@ import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import React from "react";
-import { OpportunityDetails } from "../layout/volunteer/home-page/HomePageCategories";
+import { OpportunityDetails } from "@/components/features/volunteer/home-page/HomePageCategories";
 import toast from "react-hot-toast";
 import { formatTimeToAMPM } from "@/utils/helpers/formatTime";
 

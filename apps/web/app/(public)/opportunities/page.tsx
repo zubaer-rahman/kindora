@@ -7,9 +7,9 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { Opportunity } from "@/types/opportunities";
 import { OpportunityCard } from "@/components/common";
-import SignupModal from "@/components/layout/opportunities/SignupModal";
+import SignupModal from "@/components/features/opportunities/SignupModal";
 import PublicLayout from "@/components/layout/PublicLayout";
-import PublicPageHero from "@/components/features/common/PublicPageHero";
+import PublicPageHero from "@/components/features/landing-page/PublicPageHero";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 

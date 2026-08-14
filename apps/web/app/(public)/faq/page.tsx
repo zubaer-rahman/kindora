@@ -1,8 +1,8 @@
 "use client";
 
-import FAQSection from "../../../components/layout/landing/faq/FAQSection";
-import FAQHero from "../../../components/layout/landing/faq/FAQHero";
-import RegistrationBannerNew from "../../../components/layout/landing/home/RegistrationBannerNew";
+import FAQSection from "@/components/features/landing-page/faq/FAQSection";
+import FAQHero from "@/components/features/landing-page/faq/FAQHero";
+import RegistrationBannerNew from "@/components/features/landing-page/home/RegistrationBannerNew";
 import PublicLayout from "@/components/layout/PublicLayout";
 
 const KINDORAFAQs = [

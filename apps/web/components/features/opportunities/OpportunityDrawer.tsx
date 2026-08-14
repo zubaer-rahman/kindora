@@ -12,7 +12,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { formatTimeToAMPM } from "@/utils/helpers/formatTime";
 import { formatDistanceToNow } from "date-fns";
 import { ApplyButton } from "@/components/buttons/ApplyButton";
-import { PostSidebar } from "@/components/layout/shared/PostSidebar";
+import { PostSidebar } from "@/components/features/shared/PostSidebar";
 import { useFavorite } from "@/hooks/useFavorite";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { OpportunityInfoGrid } from "@/components/features/opportunities/opportunity-details/OpportunityInfoGrid";

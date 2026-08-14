@@ -16,9 +16,9 @@ import {
   Phone,
 } from "lucide-react";
 import { formatTimeToAMPM } from "@/utils/helpers/formatTime";
-import { PostSidebar } from "@/components/layout/shared/PostSidebar";
+import { PostSidebar } from "@/components/features/shared/PostSidebar";
 import { Button } from "@/components/ui/button";
-import SignupModal from "@/components/layout/opportunities/SignupModal";
+import SignupModal from "@/components/features/opportunities/SignupModal";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { motion } from "framer-motion";
 import BackButton from "@/components/buttons/BackButton";
@@ -297,8 +297,7 @@ export default function PublicOpportunityDetailPage() {
             </motion.div>
           </div>
 
-          {/* =============== Sidebar =============== */}
-          {org && (
+           {org && (
             <div className="w-full lg:w-[320px] flex-shrink-0">
               <div className="lg:sticky lg:top-6">
                 <PostSidebar

@@ -7,10 +7,10 @@ import { Opportunity } from "@/types/opportunities";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import OrganizationAvatar from "@/components/ui/OrganizationAvatar";
+import OrganizationAvatar from "@/components/common/OrganizationAvatar";
 import { useOpportunityDrawer } from "./OpportunityDrawerProvider";
 import { useVolunteerApplication } from "@/hooks/useVolunteerApplication";
-import SignupModal from "@/components/layout/opportunities/SignupModal";
+import SignupModal from "@/components/features/opportunities/SignupModal";
 import { Loader2 } from "lucide-react";
 
 interface OpportunityCardProps {

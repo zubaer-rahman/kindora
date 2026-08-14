@@ -5,11 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import SignupModal from "@/components/layout/opportunities/SignupModal";
+import SignupModal from "@/components/features/opportunities/SignupModal";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
-import VolunteerCard from "@/components/layout/organisation/VolunteerCard";
-import PublicPageHero from "@/components/features/common/PublicPageHero";
+import VolunteerCard from "@/components/features/organization/VolunteerCard";
+import PublicPageHero from "@/components/features/landing-page/PublicPageHero";
 import { RotateCcw } from "lucide-react";
 
 export default function PublicVolunteersPage() {
@@ -22,8 +22,7 @@ export default function PublicVolunteersPage() {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Reset page when filters change
-    useEffect(() => {
+     useEffect(() => {
         setCurrentPage(1);
     }, [searchQuery, location]);
 

@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-import OrganisationDashboard from "@/components/layout/organisation/dashboard";
-import SystemAdminDashboard from "@/components/layout/system-admin/dashboard";
-import SystemAdminShell from "@/components/layout/system-admin/SystemAdminShell";
+import OrganisationDashboard from "@/components/features/organization/dashboard/OrganizationDashboard";
+import SystemAdminDashboard from "@/components/features/system-admin/dashboard/SystemAdminDashboard";
+import SystemAdminShell from "@/components/features/system-admin/SystemAdminShell";
 
 type DashboardPageProps = {
   params: Promise<{ role: string }>;

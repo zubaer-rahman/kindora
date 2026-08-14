@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { Badge } from "@/components/ui/badge";
-import RandomAvatar from "@/components/ui/random-avatar";
+import RandomAvatar from "@/components/common/RandomAvatar";
 import { motion } from "framer-motion";
 
 const isPlaceholder = (val: string | null | undefined): boolean =>

@@ -6,9 +6,9 @@ import { CreateOpportunityButton } from "@/components/buttons/CreateOpportunityB
 import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-import OpportunityTabs from "@/components/layout/organisation/opportunities/OpportunityTabs";
-import OpportunityList from "@/components/layout/organisation/opportunities/OpportunityList";
-import { PaginationWrapper } from "@/components/PaginationWrapper";
+import OpportunityTabs from "@/components/features/organization/opportunities/OpportunityTabs";
+import OpportunityList from "@/components/features/organization/opportunities/OpportunityList";
+import { PaginationWrapper } from "@/components/common/PaginationWrapper";
 import { usePagination } from "@/hooks/usePagination";
 import type { Opportunity } from "@/types/opportunities";
 
