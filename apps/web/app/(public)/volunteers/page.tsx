@@ -9,7 +9,7 @@ import SignupModal from "@/components/layout/opportunities/SignupModal";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
 import VolunteerCard from "@/components/layout/organisation/VolunteerCard";
-import PublicPageHero from "@/components/common/PublicPageHero";
+import PublicPageHero from "@/components/features/common/PublicPageHero";
 import { RotateCcw } from "lucide-react";
 
 export default function PublicVolunteersPage() {

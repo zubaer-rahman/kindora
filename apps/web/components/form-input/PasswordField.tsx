@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface PasswordFieldProps {
   label: string;
@@ -15,6 +16,7 @@ interface PasswordFieldProps {
   placeholder?: string;
   onFieldChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   customClass?: string;
+  startIcon?: React.ReactNode;
 }
 
 export function PasswordField({
@@ -25,7 +27,8 @@ export function PasswordField({
   error,
   placeholder,
   onFieldChange,
-  customClass = "h-12"
+  customClass = "h-12",
+  startIcon,
 }: PasswordFieldProps) {
   const [show, setShow] = useState(false);
 
@@ -33,8 +36,13 @@ export function PasswordField({
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
       <div className="relative">
+        {startIcon && (
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            {startIcon}
+          </div>
+        )}
         <Input
-          className={customClass}
+          className={cn(startIcon ? "pl-10" : "", "pr-10", customClass)}
           id={id}
           type={show ? "text" : "password"}
           {...(typeof register === "function" && registerName

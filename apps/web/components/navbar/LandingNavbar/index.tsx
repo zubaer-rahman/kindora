@@ -19,7 +19,7 @@ import {
   isProtectedPath,
   isResetPasswordPath,
 } from "@/utils/helpers/pathCheck";
-import KindoraLogo from "@/components/common/KindoraLogo";
+import KindoraLogo from "@/components/features/common/KindoraLogo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function LandingNavbar() {

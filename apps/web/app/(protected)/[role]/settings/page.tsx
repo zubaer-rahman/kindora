@@ -50,7 +50,7 @@ export default function OrganizationSettingsPage() {
       queryClient.invalidateQueries({ queryKey: ["profileCheckup"] });
       toast.success("Profile picture updated successfully!");
       // Force a page refresh to ensure the session is updated
-      console.log("Profile picture updated, refreshing page...");
+
       setTimeout(() => {
         window.location.reload();
       }, 500);

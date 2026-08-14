@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, Variants } from "framer-motion";
-import SearchBar from "@/components/common/SearchBar-old-ref";
+import SearchBar from "@/components/features/search/SearchBar";
 
 export default function HeroSectionNew() {
   const router = useRouter();

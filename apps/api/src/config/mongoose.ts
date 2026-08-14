@@ -23,7 +23,6 @@ const connectToDatabase = async () => {
     mongoose.connection.on('error', (err) => {
       console.error('MongoDB connection error:', err);
       setTimeout(() => {
-        console.log('Attempting to reconnect to MongoDB...');
         connectToDatabase();
       }, 5000);
     });
@@ -31,16 +30,13 @@ const connectToDatabase = async () => {
     mongoose.connection.on('disconnected', () => {
       console.warn('MongoDB disconnected. Retrying connection...');
       setTimeout(() => {
-        console.log('Attempting to reconnect to MongoDB...');
         connectToDatabase();
       }, 5000);
     });
 
     mongoose.connection.on('connected', () => {
-      console.log('MongoDB connected successfully');
     });
 
-    console.log('MongoDB connected');
   } catch (error) {
     console.error('MongoDB connection error:', error);
     throw error;

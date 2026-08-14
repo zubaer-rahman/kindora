@@ -9,7 +9,7 @@ import { Opportunity } from "@/types/opportunities";
 import { OpportunityCard } from "@/components/common";
 import SignupModal from "@/components/layout/opportunities/SignupModal";
 import PublicLayout from "@/components/layout/PublicLayout";
-import PublicPageHero from "@/components/common/PublicPageHero";
+import PublicPageHero from "@/components/features/common/PublicPageHero";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 

@@ -12,7 +12,6 @@ export async function sendPushNotification(
   data?: any,
   categoryId?: string
 ): Promise<void> {
-  console.log(`[PUSH NOTIFICATION STUB] To: ${expoPushToken} | Title: ${title}`);
 }
 
 export async function sendPushNotifications(
@@ -22,5 +21,4 @@ export async function sendPushNotifications(
   data?: any,
   categoryId?: string
 ): Promise<void> {
-  console.log(`[PUSH NOTIFICATIONS STUB] To ${expoPushTokens.length} devices | Title: ${title}`);
 }

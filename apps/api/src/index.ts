@@ -48,5 +48,5 @@ app.use(notFoundHandler);
 app.use(globalErrorHandler);
 
 app.listen(env.port, () => {
-  console.log(`🚀 Kindora API running → http://localhost:${env.port}/api/v1`);
+  console.info(`🚀 Kindora API running → http://localhost:${env.port}/api/v1`);
 });

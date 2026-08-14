@@ -4,23 +4,17 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { PasswordField } from "@/components/form-input/PasswordField";
+import { FormField } from "@/components/form-input/FormField";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import Loading from "@/app/loading";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FormField } from "@/components/form-input/FormField";
+import { AuthCard } from "@/components/layout/auth/AuthCard";
+import { LoadingButton } from "@/components/ui/LoadingButton";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -142,10 +136,7 @@ const ResetPasswordPage = () => {
       setFormError("Passwords don't match");
       return;
     }
-    await authResetMutation.mutateAsync({
-      token,
-      password: data.password,
-    });
+    await authResetMutation.mutateAsync({ token, password: data.password });
   };
 
   const onSubmit = useTokenFlow
@@ -157,22 +148,13 @@ const ResetPasswordPage = () => {
   const emailErrors = formWithEmail.formState.errors;
   const isSubmitting = form.formState.isSubmitting;
   const disabled = useTokenFlow
-    ? isSubmitting ||
-      isPending ||
-      Object.keys(tokenErrors).length > 0 ||
-      !tokenPassword ||
-      !tokenConfirm
-    : isSubmitting ||
-      isPending ||
-      Object.keys(emailErrors).length > 0 ||
-      !email ||
-      !password ||
-      !confirmPassword;
+    ? isSubmitting || isPending || Object.keys(tokenErrors).length > 0 || !tokenPassword || !tokenConfirm
+    : isSubmitting || isPending || Object.keys(emailErrors).length > 0 || !email || !password || !confirmPassword;
 
   if (isLoading) {
     return (
       <Loading size="medium">
-        <p className="text-gray-600 mt-2">Wait a sec...</p>
+        <p className="text-muted-foreground mt-2">Wait a sec...</p>
       </Loading>
     );
   }
@@ -180,104 +162,93 @@ const ResetPasswordPage = () => {
   if (isAuthenticated) return null;
 
   return (
-    <div className="flex justify-center items-center min-h-screen p-4">
-      <Card className="w-full max-w-md border-none shadow-none">
-        <CardHeader>
-          <CardTitle>Reset Password</CardTitle>
-          <CardDescription>
-            {useTokenFlow
-              ? "Enter your new password below (link from email)"
-              : "Enter your email and new password below"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {formError && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{formError}</AlertDescription>
-            </Alert>
-          )}
+    <AuthCard
+      title="Reset Password"
+      description={
+        useTokenFlow
+          ? "Enter your new password below (link from email)"
+          : "Enter your email and new password below"
+      }
+      cardClassName="border-none shadow-none"
+    >
+      {formError && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{formError}</AlertDescription>
+        </Alert>
+      )}
 
-          {useTokenFlow ? (
-            <Form {...formWithToken}>
-              <form onSubmit={onSubmit} className="space-y-6">
-                <PasswordField
-                  label="New Password"
-                  id="password"
-                  register={formWithToken.register}
-                  registerName="password"
-                  error={tokenErrors.password?.message}
-                  placeholder="Enter your new password"
-                />
-
-                <PasswordField
-                  label="Confirm Password"
-                  id="confirmPassword"
-                  register={formWithToken.register}
-                  registerName="confirmPassword"
-                  error={tokenErrors.confirmPassword?.message}
-                  placeholder="Confirm your new password"
-                />
-
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 h-10"
-                  disabled={disabled}
-                >
-                  {(isSubmitting || isPending) && (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  )}
-                  {isSubmitting || isPending ? "Resetting..." : "Reset Password"}
-                </Button>
-              </form>
-            </Form>
-          ) : (
-            <Form {...formWithEmail}>
-              <form onSubmit={onSubmit} className="space-y-6">
-                <FormField
-                  label="Email"
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  register={formWithEmail.register}
-                  registerName="email"
-                  error={emailErrors.email?.message}
-                />
-
-                <PasswordField
-                  label="New Password"
-                  id="password"
-                  register={formWithEmail.register}
-                  registerName="password"
-                  error={emailErrors.password?.message}
-                  placeholder="Enter your new password"
-                />
-
-                <PasswordField
-                  label="Confirm Password"
-                  id="confirmPassword"
-                  register={formWithEmail.register}
-                  registerName="confirmPassword"
-                  error={emailErrors.confirmPassword?.message}
-                  placeholder="Confirm your new password"
-                />
-
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 h-10"
-                  disabled={disabled}
-                >
-                  {(isSubmitting || isPending) && (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  )}
-                  {isSubmitting || isPending ? "Resetting..." : "Reset Password"}
-                </Button>
-              </form>
-            </Form>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+      {useTokenFlow ? (
+        <Form {...formWithToken}>
+          <form onSubmit={onSubmit} className="space-y-6">
+            <PasswordField
+              label="New Password"
+              id="password"
+              register={formWithToken.register}
+              registerName="password"
+              error={tokenErrors.password?.message}
+              placeholder="Enter your new password"
+            />
+            <PasswordField
+              label="Confirm Password"
+              id="confirmPassword"
+              register={formWithToken.register}
+              registerName="confirmPassword"
+              error={tokenErrors.confirmPassword?.message}
+              placeholder="Confirm your new password"
+            />
+            <LoadingButton
+              type="submit"
+              className="w-full h-10"
+              isLoading={isSubmitting || isPending}
+              loadingText="Resetting..."
+              disabled={disabled}
+            >
+              Reset Password
+            </LoadingButton>
+          </form>
+        </Form>
+      ) : (
+        <Form {...formWithEmail}>
+          <form onSubmit={onSubmit} className="space-y-6">
+            <FormField
+              label="Email"
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              register={formWithEmail.register}
+              registerName="email"
+              error={emailErrors.email?.message}
+            />
+            <PasswordField
+              label="New Password"
+              id="password"
+              register={formWithEmail.register}
+              registerName="password"
+              error={emailErrors.password?.message}
+              placeholder="Enter your new password"
+            />
+            <PasswordField
+              label="Confirm Password"
+              id="confirmPassword"
+              register={formWithEmail.register}
+              registerName="confirmPassword"
+              error={emailErrors.confirmPassword?.message}
+              placeholder="Confirm your new password"
+            />
+            <LoadingButton
+              type="submit"
+              className="w-full h-10"
+              isLoading={isSubmitting || isPending}
+              loadingText="Resetting..."
+              disabled={disabled}
+            >
+              Reset Password
+            </LoadingButton>
+          </form>
+        </Form>
+      )}
+    </AuthCard>
   );
 };
 

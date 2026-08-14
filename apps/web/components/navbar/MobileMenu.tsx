@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { GiBinoculars } from "react-icons/gi";
 import { Session } from "next-auth";
-import KindoraLogo from "@/components/common/KindoraLogo";
+import KindoraLogo from "@/components/features/common/KindoraLogo";
 import { PUBLIC_NAV_OPTIONS, STATIC_LINKS } from "@/utils/constants/navigation";
 import { NavLink } from "./NavLink";
 import { NotificationBell } from "@/components/ui/notification-bell";

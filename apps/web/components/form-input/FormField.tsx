@@ -15,6 +15,7 @@ interface FormFieldProps<T extends FieldValues> {
   registerName: Path<T>;
   error?: string;
   className?: string;
+  startIcon?: React.ReactNode;
 }
 
 export const FormField = <T extends FieldValues>({
@@ -26,6 +27,7 @@ export const FormField = <T extends FieldValues>({
   registerName,
   error,
   className = "h-12",
+  startIcon,
 }: FormFieldProps<T>) => {
   return (
     <div className="space-y-2">
@@ -37,6 +39,19 @@ export const FormField = <T extends FieldValues>({
           placeholder={placeholder}
           className={cn("resize-none", className)}
         />
+      ) : startIcon ? (
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            {startIcon}
+          </div>
+          <Input
+            type={type}
+            id={id}
+            {...register(registerName)}
+            placeholder={placeholder}
+            className={cn("pl-10", className)}
+          />
+        </div>
       ) : (
         <Input
           type={type}

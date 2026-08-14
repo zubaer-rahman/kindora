@@ -30,11 +30,8 @@ const sendEmail = async (
     };
 
     const reports = await transporter.sendMail(mailOptions);
-    console.log(reports);
     return true;
   } catch (err) {
-    console.log(err);
-    console.log('EMAIL SEND FAILED');
     return false;
   }
 };

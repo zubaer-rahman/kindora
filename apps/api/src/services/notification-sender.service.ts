@@ -44,13 +44,6 @@ export class NotificationService {
     customMessage?: string
   ): Promise<void> {
     try {
-      console.log(`📢 Sending archive notification for opportunity: ${opportunityTitle}`);
-      console.log(`📊 Notification Details:`);
-      console.log(`   - Opportunity ID: ${opportunityId} (type: ${typeof opportunityId})`);
-      console.log(`   - Opportunity Title: ${opportunityTitle}`);
-      console.log(`   - Organization ID: ${organizationId}`);
-      console.log(`   - Organization Name: ${organizationName}`);
-      console.log(`   - Timestamp: ${new Date().toISOString()}`);
 
       // Debug: Check current notification count
       await this.debugNotificationCount(opportunityId);
@@ -73,15 +66,12 @@ export class NotificationService {
         role: { $in: ['organization', 'admin', 'mentor'] }
       });
 
-      console.log(`👥 Organization users found: ${organizationUsers.length}`);
       organizationUsers.forEach(user => {
-        console.log(`   - ${user.name} (${user.email}) - Role: ${user.role}`);
       });
 
       // Only notify users from this specific organization
       const allUsers = [...organizationUsers];
 
-      console.log(`📧 Total users to notify: ${allUsers.length}`);
 
       // Create notification data
       const notificationData: NotificationData = {
@@ -96,11 +86,8 @@ export class NotificationService {
       };
 
       // Send notifications to all relevant users
-      console.log(`📤 Sending notifications to users...`);
       for (const user of allUsers) {
         // Check if this user already has a notification for this opportunity
-        console.log(`   🔍 Checking for existing notification for ${user.name} (${user.email}) - Opportunity: ${opportunityId}`);
-        console.log(`   🔍 User ID: ${user._id}, Opportunity ID: ${opportunityId}`);
         
         // Use a more robust duplicate check with a time window
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000); // 1 hour ago
@@ -112,36 +99,21 @@ export class NotificationService {
           createdAt: { $gte: oneHourAgo }
         });
 
-        console.log(`   📊 Existing notification found: ${!!existingNotification}`);
-        if (existingNotification) {
-          console.log(`   📊 Existing notification details:`, {
-            id: existingNotification._id,
-            opportunity_id: existingNotification.opportunity_id,
-            type: existingNotification.type,
-            createdAt: existingNotification.createdAt
-          });
-        }
 
         if (existingNotification) {
-          console.log(`   ⏭️ Skipping ${user.name} (${user.email}) - notification already exists (ID: ${existingNotification._id})`);
           continue;
         }
 
-        console.log(`   📧 Sending to: ${user.name} (${user.email})`);
         await this.sendNotificationToUser(user as any, notificationData);
       }
 
       // Note: We're now only sending notifications to users from the specific organization
       // that created the opportunity, ensuring privacy and preventing cross-organization notifications
 
-      console.log(`✅ Archive notification sent for opportunity: ${opportunityTitle}`);
-      console.log(`📊 Summary: Notified ${allUsers.length} users for opportunity "${opportunityTitle}"`);
       
       // Debug: Check final notification count
       await this.debugNotificationCount(opportunityId);
       
-      console.log(`⏰ Completed at: ${new Date().toISOString()}`);
-      console.log(`---`);
     } catch (error) {
       console.error('❌ Error sending archive notification:', error);
     }
@@ -158,8 +130,6 @@ export class NotificationService {
     customMessage?: string
   ): Promise<void> {
     try {
-      console.log(`📤 Starting unarchive notification for opportunity: ${opportunityTitle} (${opportunityId})`);
-      console.log(`🏢 Organization: ${organizationName} (${organizationId})`);
 
       // Get the opportunity to find all users who should be notified
       const OpportunityModel = Opportunity as any;
@@ -179,7 +149,6 @@ export class NotificationService {
         is_deleted: { $ne: true }
       }).select('name email _id');
 
-      console.log(`📧 Total users to notify: ${allUsers.length}`);
 
       // Create notification data
       const notificationData: NotificationData = {
@@ -194,10 +163,8 @@ export class NotificationService {
       };
 
       // Send notifications to all relevant users
-      console.log(`📤 Sending unarchive notifications to users...`);
       for (const user of allUsers) {
         // Check if this user already has a notification for this opportunity
-        console.log(`   🔍 Checking for existing unarchive notification for ${user.name} (${user.email}) - Opportunity: ${opportunityId}`);
         
         // Use a more robust duplicate check with a time window
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000); // 1 hour ago
@@ -209,13 +176,10 @@ export class NotificationService {
           createdAt: { $gte: oneHourAgo }
         });
 
-        console.log(`   📊 Existing unarchive notification found: ${!!existingNotification}`);
         if (existingNotification) {
-          console.log(`   ⏭️ Skipping ${user.name} (${user.email}) - unarchive notification already exists (ID: ${existingNotification._id})`);
           continue;
         }
 
-        console.log(`   📝 Creating unarchive notification for ${user.name} (${user.email})`);
 
         // Create the notification
         const notification = new Notification({
@@ -234,21 +198,15 @@ export class NotificationService {
 
         try {
           await notification.save();
-          console.log(`   ✅ Unarchive notification created for ${user.name} (${user.email}) - ID: ${notification._id}`);
         } catch (saveError: any) {
           if (saveError.code === 11000) {
-            console.log(`   ⚠️ Duplicate unarchive notification prevented for ${user.name} (${user.email})`);
           } else {
             console.error(`   ❌ Error saving unarchive notification for ${user.name}:`, saveError);
           }
         }
       }
 
-      console.log(`✅ Unarchive notification sent for opportunity: ${opportunityTitle}`);
-      console.log(`📊 Summary: Notified ${allUsers.length} users for opportunity "${opportunityTitle}"`);
       
-      console.log(`⏰ Completed at: ${new Date().toISOString()}`);
-      console.log(`---`);
     } catch (error) {
       console.error('❌ Error sending unarchive notification:', error);
     }
@@ -329,12 +287,6 @@ export class NotificationService {
       await this.storeInAppNotification(user._id, notificationData);
 
       // Log the notification
-      console.log(`📧 Notification for user ${user.email || user.name}:`);
-      console.log(`   Subject: ${notificationData.title}`);
-      console.log(`   Message: ${notificationData.message}`);
-      console.log(`   Opportunity: ${notificationData.opportunityTitle}`);
-      console.log(`   Organization: ${notificationData.organizationName}`);
-      console.log(`   Archived at: ${notificationData.archivedAt?.toISOString() || 'N/A'}`);
 
       // TODO: Implement additional notification delivery methods
       // await this.sendEmail(user.email, notificationData);
@@ -350,7 +302,6 @@ export class NotificationService {
    */
   private async sendEmail(email: string, notificationData: NotificationData): Promise<void> {
     // TODO: Implement email sending using nodemailer or similar
-    console.log(`📧 Would send email to ${email}: ${notificationData.title}`);
   }
 
   /**
@@ -358,7 +309,6 @@ export class NotificationService {
    */
   private async sendPushNotification(pushToken: string, notificationData: NotificationData): Promise<void> {
     // TODO: Implement push notification using Firebase or similar
-    console.log(`📱 Would send push notification to ${pushToken}: ${notificationData.title}`);
   }
 
   /**
@@ -370,7 +320,6 @@ export class NotificationService {
       opportunity_id: opportunityId,
       type: 'opportunity_archived'
     });
-    console.log(`🔍 Total notifications for opportunity ${opportunityId}: ${count}`);
   }
 
   /**
@@ -378,15 +327,6 @@ export class NotificationService {
    */
   private async storeInAppNotification(userId: string, notificationData: NotificationData): Promise<void> {
     try {
-      console.log(`💾 Attempting to store notification for user ${userId}...`);
-      console.log(`📝 Notification data:`, {
-        user: userId,
-        type: notificationData.type,
-        title: notificationData.title,
-        message: notificationData.message,
-        opportunity_id: notificationData.opportunityId
-      });
-
       const notificationDataToStore = {
         user: userId,
         type: notificationData.type,
@@ -403,22 +343,12 @@ export class NotificationService {
         isRead: false
       };
 
-      console.log(`💾 Storing notification with data:`, notificationDataToStore);
 
       const NotificationModel = Notification as any;
       const notification = await NotificationModel.create(notificationDataToStore);
-      
-      console.log(`✅ Successfully stored notification:`, {
-        id: notification._id,
-        user: userId,
-        title: notificationData.title,
-        opportunity_id: notification.opportunity_id,
-        createdAt: notification.createdAt
-      });
     } catch (error) {
       // Handle duplicate key error (E11000)
       if (error instanceof Error && error.message.includes('E11000')) {
-        console.log(`⚠️ Duplicate notification prevented for user ${userId} and opportunity ${notificationData.opportunityId}`);
         return;
       }
       

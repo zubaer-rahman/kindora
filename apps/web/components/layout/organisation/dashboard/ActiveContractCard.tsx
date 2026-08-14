@@ -28,7 +28,7 @@ export const ActiveContractCard: React.FC<ActiveContractCardProps> = ({
   contract,
 }) => {
   const router = useRouter();
-console.log("image",  contract?.profileImg);
+
 
   return (
     <div className={`${DASHBOARD_CARD_STYLES} ${DASHBOARD_CARD_HEIGHT}`}>

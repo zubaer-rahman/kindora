@@ -4,7 +4,7 @@ import { ClientProviders } from "@/config/ClientProviders";
 import { auth } from "@/auth";
 import { Toaster } from "react-hot-toast";
 import { SearchProvider } from "@/contexts/SearchContext";
-import { OpportunityDrawerProvider } from "@/components/common/OpportunityDrawerProvider";
+import { OpportunityDrawerProvider } from "@/components/features/opportunities/OpportunityDrawerProvider";
 
 const outfit = Outfit({ subsets: ["latin"] });
 

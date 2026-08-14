@@ -58,7 +58,6 @@ class MessagePubSub extends EventEmitter {
   }
 
   publishNewMessage(userId: string, message: Record<string, unknown>) {
-    console.log('📤 Publishing new message to user:', userId);
 
     // 1. In-memory emit (for same-instance subscribers)
     const event: MessageEvent = {

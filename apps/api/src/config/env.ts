@@ -29,4 +29,7 @@ export default {
   upstash_redis_rest_url: process.env.UPSTASH_REDIS_REST_URL,
   upstash_redis_rest_token: process.env.UPSTASH_REDIS_REST_TOKEN,
   allowed_origins: process.env.ALLOWED_ORIGINS,
+  client_url: process.env.CLIENT_URL,
+  support_url: process.env.SUPPORT_URL,
+  vercel_url: process.env.VERCEL_URL,
 };
