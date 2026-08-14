@@ -290,7 +290,7 @@ export default function OpportunityDrawer({
 
                     <PostSidebar
                       organization_profile={
-                        opportunity.organization_profile as unknown as import("@/server/db/interfaces/organization-profile").IOrgnizationPofile
+                        opportunity.organization_profile as unknown as import("@/types/api/organization-profile").IOrgnizationPofile
                       }
                       userRole={isOrganisation ? "organization" : "volunteer"}
                       className="max-w-full [&_button]:max-w-full [&_a]:max-w-full [&_button]:break-words [&_a]:break-words"

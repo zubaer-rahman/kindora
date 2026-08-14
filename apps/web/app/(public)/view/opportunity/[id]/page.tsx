@@ -302,7 +302,7 @@ export default function PublicOpportunityDetailPage() {
               <div className="lg:sticky lg:top-6">
                 <PostSidebar
                   organization_profile={
-                    org as unknown as import("@/server/db/interfaces/organization-profile").IOrgnizationPofile
+                    org as unknown as import("@/types/api/organization-profile").IOrgnizationPofile
                   }
                   userRole="volunteer"
                   className="lg:w-[320px]"

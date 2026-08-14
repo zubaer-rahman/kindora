@@ -12,7 +12,7 @@ import {
   STATES_OPTIONS,
 } from "@/utils/constants";
 import { SKILL_OPTIONS } from "@/utils/constants";
-import { organizationProfileSchema } from "@/server/validators/user.validator";
+import { organizationProfileSchema } from "@/utils/validation/user.validator";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { PhoneField } from "@/components/form-input/PhoneField";

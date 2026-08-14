@@ -7,13 +7,12 @@ import { OrgSignupFormData, orgSignupSchema } from "@/types/auth";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import { useEmailUniqueness } from "@/hooks/useEmailUniqueness";
 import {
-  registerUser,
   SIGNUP_SUCCESS_UNVERIFIED,
   EMAIL_ALREADY_REGISTERED,
-  getApiError,
-} from "@/lib/auth-api";
+  authService,
+} from "@/services/auth.service";
 import toast from "react-hot-toast";
-import { UserRole } from "@/server/db/interfaces/user";
+import { UserRole } from "@/types/api/user";
 import { Form } from "@/components/ui/form";
 import { SignupStep } from "@/components/features/auth/SignupStep";
 import { SignupActionBar } from "@/components/features/auth/SignupActionBar";
@@ -80,7 +79,7 @@ export default function OrganizationSignup() {
     try {
       setIsSignupLoading(true);
 
-      const response = await registerUser({
+      const response = await authService.registerUser({
         name: data.name,
         email: data.email,
         password: data.password,
@@ -95,7 +94,7 @@ export default function OrganizationSignup() {
 
       toast.error("Something went wrong. Please try again.");
     } catch (err) {
-      const apiError = getApiError(err);
+      const apiError = authService.getApiError(err);
       if (apiError.code === EMAIL_ALREADY_REGISTERED) {
         form.setError("email", { type: "manual", message: EMAIL_TAKEN_MESSAGE });
         return;

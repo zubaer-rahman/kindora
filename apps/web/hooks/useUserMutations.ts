@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import { userService } from "@/services/user.service";
 
 export function useUserMutations() {
   const { data: session } = useSession();
@@ -12,10 +13,8 @@ export function useUserMutations() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const updateRoleMutation = useMutation({
-    mutationFn: async (payload: { userId: string; role: "admin" | "mentor" }) => {
-      const res = await axiosAuth.patch(`/api/v1/users/${payload.userId}/role`, { role: payload.role });
-      return res.data.data;
-    },
+    mutationFn: (payload: { userId: string; role: "admin" | "mentor" }) => 
+      userService.updateRole(axiosAuth, payload.userId, payload.role),
     onSuccess: () => {
       toast.success("User role updated successfully");
       queryClient.invalidateQueries({ queryKey: ["organizationUsers"] });
@@ -26,10 +25,8 @@ export function useUserMutations() {
   });
 
   const demoteMentorMutation = useMutation({
-    mutationFn: async (payload: { userId: string }) => {
-      const res = await axiosAuth.post(`/api/v1/users/${payload.userId}/demote`);
-      return res.data.data;
-    },
+    mutationFn: (payload: { userId: string }) => 
+      userService.demoteMentor(axiosAuth, payload.userId),
     onSuccess: () => {
       toast.success("Mentor role removed successfully");
       queryClient.invalidateQueries({ queryKey: ["organizationUsers"] });
@@ -40,10 +37,8 @@ export function useUserMutations() {
   });
 
   const deleteUserMutation = useMutation({
-    mutationFn: async (payload: { userId: string }) => {
-      const res = await axiosAuth.delete(`/api/v1/users/${payload.userId}`);
-      return res.data.data;
-    },
+    mutationFn: (payload: { userId: string }) => 
+      userService.deleteUser(axiosAuth, payload.userId),
     onSuccess: () => {
       toast.success("User deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["organizationUsers"] });

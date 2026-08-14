@@ -3,8 +3,7 @@
 import { MapPin, Globe, Eye, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import OrganizationAvatar from "@/components/common/OrganizationAvatar";
-import { IOrgnizationPofile } from "@/server/db/interfaces/organization-profile";
-import { Types } from "mongoose";
+import { IOrgnizationPofile } from "@/types/api/organization-profile";
 import { formatText } from "@/utils/helpers/formatText";
 
 interface PostSidebarProps {
@@ -15,7 +14,7 @@ interface PostSidebarProps {
 
 // Type for organization profile that can handle both populated and unpopulated cases
 type OrganizationProfileData = IOrgnizationPofile & {
-  _id: string | Types.ObjectId;
+  _id: string;
   title?: string;
   name?: string;
 };

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
+import { messageService } from "@/services/message.service";
 
 export const useConversations = () => {
   const { data: session } = useSession();
@@ -11,10 +12,7 @@ export const useConversations = () => {
   const { data: conversations, isLoading: isLoadingConversations } =
     useQuery({
       queryKey: ["conversations"],
-      queryFn: async () => {
-        const res = await axiosAuth.get("/api/v1/messages/conversations");
-        return res.data.data;
-      },
+      queryFn: () => messageService.getConversations(axiosAuth),
       enabled: !!session?.user?.id,
       staleTime: 5 * 1000, // 5 seconds
       refetchOnWindowFocus: true,
@@ -25,10 +23,7 @@ export const useConversations = () => {
   const { data: groups, isLoading: isLoadingGroups } =
     useQuery({
       queryKey: ["groups"],
-      queryFn: async () => {
-        const res = await axiosAuth.get("/api/v1/messages/groups");
-        return res.data.data;
-      },
+      queryFn: () => messageService.getGroups(axiosAuth),
       enabled: !!session?.user?.id,
       staleTime: 5 * 1000, // 5 seconds
       refetchOnWindowFocus: true,
@@ -37,12 +32,8 @@ export const useConversations = () => {
     });
 
   const markAsReadMutation = useMutation({
-    mutationFn: async (payload: { conversationId: string }) => {
-      const res = await axiosAuth.patch(
-        `/api/v1/messages/conversation/${payload.conversationId}/read`
-      );
-      return res.data.data;
-    },
+    mutationFn: (payload: { conversationId: string }) => 
+      messageService.markAsRead(axiosAuth, payload.conversationId),
     onSuccess: () => {
       // Only invalidate the necessary queries
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
