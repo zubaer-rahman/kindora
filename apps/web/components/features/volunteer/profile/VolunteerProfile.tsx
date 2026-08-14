@@ -75,7 +75,7 @@ export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
           return "Staff Member";
         } else if (volunteer.non_student_type === "alumni") {
           return "Alumni";
-        } else if (volunteer.non_student_type === "general") {
+        } else if (volunteer.non_student_type === "general_public") {
           return "General Public";
         }
         return "Not Currently Studying";
@@ -357,7 +357,7 @@ export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
           <MessageDialog
             isOpen={isMessageModalOpen}
             onOpenChange={setIsMessageModalOpen}
-            volunteer={volunteer}
+            volunteer={volunteer as any}
           />
         </div>
       )}

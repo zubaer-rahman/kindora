@@ -3,6 +3,7 @@
 import OrganizationOpportunities from "@/components/features/volunteer/home-page/OrganizationOpportunities";
 import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
+import { profileService } from "@/services/profile.service";
 import BackButton from "@/components/buttons/BackButton";
 import QueryStateWrapper from "@/components/common/QueryStateWrapper";
 import OrganizationProfileBanner from "./OrganizationProfileBanner";
@@ -15,10 +16,7 @@ export default function OrganizationProfileView({ organizerId }: OrganizationPro
   const axiosAuth = useAxiosAuth();
   const { data, isLoading, error } = useQuery({
     queryKey: ["organizationProfile", organizerId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/organization-profiles/${organizerId}`);
-      return res.data.data;
-    },
+    queryFn: () => profileService.getOrganizationProfileById(axiosAuth, organizerId),
     enabled: !!organizerId,
   });
 

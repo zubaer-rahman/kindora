@@ -33,4 +33,34 @@ export const profileService = {
     const res = await axios.patch<{ data: IMentorProfile }>("/api/v1/mentor-profiles/me", data);
     return res.data.data;
   },
+
+  getOrganizationProfile: async (axios: AxiosInstance): Promise<any> => {
+    const res = await axios.get("/api/v1/users/me/organisation-profile");
+    return res.data.data;
+  },
+
+  updateOrganizationProfile: async (axios: AxiosInstance, data: any): Promise<any> => {
+    const res = await axios.post("/api/v1/users/me/organization-profile", data);
+    return res.data.data;
+  },
+
+  getOrganizationProfileById: async (axios: AxiosInstance, id: string): Promise<any> => {
+    const res = await axios.get(`/api/v1/organization-profiles/${id}`);
+    return res.data.data;
+  },
+
+  getFavoriteStatus: async (axios: AxiosInstance, organizationId: string): Promise<any> => {
+    const res = await axios.get(`/api/v1/organization-profiles/favorites/status/${organizationId}`);
+    return res.data.data;
+  },
+
+  toggleFavorite: async (axios: AxiosInstance, organizationId: string): Promise<any> => {
+    const res = await axios.put(`/api/v1/organization-profiles/favorites/${organizationId}`);
+    return res.data.data;
+  },
+
+  getFavorites: async (axios: AxiosInstance, params?: any): Promise<any> => {
+    const res = await axios.get("/api/v1/organization-profiles/favorites", { params });
+    return res.data.data;
+  },
 };

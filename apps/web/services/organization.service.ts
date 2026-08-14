@@ -20,4 +20,9 @@ export const organizationService = {
     const res = await axios.post("/api/v1/organization-mentors/accept-invitation", payload);
     return res.data.data;
   },
+
+  toggleMentor: async (axios: AxiosInstance, payload: { volunteerId: string; opportunityId: string }) => {
+    const res = await axios.patch("/api/v1/organization-mentors/toggle", payload);
+    return res.data.data;
+  },
 };

@@ -21,6 +21,7 @@ import { UserMenu } from "@/components/navbar/UserMenu";
 import { NotificationBell } from "@/components/navbar/NotificationBell";
 import { SessionUser } from "@/types/navigation";
 import { MobileMenu } from "@/components/navbar/MobileMenu";
+import { messageService } from "@/services/message.service";
 import { isAuthPath, isProtectedPath } from "@/utils/helpers/pathCheck";
 import { toast } from "react-hot-toast";
 import KindoraLogo from "@/components/common/KindoraLogo";
@@ -108,10 +109,7 @@ export default function ProtectedNavbar() {
   // Fetch conversations to get total unread count (relaxed polling as fallback)
   const { data: conversations } = useQuery({
     queryKey: ["conversations"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/messages/conversations");
-      return res.data.data;
-    },
+    queryFn: () => messageService.getConversations(axiosAuth),
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -122,10 +120,7 @@ export default function ProtectedNavbar() {
   // Fetch groups to get total unread count (relaxed polling as fallback)
   const { data: groups } = useQuery({
     queryKey: ["groups"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/messages/groups");
-      return res.data.data;
-    },
+    queryFn: () => messageService.getGroups(axiosAuth),
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,

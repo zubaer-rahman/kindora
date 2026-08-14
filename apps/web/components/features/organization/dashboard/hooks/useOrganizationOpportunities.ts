@@ -35,7 +35,7 @@ export function useOrganizationOpportunities() {
   const { data: availableVolunteersData, isLoading: isLoadingVolunteers } = useQuery({
     queryKey: ["availableUsers"],
     queryFn: async () => {
-      const res = await userService.getAvailableUsers(axiosAuth, 1, 10);
+      const res = await userService.getAvailableUsers(axiosAuth, { page: 1, limit: 10 });
       return (res?.users ?? []) as Volunteer[];
     },
   });

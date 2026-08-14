@@ -12,6 +12,8 @@ import VolunteerDashboardSidebar from "@/components/features/volunteer/find-oppo
 import { PaginationWrapper } from "@/components/common/PaginationWrapper";
 import { Users } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { applicationService } from "@/services/application.service";
+import { opportunityService } from "@/services/opportunity.service";
 
 interface Application {
     _id: string;
@@ -45,10 +47,7 @@ export default function ManageOpportunities() {
         isLoading: isLoadingActive
     } = useQuery({
         queryKey: ['applications', 'active', currentPage, limit],
-        queryFn: async () => {
-            const res = await axiosAuth.get('/api/v1/applications/me/active', { params: { page: currentPage, limit } });
-            return res.data.data;
-        },
+        queryFn: () => applicationService.getMyActiveApplications(axiosAuth, currentPage, limit),
         enabled: activeTab === "active",
     });
 
@@ -58,10 +57,7 @@ export default function ManageOpportunities() {
         isLoading: isLoadingApproved
     } = useQuery({
         queryKey: ['applications', 'approved', currentPage, limit],
-        queryFn: async () => {
-            const res = await axiosAuth.get('/api/v1/applications/me/approved', { params: { page: currentPage, limit } });
-            return res.data.data;
-        },
+        queryFn: () => applicationService.getMyApprovedApplications(axiosAuth, currentPage, limit),
         enabled: activeTab === "approved",
     });
 
@@ -71,10 +67,7 @@ export default function ManageOpportunities() {
         isLoading: isLoadingRecent
     } = useQuery({
         queryKey: ['applications', 'recent', currentPage, limit],
-        queryFn: async () => {
-            const res = await axiosAuth.get('/api/v1/applications/me/recent', { params: { page: currentPage, limit } });
-            return res.data.data;
-        },
+        queryFn: () => applicationService.getMyRecentApplications(axiosAuth, currentPage, limit),
         enabled: activeTab === "recent",
     });
 
@@ -84,10 +77,7 @@ export default function ManageOpportunities() {
         isLoading: isLoadingMentorOpportunities
     } = useQuery({
         queryKey: ['mentorOpportunities', currentPage, limit],
-        queryFn: async () => {
-            const res = await axiosAuth.get('/api/v1/opportunities/mentor', { params: { page: currentPage, limit } });
-            return res.data.data;
-        },
+        queryFn: () => opportunityService.getAllMentorOpportunities(axiosAuth),
         enabled: activeTab === "mentor",
     });
 

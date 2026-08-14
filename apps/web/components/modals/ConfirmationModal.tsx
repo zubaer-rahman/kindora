@@ -15,6 +15,8 @@ import React from "react";
 import { OpportunityDetails } from "@/components/features/volunteer/home-page/HomePageCategories";
 import toast from "react-hot-toast";
 import { formatTimeToAMPM } from "@/utils/helpers/formatTime";
+import { opportunityService } from "@/services/opportunity.service";
+import { applicationService } from "@/services/application.service";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -44,10 +46,7 @@ export function ConfirmationModal({
   });
 
   const applyMutation = useMutation({
-    mutationFn: async (payload: { opportunityId: string }) => {
-      const res = await axiosAuth.post("/api/v1/applications/apply", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { opportunityId: string }) => applicationService.apply(axiosAuth, payload.opportunityId),
     onSuccess: () => {
       toast.success(
         `Successfully applied to "${opportunityDetails.title}"!`,

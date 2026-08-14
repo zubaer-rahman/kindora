@@ -3,17 +3,26 @@ import { AxiosInstance } from "axios";
 export const userService = {
   getAvailableUsers: async (
     axios: AxiosInstance,
-    page: number = 1,
-    limit: number = 200,
-    includeMentors: boolean = true
+    options?: {
+      page?: number;
+      limit?: number;
+      isMentorOnly?: boolean;
+      search?: string;
+      opportunityId?: string;
+      isGroupContext?: boolean;
+      categories?: string[];
+      location?: string;
+      sortBy?: string;
+    }
   ) => {
     const res = await axios.get("/api/v1/users/available", {
-      params: {
-        search: searchQuery,
-        opportunityId: opportunityId || undefined,
-        isGroupContext: isGroupContext ? "true" : undefined,
-      },
+      params: options,
     });
+    return res.data.data;
+  },
+
+  getMe: async (axios: AxiosInstance) => {
+    const res = await axios.get("/api/v1/users/me");
     return res.data.data;
   },
 

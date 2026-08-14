@@ -12,6 +12,8 @@ import MessageDialog from "../MessageDialog";
 import { SearchBar } from "@/components/common";
 import { useSearch } from "@/components/providers/SearchProvider";
 
+import QueryStateWrapper from "@/components/common/QueryStateWrapper";
+import { userService } from "@/services/user.service";
 import { PaginationWrapper } from "@/components/common/PaginationWrapper";
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
@@ -79,19 +81,14 @@ export default function SearchVolunteer() {
 
   const { data: volunteersData, isLoading } = useQuery({
     queryKey: ["availableUsers", currentPage, filters, searchQuery, sortBy],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/users/available", {
-        params: {
-          page: currentPage,
-          limit: 6,
-          search: searchQuery || undefined,
-          categories: filters.categories.length > 0 ? filters.categories : undefined,
-          location: filters.locations.length > 0 ? filters.locations.join(", ") : undefined,
-          sortBy: sortBy === "best_matches" ? undefined : sortBy,
-        },
-      });
-      return res.data.data;
-    },
+    queryFn: () => userService.getAvailableUsers(axiosAuth, {
+      page: currentPage,
+      limit: 10,
+      search: searchQuery,
+      categories: filters.categories.length > 0 ? filters.categories : undefined,
+      location: filters.locations.length > 0 ? filters.locations.join(", ") : undefined,
+      sortBy: sortBy === "best_matches" ? undefined : sortBy,
+    }),
   });
 
   const handleConnect = (volunteer: Volunteer) => {

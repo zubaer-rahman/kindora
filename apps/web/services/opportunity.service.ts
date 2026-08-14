@@ -62,6 +62,11 @@ export const opportunityService = {
     return res.data.data;
   },
 
+  getMentorOpportunitiesPaginated: async (axios: AxiosInstance, page: number = 1, limit: number = 10) => {
+    const res = await axios.get("/api/v1/opportunities/mentor", { params: { page, limit } });
+    return res.data.data;
+  },
+
   /**
    * Fetches all published opportunities for volunteers (Find Opportunities)
    */

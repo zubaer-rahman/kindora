@@ -8,7 +8,7 @@ export const useAvailableUsers = (enabled: boolean) => {
 
   const { data, isLoading } = useQuery<{ users: AvailableUser[] }>({
     queryKey: ["availableUsers"],
-    queryFn: () => userService.getAvailableUsers(axiosAuth, 1, 200, true),
+    queryFn: () => userService.getAvailableUsers(axiosAuth, { page: 1, limit: 200, isMentorOnly: true }),
     enabled,
   });
 

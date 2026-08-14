@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import ConfirmationDialog from '@/components/modals/ConfirmationDialog';
 import { Pencil, Trash2, FileText, ArchiveRestore } from 'lucide-react';
 import ActionDropdown, { ActionDropdownOption } from '@/components/buttons/ActionDropdown';
+import { opportunityService } from '@/services/opportunity.service';
 
 interface OpportunityActionsDropdownProps {
   opportunityId: string;
@@ -43,10 +44,7 @@ export default function OpportunityActionsDropdown({
   };
 
   const deleteMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosAuth.delete(`/api/v1/opportunities/${opportunityId}`);
-      return res.data;
-    },
+    mutationFn: () => opportunityService.delete(axiosAuth, opportunityId),
     onSuccess: () => {
       invalidateList();
       setIsDeleteDialogOpen(false);
@@ -59,10 +57,7 @@ export default function OpportunityActionsDropdown({
   });
 
   const archiveMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosAuth.patch(`/api/v1/opportunities/${opportunityId}/archive`);
-      return res.data;
-    },
+    mutationFn: () => opportunityService.archive(axiosAuth, opportunityId),
     onSuccess: () => {
       invalidateList();
       setIsDeleteDialogOpen(false);
@@ -75,10 +70,7 @@ export default function OpportunityActionsDropdown({
   });
 
   const unarchiveMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosAuth.patch(`/api/v1/opportunities/${opportunityId}/unarchive`);
-      return res.data;
-    },
+    mutationFn: () => opportunityService.unarchive(axiosAuth, opportunityId),
     onSuccess: () => {
       invalidateList();
       setIsDeleteDialogOpen(false);

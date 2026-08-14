@@ -3,6 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { messageService } from "@/services/message.service";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
@@ -26,10 +27,7 @@ export default function MessageApplicantModal({ isOpen, onClose, applicant }: Me
   const queryClient = useQueryClient();
 
   const sendMessageMutation = useMutation({
-    mutationFn: async (payload: { receiverId: string; content: string }) => {
-      const res = await axiosAuth.post("/api/v1/messages", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { receiverId: string; content: string }) => messageService.sendMessage(axiosAuth, payload),
     onSuccess: () => {
       toast.success("Message sent successfully!");
       setMessage("");

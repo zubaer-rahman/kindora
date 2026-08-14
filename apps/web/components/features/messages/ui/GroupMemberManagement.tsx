@@ -57,7 +57,7 @@ export const GroupMemberManagement: React.FC<GroupMemberManagementProps> = ({
   // Get available users for adding to group (volunteers and mentors)
   const { data: availableUsersData } = useQuery({
     queryKey: ["availableUsers", searchQuery],
-    queryFn: () => userService.getAvailableUsers(axiosAuth, searchQuery),
+    queryFn: () => userService.getAvailableUsers(axiosAuth, { search: searchQuery }),
     enabled: open,
   });
 

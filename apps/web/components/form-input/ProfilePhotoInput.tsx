@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useAxiosAuth } from '@/hooks/useAxiosAuth';
 import toast from 'react-hot-toast';
 import { UseFormSetValue } from 'react-hook-form';
+import { uploadService } from '@/services/upload.service';
 
 type ProfilePhotoInputProps<Ev extends Record<string, any>> = {
   name: any;
@@ -29,8 +30,8 @@ export function ProfilePhotoInput<Ev extends Record<string, any>>({
 
   const uploadMutation = useMutation({
     mutationFn: async (payload: { base64File: string; fileName: string; fileType: string; folder: string }) => {
-      const res = await axiosAuth.post('/api/v1/upload', payload);
-      return res.data.data;
+      const data = await uploadService.uploadImage(axiosAuth, payload);
+      return data;
     },
     onSuccess: (data) => {
       const link = data.link;

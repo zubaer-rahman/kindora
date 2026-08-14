@@ -16,6 +16,8 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { profileService } from "@/services/profile.service";
 
 interface OrganizationCardProps {
     organisation: any; // Using any for now
@@ -34,18 +36,12 @@ export default function OrganizationCard({
 
     const { data: favoriteData } = useQuery({
         queryKey: ["organizationFavoriteStatus", organisation._id],
-        queryFn: async () => {
-            const res = await axiosAuth.get(`/api/v1/organization-profiles/favorites/status/${organisation._id}`);
-            return res.data.data;
-        },
+        queryFn: () => profileService.getFavoriteStatus(axiosAuth, organisation._id),
         enabled: !!session?.user && !!organisation._id,
     });
 
     const toggleFavoriteMutation = useMutation({
-        mutationFn: async (payload: { organizationId: string }) => {
-            const res = await axiosAuth.put(`/api/v1/organization-profiles/favorites/${payload.organizationId}`);
-            return res.data.data;
-        },
+        mutationFn: (payload: { organizationId: string }) => profileService.toggleFavorite(axiosAuth, payload.organizationId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["organizationFavoriteStatus", organisation._id] });
             queryClient.invalidateQueries({ queryKey: ["favoriteOrganizations"] });

@@ -27,7 +27,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   const queryClient = useQueryClient();
   const { data: availableUsersData } = useQuery({
     queryKey: ["availableUsers", searchQuery],
-    queryFn: () => userService.getAvailableUsers(axiosAuth, searchQuery),
+    queryFn: () => userService.getAvailableUsers(axiosAuth, { search: searchQuery }),
     enabled: open,
   });
 

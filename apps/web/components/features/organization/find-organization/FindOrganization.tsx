@@ -8,7 +8,9 @@ import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { OrganizationCard, SearchBar, CustomTabs } from "@/components/common";
 import MentorDashboardSidebar from "@/components/features/mentor/DashboardSidebar";
-import { PaginationWrapper } from "@/components/common/PaginationWrapper";
+import QueryStateWrapper from '@/components/common/QueryStateWrapper';
+import { PaginationWrapper } from '@/components/common/PaginationWrapper';
+import { profileService } from '@/services/profile.service';
 import { useSearch } from "@/components/providers/SearchProvider";
 
 export default function FindOrganisation() {
@@ -53,15 +55,7 @@ export default function FindOrganisation() {
     // Fetch user's saved organisations
     const { data: savedOrgsData, isLoading: isLoadingSaved } = useQuery({
         queryKey: ['favoriteOrganizations', activeTab === "saved" ? currentPage : 1],
-        queryFn: async () => {
-            const res = await axiosAuth.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/organization-profiles/favorites`, {
-                params: {
-                    page: activeTab === "saved" ? currentPage : 1,
-                    limit: activeTab === "saved" ? 6 : 1,
-                }
-            });
-            return res.data.data;
-        },
+        queryFn: () => profileService.getFavorites(axiosAuth, { page: currentPage, limit: 6 }),
         enabled: activeTab === "saved"
     });
 

@@ -36,6 +36,9 @@ import {
 import RandomAvatar from "@/components/common/RandomAvatar";
 import { ProfilePhotoInput } from "@/components/form-input/ProfilePhotoInput";
 import { FormImageInput } from "@/components/form-input/FormImageInput";
+import { userService } from "@/services/user.service";
+import { profileService } from "@/services/profile.service";
+import { skillService } from "@/services/skill.service";
 
 type OrganizationProfileData = Omit<
   z.infer<typeof organizationProfileSchema>,
@@ -70,24 +73,15 @@ export default function OrganizationProfile() {
 
   const { data: profileData, isLoading } = useQuery({
     queryKey: ['profileCheckup'],
-    queryFn: async () => {
-      const res = await axiosAuth.get('/api/v1/users/me/profile-checkup');
-      return res.data.data;
-    },
+    queryFn: () => userService.getMe(axiosAuth),
   });
 
   // Organization profile mutation
   const createSkillMutation = useMutation({
-    mutationFn: async (payload: { name: string }) => {
-      const res = await axiosAuth.post('/api/v1/skills', payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { name: string }) => skillService.createSkill(axiosAuth, payload.name),
   });
   const organizationProfileUpdateMutation = useMutation({
-    mutationFn: async (data: OrganizationProfileData) => {
-      const res = await axiosAuth.post('/api/v1/users/me/organization-profile', data);
-      return res.data.data;
-    },
+    mutationFn: (data: OrganizationProfileData) => profileService.updateOrganizationProfile(axiosAuth, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['profileCheckup'] });
       if (variables.title && variables.contact_email) {

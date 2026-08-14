@@ -92,7 +92,7 @@ export default function VolunteerDashboardSidebar({ className }: VolunteerDashbo
         } else if (volunteer.is_currently_studying === "no") {
             if (volunteer.non_student_type === "staff") return "Staff Member";
             if (volunteer.non_student_type === "alumni") return "Alumni";
-            if (volunteer.non_student_type === "general") return "General Public";
+            if (volunteer.non_student_type === "general_public") return "General Public";
             return "Not Currently Studying";
         }
         return volunteer.student_type === "yes" ? "Student" : "Non-Student";
@@ -102,7 +102,7 @@ export default function VolunteerDashboardSidebar({ className }: VolunteerDashbo
         <div className={cn("bg-background rounded-[24px] border border-border p-6 flex flex-col gap-6", className)}>
             {/* Volunteer Profile Section */}
             <div className="flex items-center gap-4">
-                <UserAvatar user={volunteer} size={64} className="w-16 h-16 rounded-2xl" />
+                <UserAvatar user={{ name: volunteer.name || "Volunteer", image: volunteer.profile_img }} size={64} className="w-16 h-16 rounded-2xl" />
                 <div>
                     <h3 className="text-lg font-semibold text-foreground">{volunteer.name}</h3>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">

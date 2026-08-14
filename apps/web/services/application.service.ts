@@ -34,6 +34,33 @@ export const applicationService = {
     return res.data.data;
   },
 
+  getMyActiveApplications: async (axios: AxiosInstance, page: number = 1, limit: number = 10) => {
+    const res = await axios.get("/api/v1/applications/me/active", { params: { page, limit } });
+    return res.data.data;
+  },
+
+  getMyApprovedApplications: async (axios: AxiosInstance, page: number = 1, limit: number = 10) => {
+    const res = await axios.get("/api/v1/applications/me/approved", { params: { page, limit } });
+    return res.data.data;
+  },
+
+  getMyRecentApplications: async (axios: AxiosInstance, page: number = 1, limit: number = 10) => {
+    const res = await axios.get("/api/v1/applications/me/recent", { params: { page, limit } });
+    return res.data.data;
+  },
+
+  getCompletedCount: async (axios: AxiosInstance, volunteerId: string, currentOpportunityId?: string) => {
+    const res = await axios.get("/api/v1/applications/completed/count", {
+      params: { volunteerId, currentOpportunityId: currentOpportunityId || '' }
+    });
+    return res.data.data;
+  },
+
+  recruit: async (axios: AxiosInstance, applicationId: string) => {
+    const res = await axios.post('/api/v1/recruitments', { applicationId });
+    return res.data.data;
+  },
+
   withdraw: async (axios: AxiosInstance, opportunityId: string) => {
     const res = await axios.delete(`/api/v1/applications/${opportunityId}`);
     return res.data.data;
