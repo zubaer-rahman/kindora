@@ -71,7 +71,7 @@ const ExportApplicantsInfoPage: React.FC = () => {
     isLoading,
     error,
   } = { data: [], isLoading: false, error: null } as any;
-  console.log({ volunteers });
+
 
   const handleFieldToggle = (fieldId: string): void => {
     setSelectedFields((prev: string[]) => {

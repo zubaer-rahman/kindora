@@ -99,7 +99,7 @@ const EditOpportunityPage = () => {
       return;
     }
     try {
-      console.log("Form data being submitted:", data);
+
       await handleUpdate(data);
     } catch (error) {
       console.error("Error updating opportunity:", error);

@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import KindoraLogo from "@/components/common/KindoraLogo";
+import KindoraLogo from "@/components/features/common/KindoraLogo";
 
 export default function AuthNavbar() {
   const pathname = usePathname();

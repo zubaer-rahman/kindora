@@ -23,7 +23,7 @@ import { SessionUser } from "@/types/navigation";
 import { MobileMenu } from "@/components/navbar/MobileMenu";
 import { isAuthPath, isProtectedPath } from "@/utils/helpers/pathCheck";
 import { toast } from "react-hot-toast";
-import KindoraLogo from "@/components/common/KindoraLogo";
+import KindoraLogo from "@/components/features/common/KindoraLogo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function ProtectedNavbar() {

@@ -52,7 +52,7 @@ export function NotificationBell() {
 
   // const handleShowHistory = () => {
   //   refetchHistory();
-  //   console.log('📊 Notification History:', notificationHistory);
+
   // };
 
   // Debug logging removed

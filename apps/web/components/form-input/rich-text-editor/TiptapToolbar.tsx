@@ -114,7 +114,7 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
   if (!editor) return null;
 
   const setTextStyle = (style: string) => {
-    console.log('Setting text style:', style);
+
     const chain = editor.chain().focus();
     if (style === "paragraph") {
       chain.setParagraph().run();
@@ -125,7 +125,7 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
   };
 
   const setFontSize = (size: string) => {
-    console.log('Setting font size:', size);
+
     editor.chain().focus().setMark('textStyle', { 
       fontSize: `${size}px`
     }).run();
@@ -208,7 +208,7 @@ export function TiptapToolbar({ editor }: TiptapToolbarProps) {
                 className="w-5 h-5 sm:w-6 sm:h-6 rounded border border-border hover:border-primary hover:scale-110 transition-transform"
                 style={{ backgroundColor: color }}
                 onClick={() => {
-                  console.log('Setting color:', color);
+
                   editor.chain().focus().setColor(color).run();
                   setOpenDropdown(null);
                 }}

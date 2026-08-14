@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import FilterSidebar, { VolunteerFilters } from "@/components/common/FilterSidebar";
+import FilterSidebar, { VolunteerFilters } from "@/components/features/search/FilterSidebar";
 import NewVolunteerCard from "@/components/layout/organisation/NewVolunteerCard";
 import MessageDialog from "../MessageDialog";
 import { SearchBar } from "@/components/common";

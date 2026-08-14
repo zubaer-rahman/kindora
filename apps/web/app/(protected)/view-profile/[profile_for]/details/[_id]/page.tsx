@@ -11,7 +11,7 @@ export default function ProfileDetailPage() {
   const profileId = params?._id as string;
   const profileFor = params?.["profile_for"] as string;
   
-  console.log({ profileFor, profileId });
+
 
   if (!profileId) {
     return (

@@ -15,6 +15,8 @@ import { ApplyButton } from "@/components/buttons/ApplyButton";
 import { PostSidebar } from "@/components/layout/shared/PostSidebar";
 import { useFavorite } from "@/hooks/useFavorite";
 import { IoArrowBackOutline } from "react-icons/io5";
+import { OpportunityInfoGrid } from "@/components/features/opportunities/opportunity-details/OpportunityInfoGrid";
+import { OpportunityContactInfo } from "@/components/features/opportunities/opportunity-details/OpportunityContactInfo";
 
 interface OpportunityDrawerProps {
   opportunityId: string | null;
@@ -156,32 +158,12 @@ export default function OpportunityDrawer({
                   </div>
 
                   {/* Key Info Grid - Compact */}
-                  <div className="grid grid-cols-2 gap-4 py-4 border-t border-border">
-                    {opportunity.date?.start_date && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-muted-foreground/70 flex-shrink-0" />
-                        <span className="text-foreground/80">
-                          {new Date(opportunity.date.start_date).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                          })}
-                          {opportunity.time?.start_time && ` ${formatTimeToAMPM(opportunity.time.start_time)}`}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-2 text-sm">
-                      <Users className="w-4 h-4 text-muted-foreground/70 flex-shrink-0" />
-                      <span className="text-foreground/80 font-medium">{opportunity.number_of_volunteers} spots</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-sm">
-                      <Target className="w-4 h-4 text-muted-foreground/70 flex-shrink-0" />
-                      <span className="text-foreground/80">
-                        {opportunity.commitment_type === "workbased" ? "Work based" : "Event based"}
-                      </span>
-                    </div>
-                  </div>
+                  <OpportunityInfoGrid
+                    date={opportunity.date}
+                    time={opportunity.time}
+                    numberOfVolunteers={opportunity.number_of_volunteers}
+                    commitmentType={opportunity.commitment_type}
+                  />
                   {/* Description - Compact */}
                   <div className="space-y-2">
                     <p className="text-xs font-medium text-muted-foreground">Description</p>
@@ -249,42 +231,11 @@ export default function OpportunityDrawer({
 
 
                   {/* Contact Info - Compact */}
-                  {(opportunity.email_contact || opportunity.phone_contact || opportunity.external_event_link) && (
-                    <div className="space-y-2 pt-2 border-t border-border">
-                      <p className="text-xs font-medium text-muted-foreground">Contact</p>
-                      <div className="space-y-1.5">
-                        {opportunity.email_contact && (
-                          <a
-                            href={`mailto:${opportunity.email_contact}`}
-                            className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 hover:underline"
-                          >
-                            <Mail className="w-3.5 h-3.5" />
-                            <span className="truncate">{opportunity.email_contact}</span>
-                          </a>
-                        )}
-                        {opportunity.phone_contact && (
-                          <a
-                            href={`tel:${opportunity.phone_contact}`}
-                            className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 hover:underline"
-                          >
-                            <Phone className="w-3.5 h-3.5" />
-                            <span>{opportunity.phone_contact}</span>
-                          </a>
-                        )}
-                        {opportunity.external_event_link && (
-                          <a
-                            href={opportunity.external_event_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 hover:underline"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                            <span className="truncate">External Link</span>
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  <OpportunityContactInfo
+                    emailContact={opportunity.email_contact}
+                    phoneContact={opportunity.phone_contact}
+                    externalEventLink={opportunity.external_event_link}
+                  />
 
                   {/* Posted Date */}
                   <div className="pt-2 border-t border-border">

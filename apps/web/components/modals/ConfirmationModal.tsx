@@ -74,7 +74,7 @@ export function ConfirmationModal({
 
   const handleApply = () => {
     if (!isChecked) return;
-    console.log("Applying to opportunity:", opportunityDetails.id);
+
     applyMutation.mutate({ opportunityId: opportunityDetails.id });
   };
 

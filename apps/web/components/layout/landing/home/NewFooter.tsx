@@ -5,7 +5,7 @@ import {
   FaLinkedin,
   FaInstagram,
 } from "react-icons/fa";
-import KindoraLogo from "@/components/common/KindoraLogo";
+import KindoraLogo from "@/components/features/common/KindoraLogo";
 
 interface NewFooterProps {
   containerClassName?: string;

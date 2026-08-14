@@ -19,12 +19,12 @@ export const generateTokenAndSendMail = async (
       (user as { name?: string }).name?.split(" ")[0] ??
       "User";
     const supportUrl =
-      process.env.SUPPORT_URL || process.env.CLIENT_URL || "https://example.com";
+      env.support_url || env.client_url || "https://example.com";
 
     const clientUrl =
-      process.env.CLIENT_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
-      process.env.NEXTAUTH_URL ||
+      env.client_url ||
+      (env.vercel_url ? `https://${env.vercel_url}` : null) ||
+      env.nextauth_url ||
       "http://localhost:3000";
     const logoUrl = `${clientUrl}/KINDORA.svg`;
 

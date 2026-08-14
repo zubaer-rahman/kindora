@@ -52,7 +52,7 @@ export default function VolunteerCard({
           onCardClick(volunteer);
         } else {
           const targetUrl = `/find-volunteer/volunteer/details/${volunteer._id || (volunteer as any).id}`;
-          console.log("Card Navigating to:", targetUrl);
+
           router.push(targetUrl);
         }
       }}
