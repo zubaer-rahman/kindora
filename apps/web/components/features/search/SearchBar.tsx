@@ -26,7 +26,7 @@ export default function SearchBar({
     initialQuery = "",
     initialLocation = "",
     className = "",
-    borderRadius = "8px",
+    borderRadius = "9999px",
     showClearButton = false,
     onClear,
     placeholder = "Search for jobs",

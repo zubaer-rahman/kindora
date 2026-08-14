@@ -9,7 +9,7 @@ import { LayoutDashboard, Briefcase, MessageSquare, Settings } from "lucide-reac
 import { profileService } from "@/services/profile.service";
 import BaseDashboardSidebar from "@/components/layout/BaseDashboardSidebar";
 
-export default function OrganisationDashboardSidebar() {
+export default function OrganisationDashboardSidebar({ className }: { className?: string }) {
   const pathname = usePathname();
   const axiosAuth = useAxiosAuth();
 
@@ -20,7 +20,7 @@ export default function OrganisationDashboardSidebar() {
 
   const links = [
     { name: "Overview", href: "/organisation/dashboard", icon: LayoutDashboard },
-    { name: "Opportunities", href: "/organisation/opportunities", icon: Briefcase },
+    { name: "Opportunities", href: "/organisation/manage-opportunities", icon: Briefcase },
     { name: "Messages", href: "/organisation/messages", icon: MessageSquare },
     { name: "Settings", href: "/organisation/settings", icon: Settings },
   ];
@@ -34,6 +34,7 @@ export default function OrganisationDashboardSidebar() {
       role="organisation"
       links={links}
       isLoading={isLoading}
+      className={className}
     />
   );
 }

@@ -59,7 +59,8 @@ export const TabContent: React.FC<TabContentProps> = ({
   const { session, profileCheck } = useAuthCheck();
   const role = session?.user?.role as string | undefined;
   const isOrgRole = role === 'organization' || role === 'organisation' || role === 'admin';
-  const canCreateOpportunity = !isOrgRole || !!profileCheck?.hasOrganizationProfile;
+  const isMentor = role === 'mentor';
+  const canCreateOpportunity = isMentor || (!isOrgRole || !!profileCheck?.hasOrganizationProfile);
 
   if (isLoading) {
     return (
@@ -116,13 +117,13 @@ export const TabContent: React.FC<TabContentProps> = ({
   } else {
     const createActionLabel = tab === "open"
       ? (canCreateOpportunity ? "Create Opportunity" : "Complete your profile")
-      : "View All Opportunities";
+      : "Manage All Opportunities";
     const createAction = tab === "open"
       ? (canCreateOpportunity
-          ? () => router.push("/organisation/opportunities/create")
+          ? () => router.push(`/${role === 'mentor' ? 'mentor' : 'organisation'}/opportunities/create`)
           : () => router.push("/organisation/profile"))
-      : () => router.push("/organisation/opportunities");
-    const description = tab === "open" && !canCreateOpportunity
+      : () => router.push(`/${role === 'mentor' ? 'mentor' : 'organisation'}/manage-opportunities`);
+    const description = tab === "open" && !canCreateOpportunity && isOrgRole
       ? "Complete your organisation profile first to post opportunities."
       : (currentTabConfig?.emptyState?.description || "No items available.");
     return (

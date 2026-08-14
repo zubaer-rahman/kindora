@@ -17,8 +17,16 @@ import StepOne from "../../create/_components/StepOne";
 import StepTwo from "../../create/_components/StepTwo";
 import BackButton from "@/components/buttons/BackButton";
 import { Card } from "@/components/ui/card";
+import { useParams, notFound } from "next/navigation";
 
 const EditOpportunityPage = () => {
+  const params = useParams();
+  const urlRole = params.role as string;
+
+  if (urlRole !== "organisation" && urlRole !== "mentor") {
+    notFound();
+  }
+
   const [isImageUploading, setIsImageUploading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 2;

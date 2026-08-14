@@ -21,7 +21,7 @@ import { favoriteService } from "@/services/favorite.service";
 export default function FindOpportunity() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { filters } = useSearch();
+  const { filters, setSearchQuery } = useSearch();
   const [currentPage, setCurrentPage] = useState(1);
   const axiosAuth = useAxiosAuth();
   const params = useParams();
@@ -44,8 +44,7 @@ export default function FindOpportunity() {
   ]);
 
   // Fetch opportunities with filters (for "best-matches" and "most-recent" tabs)
-  const isGenericTab =
-    activeTab === "best-matches" || activeTab === "most-recent";
+  const isGenericTab = activeTab === "best-matches" || activeTab === "most-recent";
   const { data: opportunitiesData, isLoading: isLoadingOpportunities } =
     useQuery({
       queryKey: ["allOpportunities", isGenericTab ? currentPage : 1, filters, activeTab],
@@ -65,14 +64,8 @@ export default function FindOpportunity() {
               ? "best_matches"
               : "recently_added",
         }),
-      enabled: isGenericTab,
+      enabled: true,
     });
-
-  // Fetch total count for "Most recent" tab
-  const { data: allCountData } = useQuery({
-    queryKey: ["allOpportunitiesCount"],
-    queryFn: () => opportunityService.getCount(axiosAuth),
-  });
 
   // Fetch user's favorite/saved opportunities (for "saved" tab)
   const { data: savedOpportunitiesData, isLoading: isLoadingSaved } = useQuery({
@@ -116,9 +109,13 @@ export default function FindOpportunity() {
     {
       label: "Most recent",
       value: "most-recent",
-      count: allCountData?.total || 0,
+      count: opportunitiesData?.total || 0,
     },
-    { label: "Best matches", value: "best-matches" },
+    { 
+      label: "Best matches", 
+      value: "best-matches",
+      count: opportunitiesData?.total || 0,
+    },
     {
       label: "Saved",
       value: "saved",
@@ -140,6 +137,10 @@ export default function FindOpportunity() {
             initialQuery={filters.searchQuery}
             initialLocation={filters.location}
             placeholder="Search for opportunities"
+            preventRedirect={true}
+            showClearButton={true}
+            onClear={() => setSearchQuery("")}
+            onSearch={(query) => setSearchQuery(query)}
           />
         </div>
 

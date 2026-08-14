@@ -13,7 +13,7 @@ import { applicationService } from "@/services/application.service";
 
 interface RecruitsTabProps {
   opportunityId: string;
-  userRole: "volunteer" | "organisation";
+  userRole: "volunteer" | "organisation" | "mentor";
   isCurrentUserMentor: boolean;
   currentUserId?: string;
   onCreateGroup: () => void;

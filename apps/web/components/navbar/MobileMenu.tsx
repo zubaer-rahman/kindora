@@ -131,6 +131,12 @@ export function MobileMenu({
                       icon={Users}
                       onClick={handleCloseMenu}
                     />
+                    <NavLink
+                      href="/find-organisation/best-matches"
+                      label="Find organisations"
+                      icon={GiBinoculars}
+                      onClick={handleCloseMenu}
+                    />
                   </div>
                 )}
               {(session?.user?.role === "admin" ||

@@ -46,7 +46,7 @@ type Opportunity = {
 
 interface OpportunityDetailProps {
   opportunity: Opportunity;
-  userRole?: "volunteer" | "organisation";
+  userRole?: "volunteer" | "organisation" | "mentor";
 }
 
 export function OpportunityDetail({ opportunity }: OpportunityDetailProps) {

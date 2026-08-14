@@ -13,6 +13,7 @@ import QueryStateWrapper from "@/components/common/QueryStateWrapper";
 import VolunteerProfileBanner from "./VolunteerProfileBanner";
 import { profileService } from "@/services/profile.service";
 import { applicationService } from "@/services/application.service";
+import { ProfileSkeleton } from "@/components/features/shared";
 
 interface VolunteerProfileProps {
   volunteerId: string;
@@ -123,7 +124,7 @@ export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
       isLoading={isLoading || isLoadingApplications}
       error={null}
       data={volunteer}
-      loadingMessage="Wait a sec..."
+      customSkeleton={<ProfileSkeleton />}
       notFoundTitle="Volunteer not found"
       notFoundDescription="The volunteer you're looking for doesn't exist."
     >

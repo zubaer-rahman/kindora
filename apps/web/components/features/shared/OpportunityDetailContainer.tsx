@@ -28,7 +28,7 @@ import { applicationService } from "@/services/application.service";
 import { rosterService } from "@/services/roster.service";
 
 interface OpportunityDetailContainerProps {
-  userRole: "volunteer" | "organisation";
+  userRole: "volunteer" | "organisation" | "mentor";
 }
 
 export default function OpportunityDetailContainer({

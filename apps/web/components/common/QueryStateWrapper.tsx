@@ -19,6 +19,7 @@ interface QueryStateWrapperProps {
     notFoundIcon?: LucideIcon;
     children: React.ReactNode;
     className?: string;
+    customSkeleton?: React.ReactNode;
 }
 
 export default function QueryStateWrapper({
@@ -35,6 +36,7 @@ export default function QueryStateWrapper({
     notFoundIcon = AlertCircle,
     children,
     className,
+    customSkeleton,
 }: QueryStateWrapperProps) {
     if (notFound) {
         return (
@@ -51,6 +53,9 @@ export default function QueryStateWrapper({
     }
 
     if (isLoading) {
+        if (customSkeleton) {
+            return <>{customSkeleton}</>;
+        }
         return (
             <div className="min-h-[400px] flex items-center justify-center">
                 <Loading size="medium">

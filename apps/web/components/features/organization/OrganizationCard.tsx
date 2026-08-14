@@ -6,21 +6,17 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
-import {
-    Heart,
-    MapPin,
-    Globe,
-    Briefcase
-} from "lucide-react";
+import { Heart, MapPin, Globe, Briefcase } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { profileService } from "@/services/profile.service";
+import { useOrganizationDrawer } from "@/components/common";
+import OrganizationAvatar from "@/components/common/OrganizationAvatar";
 
 interface OrganizationCardProps {
-    organisation: any; // Using any for now
+    organisation: any;
     onCardClick?: (organisation: any) => void;
 }
 
@@ -29,6 +25,7 @@ export default function OrganizationCard({
     onCardClick
 }: OrganizationCardProps) {
     const router = useRouter();
+    const { openDrawer } = useOrganizationDrawer();
     const { data: session } = useSession();
     const [isExpanded, setIsExpanded] = useState(false);
     const axiosAuth = useAxiosAuth();
@@ -41,7 +38,8 @@ export default function OrganizationCard({
     });
 
     const toggleFavoriteMutation = useMutation({
-        mutationFn: (payload: { organizationId: string }) => profileService.toggleFavorite(axiosAuth, payload.organizationId),
+        mutationFn: (payload: { organizationId: string }) =>
+            profileService.toggleFavorite(axiosAuth, payload.organizationId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["organizationFavoriteStatus", organisation._id] });
             queryClient.invalidateQueries({ queryKey: ["favoriteOrganizations"] });
@@ -64,7 +62,7 @@ export default function OrganizationCard({
             onCardClick(organisation);
             return;
         }
-        router.push(`/organisation/profile/${organisation._id}`);
+        openDrawer(organisation._id);
     };
 
     const cleanBio = (organisation.bio || "No description available.")
@@ -75,38 +73,34 @@ export default function OrganizationCard({
     return (
         <Card
             onClick={handleCardClick}
-            className="group hover:bg-[#F9FAFB] transition-colors rounded-none border-x-0 p-0 border-t-0 border-b border-[#E9EAEB] bg-white cursor-pointer flex flex-col w-full shadow-none"
+            className="group hover:bg-muted/50 transition-colors rounded-none border-x-0 p-0 border-t-0 border-b border-border bg-background cursor-pointer flex flex-col w-full shadow-none"
         >
             <CardContent className="px-4 py-6 flex flex-col flex-1">
                 {/* Top Row: Logo and Actions */}
                 <div className="flex justify-between items-start mb-4">
                     <div className="flex gap-4">
-                        <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-[#E9EAEB] flex-shrink-0 bg-gray-50">
-                            {organisation.profile_img ? (
-                                <Image
-                                    src={organisation.profile_img}
-                                    alt={organisation.title}
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-600 font-bold">
-                                    {organisation.title?.charAt(0)}
-                                </div>
-                            )}
+                        <div className="flex-shrink-0">
+                            <OrganizationAvatar 
+                                organization={organisation} 
+                                size={48} 
+                                shape="rounded"
+                                objectFit="cover"
+                            />
                         </div>
                         <div>
-                            <h3 className="text-xl font-semibold text-[#101828] group-hover:text-[#1570EF] transition-colors line-clamp-1">
+                            <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
                                 {organisation.title}
                             </h3>
-                            <div className="flex items-center gap-2 text-sm text-[#475467] mt-1">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                                 <Badge variant="outline" className="capitalize">
                                     {organisation.type?.replace('_', ' ')}
                                 </Badge>
                                 {organisation.website && (
                                     <div className="flex items-center gap-1">
                                         <Globe className="w-3 h-3" />
-                                        <span className="truncate max-w-[150px]">{organisation.website.replace(/^https?:\/\//, '')}</span>
+                                        <span className="truncate max-w-[150px]">
+                                            {organisation.website.replace(/^https?:\/\//, '')}
+                                        </span>
                                     </div>
                                 )}
                             </div>
@@ -116,15 +110,15 @@ export default function OrganizationCard({
                         variant="ghost"
                         size="icon"
                         className={cn(
-                            "h-9 w-9 rounded-full border border-[#E9EAEB] hover:bg-white transition-colors flex-shrink-0",
-                            isFavorite && "bg-[#FEF3F2] border-[#FECDCA]"
+                            "h-9 w-9 rounded-full border border-border hover:bg-background transition-colors flex-shrink-0",
+                            isFavorite && "bg-destructive/10 border-destructive/20"
                         )}
                         onClick={handleFavoriteClick}
                     >
                         <Heart
                             className={cn(
                                 "w-4 h-4 transition-colors",
-                                isFavorite ? "fill-[#D92D20] text-[#D92D20]" : "text-[#667085]"
+                                isFavorite ? "fill-destructive text-destructive" : "text-muted-foreground"
                             )}
                         />
                     </Button>
@@ -133,7 +127,7 @@ export default function OrganizationCard({
                 {/* Bio Section */}
                 <div className="mb-4">
                     <p className={cn(
-                        "text-base text-[#344054] leading-relaxed",
+                        "text-base text-foreground leading-relaxed",
                         !isExpanded && "line-clamp-2"
                     )}>
                         {cleanBio}
@@ -144,7 +138,7 @@ export default function OrganizationCard({
                                 e.stopPropagation();
                                 setIsExpanded(!isExpanded);
                             }}
-                            className="text-[#1570EF] text-sm font-medium mt-1 hover:underline"
+                            className="text-primary text-sm font-medium mt-1 hover:underline"
                         >
                             {isExpanded ? "less" : "more"}
                         </button>
@@ -157,26 +151,26 @@ export default function OrganizationCard({
                         <Badge
                             key={index}
                             variant="secondary"
-                            className="bg-[#F2F4F7] text-[#344054] hover:bg-[#E4E7EB] border-none px-3 py-1 text-xs font-medium rounded-full"
+                            className="bg-muted text-foreground hover:bg-muted/80 border-none px-3 py-1 text-xs font-medium rounded-full"
                         >
                             {type}
                         </Badge>
                     ))}
                     {organisation.opportunity_types?.length > 4 && (
-                        <span className="text-xs text-[#667085] self-center">
+                        <span className="text-xs text-muted-foreground self-center">
                             +{organisation.opportunity_types.length - 4} more
                         </span>
                     )}
                 </div>
 
                 {/* Footer Metadata */}
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-[#475467]">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-muted-foreground">
                     <div className="flex items-center gap-1.5">
-                        <MapPin className="w-4 h-4 text-[#667085]" />
+                        <MapPin className="w-4 h-4" />
                         <span>{organisation.area}, {organisation.state}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <Briefcase className="w-4 h-4 text-[#667085]" />
+                        <Briefcase className="w-4 h-4" />
                         <span>{organisation.opportunityCount || 0} active opportunities</span>
                     </div>
                 </div>

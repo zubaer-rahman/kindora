@@ -8,7 +8,7 @@ import CreateFooter from "./_components/CreateFooter";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams, notFound } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { opportunityValidationSchema } from "@/utils/validation/opportunity";
@@ -29,6 +29,13 @@ export default function CreateOpportunityPage() {
   const { profileCheck } = useAuthCheck();
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
+  const params = useParams();
+  const urlRole = params.role as string;
+
+  if (urlRole !== "organisation" && urlRole !== "mentor") {
+    notFound();
+  }
+
   const role = session?.user?.role as string | undefined;
   const isOrgRole = role === "organization" || role === "organisation" || role === "admin";
 

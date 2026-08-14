@@ -6,3 +6,4 @@ export {
   BadgeList, 
   SubmitButton 
 } from './InformationCard'; 
+export * from './ProfileLayout';

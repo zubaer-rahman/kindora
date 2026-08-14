@@ -11,7 +11,7 @@ import { applicationService } from "@/services/application.service";
 
 interface ApplicantsTabProps {
   opportunityId: string;
-  userRole?: "volunteer" | "organisation";
+  userRole?: "volunteer" | "organisation" | "mentor";
   isCurrentUserMentor: boolean;
   currentUserId?: string;
   opportunity?: {

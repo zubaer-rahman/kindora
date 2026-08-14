@@ -59,6 +59,17 @@ export const profileService = {
     return res.data.data;
   },
 
+  getAllOrganizations: async (axios: AxiosInstance, params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    category?: string;
+    sortBy?: string;
+  }): Promise<any> => {
+    const res = await axios.get("/api/v1/organization-profiles", { params });
+    return res.data.data;
+  },
+
   getFavorites: async (axios: AxiosInstance, params?: any): Promise<any> => {
     const res = await axios.get("/api/v1/organization-profiles/favorites", { params });
     return res.data.data;

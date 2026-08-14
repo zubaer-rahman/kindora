@@ -30,9 +30,12 @@ import {
   InfoGrid,
   BadgeList,
   SubmitButton,
+  ProfileSkeleton,
+  ProfileLayoutContainer,
+  ProfileHeader,
+  ProfileContent,
 } from "@/components/features/shared";
 import { SkillsMultiSelect } from "@/components/form-input/SkillsMultiSelectSelect";
-import RandomAvatar from "@/components/common/RandomAvatar";
 import { ProfilePhotoInput } from "@/components/form-input/ProfilePhotoInput";
 import { useMentorProfile } from "@/hooks/useMentorProfile";
 import { skillService } from "@/services/skill.service";
@@ -137,46 +140,25 @@ export function MentorProfileForm() {
   const handleCancelEdit = () => setEditMode("none");
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto mb-3"></div>
-          <p className="text-gray-600 text-sm">Loading profile...</p>
-        </div>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto p-3 md:p-6">
-        <BackButton className="mb-4" />
+    <ProfileLayoutContainer>
+      <ProfileHeader
+        name={mentorProfile?.name || session?.user?.name || "User"}
+        imageUrl={mentorProfile?.image || session?.user?.image}
+        subtitle={session?.user?.organization_profile?.title}
+      />
 
-        <div className="space-y-6">
-          {/* Profile Picture Card */}
-          <ProfileCard className="mb-6">
-            <div className="flex flex-col items-center space-y-4">
-              <RandomAvatar
-                name={mentorProfile?.name || session?.user?.name || "User"}
-                imageUrl={mentorProfile?.image || session?.user?.image}
-                size={120}
-                className="h-24 w-24 lg:h-28 lg:w-28 ring-3 ring-gray-100 shadow-lg"
-              />
-              <div className="text-center">
-                <h3 className="text-lg font-bold text-gray-900 mb-1">
-                  {mentorProfile?.name || session?.user?.name || "User"}
-                </h3>
-              </div>
-            </div>
-          </ProfileCard>
-
-          {/* Personal Information Card */}
-          <InformationCard
-            title="Personal Information"
-            editMode={editMode === "personal" ? "active" : "inactive"}
-            onEditClick={() => setEditMode("personal")}
-            onCancelClick={handleCancelEdit}
-          >
+      <ProfileContent>
+            <InformationCard
+              title="Personal Information"
+              editMode={editMode === "personal" ? "active" : "inactive"}
+              onEditClick={() => setEditMode("personal")}
+              onCancelClick={handleCancelEdit}
+              noBg
+            >
             {editMode === "personal" ? (
               <Form {...form}>
                 <form
@@ -722,8 +704,7 @@ export function MentorProfileForm() {
               </div>
             )}
           </InformationCard>
-        </div>
-      </div>
-    </div>
+      </ProfileContent>
+    </ProfileLayoutContainer>
   );
 }

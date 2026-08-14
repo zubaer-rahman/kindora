@@ -177,12 +177,12 @@ export function UserMenu({ user }: UserMenuProps) {
                   sideOffset={4}
                   side={isMobile ? "bottom" : "left"}
                   align={isMobile ? "center" : "start"}
-                  className="max-w-[180px] p-2.5 bg-foreground border-border shadow-lg"
+                  className="max-w-[180px] p-2.5 shadow-lg"
                 >
                   <div className="flex items-start gap-2">
                     <Info className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
                     <div className="space-y-1">
-                      <p className="text-xs font-medium text-background">
+                      <p className="text-xs font-medium text-foreground">
                         {isAvailable
                           ? "Available for Opportunities"
                           : "Currently Unavailable"}
