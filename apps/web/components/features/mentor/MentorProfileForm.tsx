@@ -167,7 +167,7 @@ export function MentorProfileForm() {
                 >
                   <InfoGrid>
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Profile Photo
                       </label>
                       <ProfilePhotoInput
@@ -191,25 +191,25 @@ export function MentorProfileForm() {
 
                   <InfoGrid>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium text-foreground">
                         Email
                       </label>
                       <input
                         type="email"
                         value={session?.user?.email || ""}
                         disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 border border-border rounded-md bg-muted text-muted-foreground cursor-not-allowed"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium text-foreground">
                         Role
                       </label>
                       <input
                         type="text"
                         value="Mentor"
                         disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 border border-border rounded-md bg-muted text-muted-foreground cursor-not-allowed"
                       />
                     </div>
                   </InfoGrid>

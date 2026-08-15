@@ -47,10 +47,10 @@ export default function OrganizationProfileView({ organizerId }: OrganizationPro
                 {/* About Section */}
                 {organizationProfile.bio && (
                   <div>
-                    <h2 className="text-lg sm:text-xl font-bold text-[#101828] mb-3 sm:mb-4">
+                    <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">
                       About Us
                     </h2>
-                    <p className="text-sm sm:text-base text-[#475467] leading-relaxed text-justify break-words">
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed text-justify break-words">
                       {organizationProfile.bio}
                     </p>
                   </div>
@@ -58,20 +58,20 @@ export default function OrganizationProfileView({ organizerId }: OrganizationPro
 
                 {/* Location & Details */}
                 <div>
-                  <h2 className="text-lg sm:text-xl font-bold text-[#101828] mb-3 sm:mb-4">
+                  <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">
                     Location & Details
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                     <div className="space-y-2 sm:space-y-3">
-                      <h3 className="text-sm sm:text-base font-semibold text-[#344054]">Address</h3>
-                      <div className="space-y-1 text-sm sm:text-base text-[#475467] break-words">
+                      <h3 className="text-sm sm:text-base font-semibold text-foreground">Address</h3>
+                      <div className="space-y-1 text-sm sm:text-base text-muted-foreground break-words">
                         <p>{organizationProfile.area}</p>
                         <p>{organizationProfile.state}, Australia</p>
                       </div>
                     </div>
                     <div className="space-y-2 sm:space-y-3">
-                      <h3 className="text-sm sm:text-base font-semibold text-[#344054]">Organisation Type</h3>
-                      <div className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-[#F9FAFB] text-[#344054] border border-[#EAECF0]">
+                      <h3 className="text-sm sm:text-base font-semibold text-foreground">Organisation Type</h3>
+                      <div className="inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-muted text-foreground border border-border">
                         {organizationProfile.type?.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
                       </div>
                     </div>
@@ -79,8 +79,8 @@ export default function OrganizationProfileView({ organizerId }: OrganizationPro
                 </div>
 
                 {/* Volunteer Opportunities Section */}
-                <div className="pt-6 sm:pt-8 border-t border-[#E9EAEB]">
-                  <h2 className="text-lg sm:text-xl font-bold text-[#101828] mb-4 sm:mb-6">
+                <div className="pt-6 sm:pt-8 border-t border-border">
+                  <h2 className="text-lg sm:text-xl font-bold text-foreground mb-4 sm:mb-6">
                     Volunteer Opportunities
                   </h2>
                   <OrganizationOpportunities organizationId={organizerId} />

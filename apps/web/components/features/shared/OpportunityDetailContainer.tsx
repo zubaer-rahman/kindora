@@ -20,12 +20,11 @@ import ConfirmationDialog from "@/components/modals/ConfirmationDialog";
 import { toast } from "react-hot-toast";
 import QueryStateWrapper from "@/components/common/QueryStateWrapper";
 import OpportunityHeaderBanner from "./OpportunityHeaderBanner";
-import { RosterTab } from "./tabs/roster/RosterTab";
-import type { Volunteer, Shift } from "./tabs/roster/rosterUtils";
+import { RosterTabContainer } from "./tabs/roster/RosterTabContainer";
+import type { Volunteer } from "./tabs/roster/rosterUtils";
 import { opportunityService } from "@/services/opportunity.service";
 import { organizationService } from "@/services/organization.service";
 import { applicationService } from "@/services/application.service";
-import { rosterService } from "@/services/roster.service";
 
 interface OpportunityDetailContainerProps {
   userRole: "volunteer" | "organisation" | "mentor";
@@ -45,9 +44,7 @@ export default function OpportunityDetailContainer({
   const [isGroupMessageModalOpen, setIsGroupMessageModalOpen] = useState(false);
   const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
-  // Roster state (local for instant UI feedback; synced from DB)
-  const [rosterShifts, setRosterShifts] = useState<Shift[]>([]);
+  const [rosterShiftCount, setRosterShiftCount] = useState<number | undefined>(undefined);
 
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
@@ -101,55 +98,6 @@ export default function OpportunityDetailContainer({
     },
   });
 
-  const invalidateRoster = () => {
-    queryClient.invalidateQueries({ queryKey: ["rosterShifts", opportunityId] });
-  };
-
-  const createShiftMutation = useMutation({
-    mutationFn: (payload: any) => rosterService.createShift(axiosAuth, payload),
-    onSuccess: invalidateRoster,
-  });
-
-  const updateShiftMutation = useMutation({
-    mutationFn: (payload: any) => rosterService.updateShift(axiosAuth, payload.shiftId, payload),
-    onSuccess: invalidateRoster,
-  });
-
-  const deleteShiftMutation = useMutation({
-    mutationFn: (payload: { shiftId: string }) => rosterService.deleteShift(axiosAuth, payload.shiftId),
-    onSuccess: invalidateRoster,
-  });
-
-  const assignVolunteerMutation = useMutation({
-    mutationFn: (payload: { shiftId: string; volunteerId: string }) =>
-      rosterService.assignVolunteer(axiosAuth, payload.shiftId, payload.volunteerId),
-    onSuccess: invalidateRoster,
-  });
-
-  const unassignVolunteerMutation = useMutation({
-    mutationFn: (payload: { shiftId: string; volunteerId: string }) =>
-      rosterService.removeVolunteer(axiosAuth, payload.shiftId, payload.volunteerId),
-    onSuccess: invalidateRoster,
-  });
-
-  const updateVolunteerStatusMutation = useMutation({
-    mutationFn: (payload: any) =>
-      rosterService.updateShiftStatus(axiosAuth, payload.shiftId, payload.status),
-    onSuccess: invalidateRoster,
-  });
-
-  const signupForShiftMutation = useMutation({
-    mutationFn: (payload: { shiftId: string }) =>
-      rosterService.signupShift(axiosAuth, payload.shiftId),
-    onSuccess: invalidateRoster,
-  });
-
-  const withdrawFromShiftMutation = useMutation({
-    mutationFn: (payload: { shiftId: string }) =>
-      rosterService.withdrawShift(axiosAuth, payload.shiftId),
-    onSuccess: invalidateRoster,
-  });
-
   // Check if current user is a mentor for this opportunity
   const isCurrentUserMentor = opportunityMentors?.some(
     (mentor) => mentor.volunteer._id === session?.user?.id
@@ -172,18 +120,6 @@ export default function OpportunityDetailContainer({
 
   const canAccessRoster =
     hasManagementAccess || isCurrentUserRecruited || isCurrentUserApproved;
-
-  const { data: rosterShiftsFromDb } = useQuery({
-    queryKey: ["rosterShifts", opportunityId],
-    queryFn: () => rosterService.getShiftsForOpportunity(axiosAuth, opportunityId),
-    enabled: !!opportunityId && !!canAccessRoster,
-  });
-
-  useEffect(() => {
-    if (rosterShiftsFromDb) {
-      setRosterShifts(rosterShiftsFromDb as unknown as Shift[]);
-    }
-  }, [rosterShiftsFromDb]);
 
   // ── Tab content ──────────────────────────────────────────────────────────
 
@@ -229,146 +165,13 @@ export default function OpportunityDetailContainer({
   }));
 
   const rosterContent = (
-    <RosterTab
+    <RosterTabContainer
       key={`roster-${opportunityId}`}
-      postId={opportunityId}
+      opportunityId={opportunityId}
       role={hasManagementAccess ? "organiser" : "volunteer"}
       recruits={rosterRecruits}
-      shifts={rosterShifts}
-      currentUserId={session?.user?.id}
-      onShiftCreate={(data) => {
-        const newShift: Shift = {
-          ...data,
-          id: `shift-${Date.now()}`,
-          assignedVolunteers: [],
-        };
-        setRosterShifts((prev) => [...prev, newShift]);
-        createShiftMutation.mutate({
-          opportunityId,
-          title: data.title,
-          date: data.date,
-          startTime: data.startTime,
-          endTime: data.endTime,
-          role: data.role,
-          maxVolunteers: data.maxVolunteers,
-        });
-      }}
-      onShiftUpdate={(shiftId, data) => {
-        setRosterShifts((prev) =>
-          prev.map((s) => (s.id === shiftId ? { ...s, ...data } : s))
-        );
-        updateShiftMutation.mutate({
-          shiftId,
-          title: (data as any).title,
-          date: (data as any).date,
-          startTime: (data as any).startTime,
-          endTime: (data as any).endTime,
-          role: (data as any).role,
-          maxVolunteers: (data as any).maxVolunteers,
-        });
-      }}
-      onUpdateVolunteerStatus={(shiftId, volunteerId, status) => {
-        setRosterShifts((prev) =>
-          prev.map((s) => {
-            if (s.id !== shiftId) return s;
-            return {
-              ...s,
-              assignedVolunteers: s.assignedVolunteers.map((v) =>
-                v.id === volunteerId ? { ...v, status } : v
-              ),
-            };
-          })
-        );
-        updateVolunteerStatusMutation.mutate({
-          shiftId,
-          volunteerId,
-          status: status as any,
-        });
-      }}
-      onAssign={(shiftId, volunteerId) => {
-        setRosterShifts((prev) =>
-          prev.map((s) => {
-            if (s.id !== shiftId) return s;
-            const volunteer = rosterRecruits.find((r) => r.id === volunteerId);
-            if (
-              !volunteer ||
-              s.assignedVolunteers.some((v) => v.id === volunteerId)
-            )
-              return s;
-            return {
-              ...s,
-              assignedVolunteers: [
-                ...s.assignedVolunteers,
-                { ...volunteer, status: "pending" as const },
-              ],
-            };
-          })
-        );
-        assignVolunteerMutation.mutate({ shiftId, volunteerId });
-      }}
-      onUnassign={(shiftId, volunteerId) => {
-        setRosterShifts((prev) =>
-          prev.map((s) =>
-            s.id === shiftId
-              ? {
-                ...s,
-                assignedVolunteers: s.assignedVolunteers.filter(
-                  (v) => v.id !== volunteerId
-                ),
-              }
-              : s
-          )
-        );
-        unassignVolunteerMutation.mutate({ shiftId, volunteerId });
-      }}
-      onSignup={(shiftId) => {
-        if (!session?.user?.id) return;
-        const userName = session.user.name ?? "Me";
-        const me: Volunteer = {
-          id: session.user.id,
-          name: userName,
-          initials: userName
-            .split(" ")
-            .map((w: string) => w[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2),
-          skills: [],
-          status: "pending",
-        };
-        setRosterShifts((prev) =>
-          prev.map((s) => {
-            if (s.id !== shiftId) return s;
-            if (s.assignedVolunteers.some((v) => v.id === me.id)) return s;
-            if (s.assignedVolunteers.length >= s.maxVolunteers) return s;
-            return { ...s, assignedVolunteers: [...s.assignedVolunteers, me] };
-          })
-        );
-        signupForShiftMutation.mutate({ shiftId });
-      }}
-      onWithdraw={(shiftId) => {
-        if (!session?.user?.id) return;
-        const userId = session.user.id;
-        setRosterShifts((prev) =>
-          prev.map((s) =>
-            s.id === shiftId
-              ? {
-                ...s,
-                assignedVolunteers: s.assignedVolunteers.filter(
-                  (v) => v.id !== userId
-                ),
-              }
-              : s
-          )
-        );
-        withdrawFromShiftMutation.mutate({ shiftId });
-      }}
-      onDeleteShift={(shiftId) => {
-        setRosterShifts((prev) => prev.filter((s) => s.id !== shiftId));
-        deleteShiftMutation.mutate({ shiftId });
-      }}
-      onExport={() => toast.success("Roster export coming soon")}
-      onSendReminders={() => toast.success("Reminders sent!")}
+      canAccessRoster={canAccessRoster}
+      onUpdateShiftCount={setRosterShiftCount}
     />
   );
 
@@ -403,7 +206,7 @@ export default function OpportunityDetailContainer({
           value: "roster",
           label: "Roster",
           icon: <LayoutGrid />,
-          count: rosterShifts.length || undefined,
+          count: rosterShiftCount,
           content: rosterContent,
         },
       ]

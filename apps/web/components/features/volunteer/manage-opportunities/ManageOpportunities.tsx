@@ -77,7 +77,7 @@ export default function ManageOpportunities() {
         isLoading: isLoadingMentorOpportunities
     } = useQuery({
         queryKey: ['mentorOpportunities', currentPage, limit],
-        queryFn: () => opportunityService.getAllMentorOpportunities(axiosAuth),
+        queryFn: () => opportunityService.getMentorOpportunitiesPaginated(axiosAuth, currentPage, limit),
         enabled: activeTab === "mentor",
     });
 

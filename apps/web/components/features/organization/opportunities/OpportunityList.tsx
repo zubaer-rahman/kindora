@@ -29,7 +29,11 @@ export default function OpportunityList({
   const router = useRouter();
 
   const handleTitleClick = (opportunityId: string) => {
-    router.push(`${detailPathPrefix}/${opportunityId}`);
+    if (actionsMode === "mentor") {
+      router.push(`/volunteer/mentor-opportunity/${opportunityId}`);
+    } else {
+      router.push(`/organisation/opportunities/${opportunityId}/details`);
+    }
   };
   return (
     <div className="flex-1 flex flex-col">

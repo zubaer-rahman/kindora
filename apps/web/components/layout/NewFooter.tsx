@@ -19,10 +19,10 @@ export default function NewFooter({
   const footerLinks = {
     platform: [
       { label: "About", href: "/about" },
-      { label: "Volunteers", href: "/find-volunteer" },
+      { label: "Volunteers", href: "/search/volunteers" },
     ],
     resources: [
-      { label: "Volunteers", href: "/find-volunteer" },
+      { label: "Volunteers", href: "/search/volunteers" },
       { label: "FAQs", href: "/faq" },
     ],
     company: [{ label: "About Kindora", href: "/about" }],

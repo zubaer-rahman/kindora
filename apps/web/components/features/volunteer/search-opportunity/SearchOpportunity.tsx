@@ -22,6 +22,14 @@ import {
 } from "@/components/ui/select";
 
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Filter } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 
 export default function SearchOpportunity() {
@@ -30,7 +38,7 @@ export default function SearchOpportunity() {
   const { setSearchQuery, setLocation, setSaved, filters } = useSearch();
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<"best_matches" | "most_recent">("most_recent");
-
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -97,7 +105,7 @@ export default function SearchOpportunity() {
 
 
   return (
-    <div className="h-screen flex flex-col bg-white">
+    <div className="h-screen flex flex-col bg-background">
       {/* Fixed Search Bar */}
       <div className="flex-shrink-0 px-4 py-6 md:py-8">
         <div className="flex items-center gap-4">
@@ -111,6 +119,14 @@ export default function SearchOpportunity() {
               placeholder="Search for opportunities"
             />
           </div>
+          <Button
+            variant="outline"
+            onClick={() => setIsFilterModalOpen(true)}
+            className="lg:hidden flex items-center gap-2 h-[48px]"
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+          </Button>
         </div>
       </div>
 
@@ -125,7 +141,7 @@ export default function SearchOpportunity() {
         <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Fixed Controls Row */}
           <div className="flex-shrink-0 px-4 pb-4">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#E9EAEB]">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
               <div className="flex items-center gap-6">
                 {/* Left side empty or for future use */}
               </div>
@@ -136,23 +152,23 @@ export default function SearchOpportunity() {
                   className={cn(
                     "flex items-center gap-2 text-sm font-medium transition-colors",
                     filters.saved
-                      ? "text-[#1570EF]"
-                      : "text-[#667085] hover:text-[#1570EF]"
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-primary"
                   )}
                 >
                   <Heart
-                    className={cn("h-4 w-4", filters.saved && "fill-[#1570EF]")}
+                    className={cn("h-4 w-4", filters.saved && "fill-primary")}
                   />
                   Saved jobs
                 </button>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-[#667085]">Sort by:</span>
+                  <span className="text-sm text-muted-foreground">Sort by:</span>
                   <Select
                     value={sortBy}
                     onValueChange={(value: "best_matches" | "most_recent") => setSortBy(value)}
                   >
-                    <SelectTrigger className="w-[140px] h-9 border-[#D0D5DD] rounded-lg text-sm font-medium text-[#344054] focus:ring-0 focus:ring-offset-0">
+                    <SelectTrigger className="w-[140px] h-9 border-input rounded-lg text-sm font-medium text-foreground focus:ring-0 focus:ring-offset-0">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent align="end">
@@ -173,13 +189,13 @@ export default function SearchOpportunity() {
                 {Array.from({ length: 3 }).map((_, index) => (
                   <div
                     key={index}
-                    className="h-[300px] bg-gray-50 rounded-lg animate-pulse"
+                    className="h-[300px] bg-muted rounded-lg animate-pulse"
                   />
                 ))}
               </div>
             ) : visibleItems.length === 0 ? (
               <div className="text-center py-20">
-                <p className="text-[#667085]">No opportunities found.</p>
+                <p className="text-muted-foreground">No opportunities found.</p>
               </div>
             ) : (
               <>
@@ -194,7 +210,7 @@ export default function SearchOpportunity() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="p-6 border-t border-[#E9EAEB] flex justify-center">
+                  <div className="p-6 border-t border-border flex justify-center">
                     <PaginationWrapper
                       currentPage={currentPage}
                       totalPages={totalPages}
@@ -208,6 +224,26 @@ export default function SearchOpportunity() {
           </div>
         </main>
       </div>
+
+      {/* Mobile Filter Modal */}
+      <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
+        <DialogContent
+          className="w-[95vw] max-w-md max-h-[90vh] overflow-y-auto [&>button]:hidden bg-background"
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
+          <DialogHeader className="sr-only">
+            <DialogTitle>Filter Opportunities</DialogTitle>
+          </DialogHeader>
+          <div className="p-2">
+            <FilterSidebar variant="search" />
+          </div>
+          <div className="px-4 pb-2 flex justify-center">
+            <Button onClick={() => setIsFilterModalOpen(false)} className="px-6">
+              Show Results
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

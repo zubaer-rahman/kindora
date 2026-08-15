@@ -114,7 +114,7 @@ export default function LandingNavbar() {
     return [
       { label: "Home", href: "/" },
       { label: "About", href: "/about" },
-      { label: "Gallery", href: "/kindora/gallery" },
+      { label: "Gallery", href: "/gallery" },
       { label: "FAQ", href: "/faq" },
       { label: "Opportunities", href: "/opportunities" },
       { label: "Volunteers", href: "/volunteers" },

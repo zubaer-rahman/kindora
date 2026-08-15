@@ -260,7 +260,7 @@ export async function getPublicOpportunity(id: string) {
     is_archived: { $ne: true },
   })
     .populate('organization_profile')
-    .populate('created_by', 'name');
+    .populate('created_by', 'name role');
 
   if (!opportunity) throw new AppError(404, 'Opportunity not found.');
   return opportunity;

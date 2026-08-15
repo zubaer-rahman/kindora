@@ -162,7 +162,7 @@ export function ApplicantsCard({
         )}
 
         <Link
-          href={`/view-profile/volunteer/details/${applicant.id}`}
+          href={`/volunteers/${applicant.id}`}
           className="block"
         >
           <div className="flex gap-3 sm:gap-4">

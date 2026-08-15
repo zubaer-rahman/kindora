@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
-import { OpportunityFormValues } from "@/app/(protected)/organisation/opportunities/create/_components/types";
+import { OpportunityFormValues } from "@/app/(protected)/[role]/opportunities/create/_components/types";
 import { formatDateForInput } from "@/utils/helpers/formatDateForInput";
 import { useCallback } from "react";
 import { opportunityService } from "@/services/opportunity.service";

@@ -9,7 +9,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
-import { useOpportunityDrawer } from "./OpportunityDrawerProvider";
+import { useUnifiedDrawer } from "@/components/providers/UnifiedDrawerProvider";
 import { useVolunteerApplication } from "@/hooks/useVolunteerApplication";
 import {
     Heart,
@@ -36,7 +36,7 @@ export default function VolunteerOpportunityCard({
 }: VolunteerOpportunityCardProps) {
     const router = useRouter();
     const { data: session } = useSession();
-    const { openDrawer } = useOpportunityDrawer();
+    const { openDrawer } = useUnifiedDrawer();
     const { isApplied } = useVolunteerApplication(opportunity._id);
     const [isExpanded, setIsExpanded] = useState(false);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -100,7 +100,7 @@ export default function VolunteerOpportunityCard({
             return;
         }
         if (session) {
-            openDrawer(opportunity._id);
+            openDrawer("opportunity", opportunity._id);
         } else {
             router.push(`/login?redirect=/opportunities/${opportunity._id}`);
         }

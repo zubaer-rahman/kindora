@@ -182,10 +182,10 @@ export default function ProtectedNavbar() {
 
   const isFindActive =
     (normalizedRole === "volunteer" && pathname.startsWith("/find-opportunity")) ||
-    (normalizedRole === "mentor" && pathname.startsWith("/find-volunteer")) ||
+    (normalizedRole === "mentor" && pathname.startsWith("/search/volunteers")) ||
     (normalizedRole === "organisation" && pathname.startsWith("/search/volunteers"));
 
-  const isFindOrgActive = normalizedRole === "mentor" && pathname.startsWith("/find-organisation");
+  const isFindOrgActive = normalizedRole === "mentor" && (pathname.startsWith("/find-organisation") || pathname.startsWith("/search/organizations") || pathname.startsWith("/search/organisations"));
 
   const isManageActive =
     (normalizedRole === "volunteer" && pathname.startsWith("/volunteer/manage-opportunities")) ||
@@ -242,9 +242,7 @@ export default function ProtectedNavbar() {
                          href={
                            session?.user?.role === "volunteer"
                              ? "/find-opportunity/most-recent"
-                             : session?.user?.role === "mentor"
-                               ? "/find-volunteer"
-                               : "/search/volunteers"
+                             : "/search/volunteers"
                          }
                          className={`flex items-center text-sm font-medium transition-colors px-2 py-2 ${
                            isFindActive

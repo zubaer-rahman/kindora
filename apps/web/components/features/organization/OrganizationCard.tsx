@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import Image from "next/image";
 import { profileService } from "@/services/profile.service";
-import { useOrganizationDrawer } from "@/components/common";
+import { useUnifiedDrawer } from "@/components/providers/UnifiedDrawerProvider";
 import OrganizationAvatar from "@/components/common/OrganizationAvatar";
 
 interface OrganizationCardProps {
@@ -25,7 +25,7 @@ export default function OrganizationCard({
     onCardClick
 }: OrganizationCardProps) {
     const router = useRouter();
-    const { openDrawer } = useOrganizationDrawer();
+    const { openDrawer } = useUnifiedDrawer();
     const { data: session } = useSession();
     const [isExpanded, setIsExpanded] = useState(false);
     const axiosAuth = useAxiosAuth();
@@ -62,7 +62,7 @@ export default function OrganizationCard({
             onCardClick(organisation);
             return;
         }
-        openDrawer(organisation._id);
+        openDrawer("organization", organisation._id);
     };
 
     const cleanBio = (organisation.bio || "No description available.")

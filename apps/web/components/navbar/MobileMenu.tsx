@@ -126,7 +126,7 @@ export function MobileMenu({
                       onClick={handleCloseMenu}
                     />
                     <NavLink
-                      href="/find-volunteer"
+                      href="/search/volunteers"
                       label="Find volunteers"
                       icon={Users}
                       onClick={handleCloseMenu}

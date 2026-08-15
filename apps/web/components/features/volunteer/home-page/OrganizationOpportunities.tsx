@@ -157,7 +157,7 @@ export default function OrganizationOpportunities({
 
   return (
     <section className="w-full relative">
-      <div className="border-b border-[#E9EAEB] mb-6">
+      <div className="border-b border-border mb-6">
         <CustomTabs
           tabs={tabs}
           activeTab={activeTab}

@@ -168,11 +168,26 @@ export default function FilterSidebar({
   };
 
   const hasActiveFilters =
-    filters.categories.length > 0 || filters.commitmentType !== "all";
+    filters.categories.length > 0 || 
+    filters.commitmentType !== "all" || 
+    filters.searchQuery !== "" || 
+    filters.location !== "" || 
+    filters.saved === true;
 
   if (variant === "search") {
     return (
-      <div className={cn("w-full h-full bg-muted rounded-2xl p-4", className)}>
+      <div className={cn("w-full h-full bg-muted rounded-2xl p-4 flex flex-col", className)}>
+        <div className="flex items-center justify-between mb-2 px-1">
+          <span className="text-sm font-medium text-muted-foreground">Filters</span>
+          {hasActiveFilters && (
+            <button
+              onClick={clearAllFilters}
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              Clear all
+            </button>
+          )}
+        </div>
         <Accordion type="multiple" defaultValue={["categories", "experience"]} className="w-full border-none">
           {/* Categories Section */}
           <AccordionItem value="categories" className="border-none">
@@ -269,9 +284,27 @@ export default function FilterSidebar({
   if (variant === "volunteer") {
     const activeCategories = volunteerFilters.categories;
     const activeLocations = volunteerFilters.locations;
+    const hasActiveVolunteerFilters = activeCategories.length > 0 || activeLocations.length > 0;
+
+    const handleClearVolunteerFilters = () => {
+      const empty = { categories: [], locations: [] };
+      setVolunteerFilters(empty);
+      onFilterChange?.(empty);
+    };
 
     return (
-      <div className={cn("w-full min-h-[calc(100vh-180px)] bg-muted rounded-lg p-4", className)}>
+      <div className={cn("w-full min-h-[calc(100vh-180px)] bg-muted rounded-lg p-4 flex flex-col", className)}>
+        <div className="flex items-center justify-between mb-2 px-1">
+          <span className="text-sm font-medium text-muted-foreground">Filters</span>
+          {hasActiveVolunteerFilters && (
+            <button
+              onClick={handleClearVolunteerFilters}
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              Clear all
+            </button>
+          )}
+        </div>
         <Accordion type="multiple" defaultValue={["location", "categories"]} className="w-full border-none">
           {/* Location Section */}
           <AccordionItem value="location" className="border-none">
@@ -382,8 +415,16 @@ export default function FilterSidebar({
     <div
       className={cn("w-full sm:w-[320px] flex flex-col gap-[10px] p-[24px_25px_32px_20px] rounded-[24px] bg-accent", className)}
     >
-      <div className="w-full pb-4 border-b border-border">
+      <div className="w-full pb-4 border-b border-border flex items-center justify-between">
         <h3 className="font-semibold text-base text-foreground">Filter</h3>
+        {hasActiveFilters && (
+          <button
+            onClick={clearAllFilters}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Clear all
+          </button>
+        )}
       </div>
 
       <ScrollArea className="h-[calc(100vh-200px)] w-full flex-1">

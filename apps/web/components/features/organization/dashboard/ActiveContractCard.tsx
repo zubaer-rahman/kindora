@@ -45,7 +45,7 @@ export const ActiveContractCard: React.FC<ActiveContractCardProps> = ({
             <h3 
               className="text-lg font-semibold text-foreground cursor-pointer hover:text-primary transition-colors"
               onClick={() => {
-                router.push(`/find-volunteer/volunteer/details/${contract.id}`);
+                router.push(`/volunteers/${contract.id}`);
               }}
             >
               {contract.freelancerName}
@@ -63,7 +63,7 @@ export const ActiveContractCard: React.FC<ActiveContractCardProps> = ({
                 key={opportunity.id}
                 className="text-sm text-primary cursor-pointer hover:text-primary/80 transition-colors"
                 onClick={() => {
-                  router.push(`/organisation/opportunities/${opportunity.id}`);
+                  router.push(`/organisation/opportunities/${opportunity.id}/details`);
                 }}
               >
                 • {opportunity.title}
@@ -73,7 +73,7 @@ export const ActiveContractCard: React.FC<ActiveContractCardProps> = ({
               <p 
                 className="text-sm text-primary cursor-pointer hover:text-primary/80 transition-colors font-medium"
                 onClick={() => {
-                  router.push(`/find-volunteer/volunteer/details/${contract.id}`);
+                  router.push(`/volunteers/${contract.id}`);
                 }}
               >
                 +{contract.opportunities.length - 6} more

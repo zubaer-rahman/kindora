@@ -7,11 +7,10 @@ import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { Opportunity } from "@/types/opportunities";
 import {
-  VolunteerOpportunityCard,
-  SearchBar,
-  CustomTabs,
 } from "@/components/common";
+import VolunteerOpportunityCard from "@/components/features/opportunities/VolunteerOpportunityCard";
 import { useSearch } from "@/components/providers/SearchProvider";
+import UnifiedFindPage from "@/components/features/shared/UnifiedFindPage";
 import VolunteerDashboardSidebar from "./VolunteerDashboardSidebar";
 import { PaginationWrapper } from "@/components/common/PaginationWrapper";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -128,145 +127,81 @@ export default function FindOpportunity() {
     window.history.pushState(null, "", `/find-opportunity/${tab}`);
   };
 
-  return (
-    <div className="min-h-[calc(100vh-72px)] lg:h-[calc(100vh-72px)] flex flex-col">
-      <div className="container max-w-[1280px] mx-auto px-4 pt-6 flex flex-col flex-1 min-h-0 lg:overflow-hidden">
-        {/* Search Bar - half width on desktop */}
-        <div className="w-full lg:w-1/2 shrink-0">
-          <SearchBar
-            initialQuery={filters.searchQuery}
-            initialLocation={filters.location}
-            placeholder="Search for opportunities"
-            preventRedirect={true}
-            showClearButton={true}
-            onClear={() => setSearchQuery("")}
-            onSearch={(query) => setSearchQuery(query)}
-          />
+  const renderList = () => {
+    if (isLoading) {
+      return Array.from({ length: 3 }).map((_, index) => (
+        <div key={index} className="px-4 py-6 border-b border-border">
+          <div className="flex items-center justify-between mb-4">
+            <Skeleton className="h-3.5 w-24" />
+            <Skeleton className="h-9 w-9 rounded-full" />
+          </div>
+          <Skeleton className="h-6 w-3/4 mb-4" />
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4">
+            <Skeleton className="h-3.5 w-20" />
+            <Skeleton className="h-3.5 w-2 rounded-full" />
+            <Skeleton className="h-3.5 w-14" />
+            <Skeleton className="h-3.5 w-2 rounded-full" />
+            <Skeleton className="h-3.5 w-24" />
+          </div>
+          <div className="space-y-2 mb-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+          <div className="flex items-center gap-2 mb-4">
+            <Skeleton className="h-6 w-20 rounded-full" />
+            <Skeleton className="h-6 w-16 rounded-full" />
+            <Skeleton className="h-6 w-24 rounded-full" />
+          </div>
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-3.5 w-32" />
+            <Skeleton className="h-3.5 w-20" />
+          </div>
         </div>
+      ));
+    }
 
-        {/* Content Row */}
-        <div className="flex-1 flex flex-col lg:flex-row gap-8 min-h-0 mt-6">
-          {/* Main Content Area */}
-          <main className="flex-1 min-w-0 flex flex-col min-h-0">
-            {/* Fixed Header Section */}
-            <div className="shrink-0">
-              {/* Header Section */}
-              <div>
-                <h1 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
-                  Opportunities you might like
-                </h1>
-              </div>
-
-              {/* Tabs Section */}
-              <div className="pt-2 border-b border-border">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <CustomTabs
-                    tabs={tabs}
-                    activeTab={activeTab}
-                    onTabChange={handleTabChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Scrollable Cards Section */}
-            <div className="flex-1 overflow-y-auto min-h-0 mt-6 no-scrollbar">
-              {isLoading ? (
-                <div>
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="px-4 py-6 border-b border-border"
-                    >
-                      {/* Posted time + heart button */}
-                      <div className="flex items-center justify-between mb-4">
-                        <Skeleton className="h-3.5 w-24" />
-                        <Skeleton className="h-9 w-9 rounded-full" />
-                      </div>
-
-                      {/* Title */}
-                      <Skeleton className="h-6 w-3/4 mb-4" />
-
-                      {/* Metadata line */}
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4">
-                        <Skeleton className="h-3.5 w-20" />
-                        <Skeleton className="h-3.5 w-2 rounded-full" />
-                        <Skeleton className="h-3.5 w-14" />
-                        <Skeleton className="h-3.5 w-2 rounded-full" />
-                        <Skeleton className="h-3.5 w-24" />
-                      </div>
-
-                      {/* Description */}
-                      <div className="space-y-2 mb-4">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-2/3" />
-                      </div>
-
-                      {/* Category badges */}
-                      <div className="flex items-center gap-2 mb-4">
-                        <Skeleton className="h-6 w-20 rounded-full" />
-                        <Skeleton className="h-6 w-16 rounded-full" />
-                        <Skeleton className="h-6 w-24 rounded-full" />
-                      </div>
-
-                      {/* Footer: location + proposals */}
-                      <div className="flex items-center justify-between">
-                        <Skeleton className="h-3.5 w-32" />
-                        <Skeleton className="h-3.5 w-20" />
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Pagination Skeleton */}
-                  <div className="p-6 border-t border-border flex justify-center gap-2">
-                    <Skeleton className="h-9 w-9 rounded-md" />
-                    <Skeleton className="h-9 w-9 rounded-md" />
-                    <Skeleton className="h-9 w-9 rounded-md" />
-                    <Skeleton className="h-9 w-9 rounded-md" />
-                    <Skeleton className="h-9 w-9 rounded-md" />
-                  </div>
-                </div>
-              ) : visibleOpportunities.filter((opp) => opp && !opp.is_archived)
-                  .length === 0 ? (
-                <div className="text-center py-20">
-                  <p className="text-muted-foreground">
-                    No opportunities found.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex flex-col">
-                    {visibleOpportunities
-                      .filter((opp) => opp && !opp.is_archived)
-                      .map((opportunity) => (
-                        <VolunteerOpportunityCard
-                          key={opportunity._id}
-                          opportunity={opportunity}
-                        />
-                      ))}
-                  </div>
-
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <div className="p-6 border-t border-border flex justify-center">
-                      <PaginationWrapper
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                        maxVisiblePages={5}
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </main>
-
-          {/* Right Sidebar */}
-          <VolunteerDashboardSidebar className="w-full lg:w-[320px] flex-shrink-0 lg:sticky lg:top-6" />
+    if (visibleOpportunities.filter((opp) => opp && !opp.is_archived).length === 0) {
+      return (
+        <div className="text-center py-20">
+          <p className="text-muted-foreground">No opportunities found.</p>
         </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col">
+        {visibleOpportunities
+          .filter((opp) => opp && !opp.is_archived)
+          .map((opportunity) => (
+            <VolunteerOpportunityCard
+              key={opportunity._id}
+              opportunity={opportunity}
+            />
+          ))}
       </div>
-    </div>
+    );
+  };
+
+  return (
+    <UnifiedFindPage
+      title="Opportunities you might like"
+      type="opportunity"
+      isLoading={isLoading}
+      totalItems={totalOpportunities}
+      totalPages={totalPages}
+      currentPage={currentPage}
+      onPageChange={setCurrentPage}
+      searchPlaceholder="Search for opportunities"
+      onSearch={(q) => setSearchQuery(q)}
+      preventRedirect={false}
+      redirectBasePath="/search/opportunities"
+      sidebarPosition="right"
+      sidebarContent={<VolunteerDashboardSidebar />}
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
+      renderList={renderList}
+    />
   );
 }

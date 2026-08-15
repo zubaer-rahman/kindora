@@ -18,6 +18,7 @@ interface SearchBarProps {
     showClearButton?: boolean;
     onClear?: () => void;
     placeholder?: string;
+    redirectBasePath?: string;
 }
 
 
@@ -31,6 +32,7 @@ export default function SearchBar({
     onClear,
     placeholder = "Search for jobs",
     preventRedirect = false,
+    redirectBasePath,
 }: SearchBarProps & { preventRedirect?: boolean }) {
 
     const [searchQuery, setSearchQuery] = useState(initialQuery);
@@ -90,7 +92,7 @@ export default function SearchBar({
 
             if (!preventRedirect) {
                 const role = session?.user?.role;
-                const basePath = role === "volunteer" ? "/search/opportunities" : "/search/volunteers";
+                const basePath = redirectBasePath || (role === "volunteer" ? "/search/opportunities" : "/search/volunteers");
                 const searchUrl = `${basePath}/?from_recent_search=true&q=${encodeURIComponent(trimmedQuery)}`;
                 router.push(searchUrl);
             }
@@ -106,7 +108,7 @@ export default function SearchBar({
 
         if (!preventRedirect) {
             const role = session?.user?.role;
-            const basePath = role === "volunteer" ? "/search/opportunities" : "/search/volunteers";
+            const basePath = redirectBasePath || (role === "volunteer" ? "/search/opportunities" : "/search/volunteers");
             const searchUrl = `${basePath}/?from_recent_search=true&q=${encodeURIComponent(query)}`;
             router.push(searchUrl);
         }

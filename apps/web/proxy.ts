@@ -8,7 +8,7 @@ const PUBLIC_PATHS = [
   "/faq",
   "/opportunities",
   "/volunteers",
-  "/kindora/gallery",
+  "/gallery",
   "/login",
   "/signup",
   "/forgot-password",
@@ -17,7 +17,7 @@ const PUBLIC_PATHS = [
 
 const ROLE_PREFIXES: Record<string, string[]> = {
   volunteer: ["/find-opportunity", "/volunteer"],
-  mentor: ["/find-volunteer", "/mentor"],
+  mentor: ["/find-volunteer", "/mentor", "/search/volunteers"],
   organisation: ["/organisation", "/organization", "/search/volunteers", "/find-volunteer"],
   system_admin: ["/system-admin"],
 };

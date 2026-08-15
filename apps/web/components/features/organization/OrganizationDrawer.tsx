@@ -129,7 +129,7 @@ export default function OrganizationDrawer({
 
             <div className="lg:w-[300px] lg:flex-shrink-0 flex justify-end">
               <a
-                href={`/organisation/profile/${organization?._id || organizationId}`}
+                href={`/organisations/${organization?._id || organizationId}?referrer_url_path=/search/organizations`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm font-medium text-primary hover:underline flex items-center gap-2"

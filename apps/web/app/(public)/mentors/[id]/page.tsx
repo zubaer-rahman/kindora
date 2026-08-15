@@ -357,7 +357,7 @@ export default function PublicMentorProfilePage() {
                       transition={{ delay: idx * 0.1 }}
                     >
                       <Link
-                        href={`/view/opportunity/${opp._id}`}
+                        href={`/opportunities/${opp._id}/details`}
                         className="flex items-center justify-between gap-6 p-8 rounded-[32px] border border-slate-100 bg-white hover:bg-slate-50 hover:border-primary/20 hover:shadow-2xl transition-all duration-500 group"
                       >
                         <div className="min-w-0 flex-1">

@@ -37,4 +37,11 @@ export interface IVolunteerProfile {
     end_time?: string;
   };
   is_available?: boolean;
+
+  // Additional fields for drawer
+  user?: { name: string; email: string };
+  skills?: string[];
+  causes?: string[];
+  available_hours_per_week?: number;
+  languages?: string[];
 }

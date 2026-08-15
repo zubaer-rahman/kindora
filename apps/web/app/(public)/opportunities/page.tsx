@@ -110,7 +110,7 @@ export default function PublicOpportunitiesPage() {
                         <OpportunityCard
                           opportunity={opportunity}
                           onCardClick={() =>
-                            router.push(`/view/opportunity/${opportunity._id}`)
+                            router.push(`/opportunities/${opportunity._id}/details`)
                           }
                         />
                       </div>

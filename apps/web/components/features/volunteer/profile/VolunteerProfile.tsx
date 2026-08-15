@@ -37,12 +37,12 @@ interface Application {
 
 export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
   const axiosAuth = useAxiosAuth();
-  const { data: volunteer, isLoading } = useQuery({
+  const { data: volunteer, isLoading, error: volunteerError } = useQuery({
     queryKey: ['volunteer', volunteerId],
     queryFn: () => profileService.getVolunteerProfileById(axiosAuth, volunteerId),
     enabled: !!volunteerId,
   });
-  const { data: applications, isLoading: isLoadingApplications } = useQuery({
+  const { data: applications, isLoading: isLoadingApplications, error: applicationsError } = useQuery({
     queryKey: ['volunteerApplications', volunteerId],
     queryFn: () => applicationService.getVolunteerApplications(axiosAuth, volunteerId),
     enabled: !!volunteerId,
@@ -119,10 +119,14 @@ export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
     return null;
   };
 
+  const is404 = (volunteerError as any)?.response?.status === 404 || (applicationsError as any)?.response?.status === 404;
+  const activeError = is404 ? null : (volunteerError || applicationsError);
+
   return (
     <QueryStateWrapper
       isLoading={isLoading || isLoadingApplications}
-      error={null}
+      error={activeError}
+      notFound={is404}
       data={volunteer}
       customSkeleton={<ProfileSkeleton />}
       notFoundTitle="Volunteer not found"

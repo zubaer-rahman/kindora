@@ -24,8 +24,8 @@ const OppModel = Opportunity as any;
 
 export async function inviteMentor(userId: string, input: InviteMentorInput) {
   const inviter = await UserModel.findById(userId);
-  if (!inviter || (inviter.role !== 'admin' && inviter.role !== 'mentor')) {
-    throw new AppError(403, 'Only admins and mentors can invite mentors.');
+  if (!inviter || (inviter.role !== 'admin' && inviter.role !== 'mentor' && inviter.role !== 'organization')) {
+    throw new AppError(403, 'Only admins, organizations, and mentors can invite mentors.');
   }
 
   const organization = await OrgProfileModel.findById(input.organizationId);
@@ -88,11 +88,11 @@ export async function markAsMentor(userId: string, input: MentorAssignmentInput)
     throw new AppError(404, 'Current user not found.');
   }
 
-  const isAdminOrMentor =
-    currentUser.role === 'admin' || currentUser.role === 'mentor';
+  const isAdminOrMentorOrOrg =
+    currentUser.role === 'admin' || currentUser.role === 'mentor' || currentUser.role === 'organization';
 
   let isOpportunityMentor = false;
-  if (!isAdminOrMentor) {
+  if (!isAdminOrMentorOrOrg) {
     const mentorAssignment = await OppMentorModel.findOne({
       opportunity: input.opportunityId,
       volunteer: currentUser._id,
@@ -100,10 +100,10 @@ export async function markAsMentor(userId: string, input: MentorAssignmentInput)
     isOpportunityMentor = !!mentorAssignment;
   }
 
-  if (!isAdminOrMentor && !isOpportunityMentor) {
+  if (!isAdminOrMentorOrOrg && !isOpportunityMentor) {
     throw new AppError(
       403,
-      'Only admins, mentors, or opportunity mentors can mark volunteers as mentors.',
+      'Only admins, organizations, mentors, or opportunity mentors can mark volunteers as mentors.',
     );
   }
 
@@ -114,7 +114,7 @@ export async function markAsMentor(userId: string, input: MentorAssignmentInput)
 
   let hasOrganizationAccess = false;
 
-  if (isAdminOrMentor) {
+  if (isAdminOrMentorOrOrg) {
     hasOrganizationAccess =
       currentUser.organization_profile?.toString() ===
       opportunity.organization_profile.toString();
@@ -174,11 +174,11 @@ export async function removeMentor(userId: string, input: MentorAssignmentInput)
     throw new AppError(404, 'Current user not found.');
   }
 
-  const isAdminOrMentor =
-    currentUser.role === 'admin' || currentUser.role === 'mentor';
+  const isAdminOrMentorOrOrg =
+    currentUser.role === 'admin' || currentUser.role === 'mentor' || currentUser.role === 'organization';
 
   let isOpportunityMentor = false;
-  if (!isAdminOrMentor) {
+  if (!isAdminOrMentorOrOrg) {
     const mentorAssignment = await OppMentorModel.findOne({
       opportunity: input.opportunityId,
       volunteer: currentUser._id,
@@ -186,10 +186,10 @@ export async function removeMentor(userId: string, input: MentorAssignmentInput)
     isOpportunityMentor = !!mentorAssignment;
   }
 
-  if (!isAdminOrMentor && !isOpportunityMentor) {
+  if (!isAdminOrMentorOrOrg && !isOpportunityMentor) {
     throw new AppError(
       403,
-      'Only admins, mentors, or opportunity mentors can remove mentors.',
+      'Only admins, organizations, mentors, or opportunity mentors can remove mentors.',
     );
   }
 
@@ -200,7 +200,7 @@ export async function removeMentor(userId: string, input: MentorAssignmentInput)
 
   let hasOrganizationAccess = false;
 
-  if (isAdminOrMentor) {
+  if (isAdminOrMentorOrOrg) {
     hasOrganizationAccess =
       currentUser.organization_profile?.toString() ===
       opportunity.organization_profile.toString();
@@ -239,11 +239,11 @@ export async function toggleMentor(userId: string, input: MentorAssignmentInput)
     throw new AppError(404, 'Current user not found.');
   }
 
-  const isAdminOrMentor =
-    currentUser.role === 'admin' || currentUser.role === 'mentor';
+  const isAdminOrMentorOrOrg =
+    currentUser.role === 'admin' || currentUser.role === 'mentor' || currentUser.role === 'organization';
 
   let isOpportunityMentor = false;
-  if (!isAdminOrMentor) {
+  if (!isAdminOrMentorOrOrg) {
     const mentorAssignment = await OppMentorModel.findOne({
       opportunity: input.opportunityId,
       volunteer: currentUser._id,
@@ -251,10 +251,10 @@ export async function toggleMentor(userId: string, input: MentorAssignmentInput)
     isOpportunityMentor = !!mentorAssignment;
   }
 
-  if (!isAdminOrMentor && !isOpportunityMentor) {
+  if (!isAdminOrMentorOrOrg && !isOpportunityMentor) {
     throw new AppError(
       403,
-      'Only admins, mentors, or opportunity mentors can toggle mentor status.',
+      'Only admins, organizations, mentors, or opportunity mentors can toggle mentor status.',
     );
   }
 
@@ -265,7 +265,7 @@ export async function toggleMentor(userId: string, input: MentorAssignmentInput)
 
   let hasOrganizationAccess = false;
 
-  if (isAdminOrMentor) {
+  if (isAdminOrMentorOrOrg) {
     hasOrganizationAccess =
       currentUser.organization_profile?.toString() ===
       opportunity.organization_profile.toString();

@@ -82,8 +82,13 @@ export default function OpportunityActionsDropdown({
     },
   });
 
-  const viewPath = actionsMode === 'mentor' ? '/volunteer/mentor-opportunity' : '/organisation/opportunities';
-  const handleView = () => router.push(`${viewPath}/${opportunityId}`);
+  const handleView = () => {
+    if (actionsMode === 'mentor') {
+      router.push(`/volunteer/mentor-opportunity/${opportunityId}`);
+    } else {
+      router.push(`/organisation/opportunities/${opportunityId}/details`);
+    }
+  };
   const handleEdit = () => router.push(`/organisation/opportunities/${opportunityId}/edit`);
   const handleArchiveOrDelete = () => {
     setDropdownOpen(false);

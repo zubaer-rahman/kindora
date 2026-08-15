@@ -9,9 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import FilterSidebar, { VolunteerFilters } from "@/components/features/search/FilterSidebar";
 import NewVolunteerCard from "@/components/features/organization/NewVolunteerCard";
 import MessageDialog from "../MessageDialog";
-import { SearchBar } from "@/components/common";
 import { useSearch } from "@/components/providers/SearchProvider";
-
+import UnifiedFindPage from "@/components/features/shared/UnifiedFindPage";
 import QueryStateWrapper from "@/components/common/QueryStateWrapper";
 import { userService } from "@/services/user.service";
 import { PaginationWrapper } from "@/components/common/PaginationWrapper";
@@ -109,128 +108,90 @@ export default function SearchVolunteer() {
   const totalItems = volunteersData?.total || 0;
   const totalPages = volunteersData?.totalPages || 0;
 
-  return (
-    <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-background">
-      <div className="container max-w-[1280px] mx-auto px-4 pt-6 md:pt-8 flex flex-col h-full">
-
-        {/* Top Search Bar Row — stays fixed */}
-        <div className="flex items-center gap-4 mb-6 flex-shrink-0">
-          <div className="flex-1 max-w-2xl">
-            <SearchBar
-              onSearch={(q) => handleSearch(q)}
-              initialQuery={searchQuery}
-              borderRadius="100px"
-              showClearButton={true}
-              onClear={handleClearSearch}
-              placeholder="Search for volunteers"
-              preventRedirect={true}
-            />
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setIsFilterModalOpen(true)}
-            className="lg:hidden flex items-center gap-2"
-          >
-            <Filter className="h-4 w-4" />
-            Filters
-          </Button>
-        </div>
-
-        {/* Body row — fills remaining height, no overflow on this level */}
-        <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
-
-          {/* Left Sidebar — fixed, scrolls internally if needed */}
-          <aside className="hidden lg:block w-[280px] flex-shrink-0 overflow-y-auto">
-            <FilterSidebar variant="volunteer" onFilterChange={setFilters} currentFilters={filters} />
-          </aside>
-
-          {/* Main Content — fixed controls + scrollable cards */}
-          <main className="flex-1 min-w-0 flex flex-col min-h-0">
-
-            {/* Controls Row — stays fixed */}
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-border flex-shrink-0">
-              <div className="flex items-center gap-6">
-                {!isLoading && volunteers.length > 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    Showing {volunteers.length} of {totalItems} volunteers
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Sort by:</span>
-                  <Select
-                    value={sortBy}
-                    onValueChange={(value: "available" | "not_available" | "best_matches") => setSortBy(value)}
-                  >
-                    <SelectTrigger className="w-[140px] h-9 border-input rounded-lg text-sm font-medium text-foreground focus:ring-0 focus:ring-offset-0">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent align="end">
-                      <SelectItem value="available">Available</SelectItem>
-                      <SelectItem value="not_available">Not Available</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
-            {/* Volunteer Cards — ONLY this area scrolls */}
-            <div className="flex-1 overflow-y-auto pr-1 space-y-4 pb-8">
-              {isLoading ? (
-                Array.from({ length: 3 }).map((_, index) => (
-                  <div key={index} className="w-full">
-                    <div className="border border-border rounded-xl p-6 bg-card">
-                      <div className="flex flex-col md:flex-row gap-6">
-                        <Skeleton className="h-16 w-16 rounded-full" />
-                        <div className="flex-1 space-y-4">
-                          <div className="flex justify-between">
-                            <div className="space-y-2">
-                              <Skeleton className="h-6 w-48" />
-                              <Skeleton className="h-4 w-32" />
-                            </div>
-                            <Skeleton className="h-10 w-24 rounded-full" />
-                          </div>
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-2/3" />
-                        </div>
-                      </div>
-                    </div>
+  const renderList = () => {
+    if (isLoading) {
+      return Array.from({ length: 3 }).map((_, index) => (
+        <div key={index} className="w-full">
+          <div className="border border-border rounded-xl p-6 bg-card">
+            <div className="flex flex-col md:flex-row gap-6">
+              <Skeleton className="h-16 w-16 rounded-full" />
+              <div className="flex-1 space-y-4">
+                <div className="flex justify-between">
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-48" />
+                    <Skeleton className="h-4 w-32" />
                   </div>
-                ))
-              ) : volunteers.length === 0 ? (
-                <EmptyState
-                  icon={Users}
-                  title="No volunteers found"
-                  description="Try adjusting your search criteria to find more volunteers that match your requirements."
-                  variant="default"
-                  showAction={false}
-                />
-              ) : (
-                volunteers.map((volunteer: Record<string, unknown>) => (
-                  <NewVolunteerCard
-                    key={volunteer._id as string}
-                    volunteer={volunteer as unknown as Volunteer}
-                    onConnect={handleConnect}
-                  />
-                ))
-              )}
-
-              {/* Pagination inside scroll area */}
-              {!isLoading && volunteers.length > 0 && totalPages > 1 && (
-                <div className="pt-4 flex justify-center">
-                  <PaginationWrapper
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                    maxVisiblePages={5}
-                  />
+                  <Skeleton className="h-10 w-24 rounded-full" />
                 </div>
-              )}
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
             </div>
-          </main>
+          </div>
         </div>
-      </div>
+      ));
+    }
+
+    if (volunteers.length === 0) {
+      return (
+        <EmptyState
+          icon={Users}
+          title="No volunteers found"
+          description="Try adjusting your search criteria to find more volunteers that match your requirements."
+          variant="default"
+          showAction={false}
+        />
+      );
+    }
+
+    return volunteers.map((volunteer: Record<string, unknown>) => (
+      <NewVolunteerCard
+        key={volunteer._id as string}
+        volunteer={volunteer as unknown as Volunteer}
+        onConnect={handleConnect}
+      />
+    ));
+  };
+
+  const controlsContent = (
+    <div className="flex items-center gap-2">
+      <span className="text-sm text-muted-foreground">Sort by:</span>
+      <Select
+        value={sortBy}
+        onValueChange={(value: "available" | "not_available" | "best_matches") => setSortBy(value)}
+      >
+        <SelectTrigger className="w-[140px] h-9 border-input rounded-lg text-sm font-medium text-foreground focus:ring-0 focus:ring-offset-0">
+          <SelectValue placeholder="Sort by" />
+        </SelectTrigger>
+        <SelectContent align="end">
+          <SelectItem value="available">Available</SelectItem>
+          <SelectItem value="not_available">Not Available</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
+  return (
+    <>
+      <UnifiedFindPage
+        type="volunteer"
+        isLoading={isLoading}
+        totalItems={totalItems}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        searchPlaceholder="Search for volunteers"
+        onSearch={handleSearch}
+        preventRedirect={false}
+        redirectBasePath="/search/volunteers"
+        sidebarPosition="left"
+        sidebarContent={
+          <FilterSidebar variant="volunteer" onFilterChange={setFilters} currentFilters={filters} />
+        }
+        controlsContent={controlsContent}
+        renderList={renderList}
+        onMobileFilterClick={() => setIsFilterModalOpen(true)}
+      />
 
       {/* Mobile Filter Modal */}
       <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
@@ -261,6 +222,6 @@ export default function SearchVolunteer() {
         onOpenChange={setIsMessageDialogOpen}
         volunteer={selectedVolunteer}
       />
-    </div>
+    </>
   );
 }

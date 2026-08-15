@@ -5,6 +5,7 @@ import UserAvatar from "@/components/common/UserAvatar";
 import { formatText } from "@/utils/helpers/formatText";
 import { MapPin } from "lucide-react";
 import { toTitleCase } from '@/utils/helpers/toTitleCase';
+import { useUnifiedDrawer } from "@/components/providers/UnifiedDrawerProvider";
 
 interface Volunteer {
     _id: string;
@@ -37,10 +38,12 @@ export default function NewVolunteerCard({
     onConnect,
 }: NewVolunteerCardProps) {
     const router = useRouter();
+    const { openDrawer } = useUnifiedDrawer();
 
     return (
         <Card
             className="group hover:bg-muted transition-colors rounded-xl border border-border p-0 bg-card cursor-pointer flex flex-col w-full shadow-none"
+            onClick={() => openDrawer("volunteer", volunteer._id)}
         >
             <CardContent className="px-4 py-6 flex flex-col flex-1">
                 <div className="flex flex-col md:flex-row gap-4">
@@ -54,7 +57,7 @@ export default function NewVolunteerCard({
                         <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                             <div>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors cursor-pointer" onClick={() => router.push(`/find-volunteer/volunteer/details/${volunteer._id}`)}>
+                                    <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors cursor-pointer">
                                         {toTitleCase(volunteer.name)}
                                     </h3>
                                     {volunteer.volunteer_profile?.is_available && (
@@ -82,7 +85,10 @@ export default function NewVolunteerCard({
                             <div className="flex-shrink-0">
                                 <Button
                                     className="bg-primary hover:bg-primary/90 text-white font-medium rounded-full px-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
-                                    onClick={() => onConnect(volunteer)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onConnect(volunteer);
+                                    }}
                                     disabled={!volunteer.volunteer_profile?.is_available}
                                 >
                                     Message

@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios";
 import { IOpportunity } from "@/types/api/opportunity";
-import { OpportunityFormValues } from "@/app/(protected)/organisation/opportunities/create/_components/types";
+import { OpportunityFormValues } from "@/app/(protected)/[role]/opportunities/create/_components/types";
 
 export const opportunityService = {
   /**

@@ -4,8 +4,7 @@ import { ClientProviders } from "@/components/providers/ClientProviders";
 import { auth } from "@/auth";
 import { Toaster } from "react-hot-toast";
 import { SearchProvider } from "@/components/providers/SearchProvider";
-import { OpportunityDrawerProvider } from "@/components/features/opportunities/OpportunityDrawerProvider";
-import { OrganizationDrawerProvider } from "@/components/features/organization/OrganizationDrawerProvider";
+import { UnifiedDrawerProvider } from "@/components/providers/UnifiedDrawerProvider";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -33,12 +32,10 @@ export default async function RootLayout({
       <body className={`${outfit.className} `} suppressHydrationWarning>
         <ClientProviders session={session}>
           <SearchProvider>
-            <OpportunityDrawerProvider>
-              <OrganizationDrawerProvider>
-                {children}
-                <Toaster position="top-center" />
-              </OrganizationDrawerProvider>
-            </OpportunityDrawerProvider>
+            <UnifiedDrawerProvider>
+              {children}
+              <Toaster position="top-center" />
+            </UnifiedDrawerProvider>
           </SearchProvider>
         </ClientProviders>
       </body>

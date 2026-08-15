@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, Variants } from "framer-motion";
-import SearchBar from "@/components/features/search/SearchBar";
+import LandingSearchBar from "./LandingSearchBar";
 
 export default function HeroSectionNew() {
   const router = useRouter();
@@ -121,7 +121,7 @@ export default function HeroSectionNew() {
               variants={fadeInUp}
               className="relative z-20 max-w-3xl mx-auto p-2 bg-background/40 backdrop-blur-xl rounded-2xl border border-border/20 shadow-2xl shadow-primary/10"
             >
-              <SearchBar onSearch={handleSearch} />
+              <LandingSearchBar onSearch={handleSearch} />
             </motion.div>
           </motion.div>
         </div>

@@ -25,7 +25,7 @@ export const STATIC_LINKS: NavItem[] = [
   },
   {
     label: "Gallery",
-    href: "/kindora/gallery",
+    href: "/gallery",
   },
   {
     label: "FAQ",

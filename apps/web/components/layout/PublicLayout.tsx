@@ -2,7 +2,7 @@
 
 import { Fragment } from "react";
 import LandingNavbar from "@/components/navbar/landing-navbar/LandingNavbar";
-import NewFooter from "@/components/features/landing-page/home/NewFooter";
+import NewFooter from "@/components/layout/NewFooter";
 import { FeedbackButton } from "@/components/buttons/FeedbackButton";
 
 interface PublicLayoutProps {

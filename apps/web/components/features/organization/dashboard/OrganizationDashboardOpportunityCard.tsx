@@ -98,7 +98,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
               className="text-lg font-semibold cursor-pointer hover:text-primary line-clamp-2"
               onClick={() =>
                 router.push(
-                  `/organisation/opportunities/${opportunity._id}`
+                  `/organisation/opportunities/${opportunity._id}/details`
                 )
               }
             >
