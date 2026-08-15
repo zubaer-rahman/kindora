@@ -8,7 +8,7 @@ const PUBLIC_PATHS = [
   "/faq",
   "/opportunities",
   "/volunteers",
-  "/kindora/gallery",
+  "/gallery",
   "/login",
   "/signup",
   "/forgot-password",
@@ -17,7 +17,7 @@ const PUBLIC_PATHS = [
 
 const ROLE_PREFIXES: Record<string, string[]> = {
   volunteer: ["/find-opportunity", "/volunteer"],
-  mentor: ["/find-volunteer", "/mentor"],
+  mentor: ["/find-volunteer", "/mentor", "/search/volunteers"],
   organisation: ["/organisation", "/organization", "/search/volunteers", "/find-volunteer"],
   system_admin: ["/system-admin"],
 };
@@ -47,10 +47,6 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/find-opportunity/most-recent", request.url));
   }
 
-  if (pathname === "/mentor/dashboard") {
-    return NextResponse.redirect(new URL("/find-volunteer", request.url));
-  }
-
   const isPublic = PUBLIC_PATHS.some(
     (path) => pathname === path || pathname.startsWith(path + "/")
   );
@@ -59,9 +55,6 @@ export default async function proxy(request: NextRequest) {
     if (userRole && (pathname === "/login" || pathname === "/signup" || pathname === "/forgot-password")) {
       if (userRole === "volunteer") {
         return NextResponse.redirect(new URL("/find-opportunity/most-recent", request.url));
-      }
-      if (userRole === "mentor") {
-        return NextResponse.redirect(new URL("/find-volunteer", request.url));
       }
       const role = userRole === "system_admin" ? "system-admin" : userRole;
       return NextResponse.redirect(new URL(`/${role}/dashboard`, request.url));

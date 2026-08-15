@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
+import { messageService } from "@/services/message.service";
 
 interface GroupMessageModalProps {
   isOpen: boolean;
@@ -31,10 +32,8 @@ export function GroupMessageModal({
   const queryClient = useQueryClient();
 
   const sendGroupMessageMutation = useMutation({
-    mutationFn: async (payload: { groupId: string; content: string }) => {
-      const res = await axiosAuth.post(`/api/v1/messages/groups/${payload.groupId}/messages`, { content: payload.content });
-      return res.data.data;
-    },
+    mutationFn: (payload: { groupId: string; content: string }) => 
+      messageService.sendGroupMessage(axiosAuth, { groupId: payload.groupId, content: payload.content }),
     onSuccess: () => {
       toast.success("Message sent successfully!");
       setGroupMessage("");

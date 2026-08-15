@@ -22,6 +22,7 @@ import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { usePathname } from "next/navigation";
 import { isProtectedPath } from "@/utils/helpers/pathCheck";
 import { useTheme } from "next-themes";
+import { profileService } from "@/services/profile.service";
 
 interface UserMenuProps {
   user: SessionUser;
@@ -70,27 +71,19 @@ export function UserMenu({ user }: UserMenuProps) {
 
   const { data: volunteerProfile } = useQuery({
     queryKey: ["volunteerProfile"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/volunteer-profiles/me");
-      return res.data.data;
-    },
+    queryFn: () => profileService.getVolunteerProfile(axiosAuth),
     enabled: isVolunteer,
   });
 
   const { data: mentorProfile } = useQuery({
     queryKey: ["mentorProfile"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/mentor-profiles/me");
-      return res.data.data;
-    },
+    queryFn: () => profileService.getMentorProfile(axiosAuth),
     enabled: isMentor,
   });
 
   const updateVolunteerProfile = useMutation({
-    mutationFn: async (payload: { is_available: boolean }) => {
-      const res = await axiosAuth.patch("/api/v1/volunteer-profiles/me", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { is_available: boolean }) =>
+      profileService.updateVolunteerProfile(axiosAuth, payload),
     onSuccess: () => {
       // Don't update local state here, let the user's choice persist
       // The server update was successful, so we trust the local state
@@ -184,12 +177,12 @@ export function UserMenu({ user }: UserMenuProps) {
                   sideOffset={4}
                   side={isMobile ? "bottom" : "left"}
                   align={isMobile ? "center" : "start"}
-                  className="max-w-[180px] p-2.5 bg-foreground border-border shadow-lg"
+                  className="max-w-[180px] p-2.5 shadow-lg"
                 >
                   <div className="flex items-start gap-2">
                     <Info className="h-3.5 w-3.5 text-primary mt-0.5 flex-shrink-0" />
                     <div className="space-y-1">
-                      <p className="text-xs font-medium text-background">
+                      <p className="text-xs font-medium text-foreground">
                         {isAvailable
                           ? "Available for Opportunities"
                           : "Currently Unavailable"}

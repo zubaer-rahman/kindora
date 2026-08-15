@@ -10,6 +10,7 @@ import { AuthCard } from "@/components/layout/auth/AuthCard";
 import { LoadingButton } from "@/components/buttons/LoadingButton";
 import toast from "react-hot-toast";
 import { signOut } from "next-auth/react";
+import { organizationService } from "@/services/organization.service";
 
 export default function AcceptMentorInvitationPage() {
   const searchParams = useSearchParams();
@@ -20,9 +21,8 @@ export default function AcceptMentorInvitationPage() {
   const axiosAuth = useAxiosAuth();
 
   const acceptInvitation = useMutation({
-    mutationFn: async (payload: { token: string; name: string; password: string }) => {
-      const res = await axiosAuth.post("/api/v1/organization-mentors/accept-invitation", payload);
-      return res.data.data;
+    mutationFn: (payload: { token: string; name: string; password: string }) => {
+      return organizationService.acceptMentorInvitation(axiosAuth, payload);
     },
     onSuccess: () => {
       toast.success("Invitation accepted successfully! You can now log in.");

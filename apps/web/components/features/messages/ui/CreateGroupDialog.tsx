@@ -11,6 +11,8 @@ import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import Avatar from "./Avatar";
 import type { Group } from "@/types/message";
+import { userService } from "@/services/user.service";
+import { messageService } from "@/services/message.service";
 
 interface CreateGroupDialogProps {
   onGroupCreated: () => void;
@@ -25,17 +27,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   const queryClient = useQueryClient();
   const { data: availableUsersData } = useQuery({
     queryKey: ["availableUsers", searchQuery],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/users/available", {
-        params: {
-          page: 1,
-          limit: 50,
-          search: searchQuery || undefined,
-          includeMentors: true,
-        },
-      });
-      return res.data.data;
-    },
+    queryFn: () => userService.getAvailableUsers(axiosAuth, { search: searchQuery }),
     enabled: open,
   });
 
@@ -49,10 +41,8 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   ) || [];
 
   const createGroupMutation = useMutation({
-    mutationFn: async (payload: { name: string; memberIds: string[]; isOrganizationGroup: boolean }) => {
-      const res = await axiosAuth.post("/api/v1/messages/groups", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { name: string; memberIds: string[]; isOrganizationGroup: boolean }) => 
+      messageService.createGroup(axiosAuth, { name: payload.name, members: payload.memberIds }),
     onSuccess: (newGroup) => {
       setOpen(false);
       setName("");

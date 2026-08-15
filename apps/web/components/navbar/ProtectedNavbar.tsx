@@ -21,6 +21,7 @@ import { UserMenu } from "@/components/navbar/UserMenu";
 import { NotificationBell } from "@/components/navbar/NotificationBell";
 import { SessionUser } from "@/types/navigation";
 import { MobileMenu } from "@/components/navbar/MobileMenu";
+import { messageService } from "@/services/message.service";
 import { isAuthPath, isProtectedPath } from "@/utils/helpers/pathCheck";
 import { toast } from "react-hot-toast";
 import KindoraLogo from "@/components/common/KindoraLogo";
@@ -108,10 +109,7 @@ export default function ProtectedNavbar() {
   // Fetch conversations to get total unread count (relaxed polling as fallback)
   const { data: conversations } = useQuery({
     queryKey: ["conversations"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/messages/conversations");
-      return res.data.data;
-    },
+    queryFn: () => messageService.getConversations(axiosAuth),
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -122,10 +120,7 @@ export default function ProtectedNavbar() {
   // Fetch groups to get total unread count (relaxed polling as fallback)
   const { data: groups } = useQuery({
     queryKey: ["groups"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/messages/groups");
-      return res.data.data;
-    },
+    queryFn: () => messageService.getGroups(axiosAuth),
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -179,9 +174,6 @@ export default function ProtectedNavbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (!mounted) {
-    return null;
-  }
 
   const userRole = (session?.user as any)?.role;
   const isSystemAdmin = userRole === "system_admin";
@@ -190,15 +182,17 @@ export default function ProtectedNavbar() {
 
   const isFindActive =
     (normalizedRole === "volunteer" && pathname.startsWith("/find-opportunity")) ||
-    (normalizedRole === "mentor" && pathname.startsWith("/find-volunteer")) ||
+    (normalizedRole === "mentor" && pathname.startsWith("/search/volunteers")) ||
     (normalizedRole === "organisation" && pathname.startsWith("/search/volunteers"));
+
+  const isFindOrgActive = normalizedRole === "mentor" && (pathname.startsWith("/find-organisation") || pathname.startsWith("/search/organizations") || pathname.startsWith("/search/organisations"));
 
   const isManageActive =
     (normalizedRole === "volunteer" && pathname.startsWith("/volunteer/manage-opportunities")) ||
     (normalizedRole === "mentor" && pathname.startsWith("/mentor/manage-opportunities")) ||
-    (normalizedRole === "organisation" && pathname.startsWith("/organisation/opportunities"));
+    (normalizedRole === "organisation" && pathname.startsWith("/organisation/manage-opportunities"));
 
-  const isDashboardActive = normalizedRole === "organisation" && pathname.startsWith("/organisation/dashboard");
+  const isDashboardActive = (normalizedRole === "organisation" || normalizedRole === "mentor") && pathname.startsWith(`/${normalizedRole}/dashboard`);
 
   const messagesPath =
     normalizedRole === "volunteer"
@@ -233,9 +227,9 @@ export default function ProtectedNavbar() {
 
              {!isSystemAdmin && (
                <div className="hidden md:flex items-center space-x-2">
-                 {normalizedRole === "organisation" && (
+                 {(normalizedRole === "organisation" || normalizedRole === "mentor") && (
                    <Link
-                     href="/organisation/dashboard"
+                     href={`/${normalizedRole}/dashboard`}
                      className={`text-sm font-medium transition-colors px-2 py-2 ${isDashboardActive ? "text-primary border-b-2 border-primary rounded-none" : "text-foreground hover:text-primary"}`}
                    >
                      Dashboard
@@ -243,45 +237,48 @@ export default function ProtectedNavbar() {
                  )}
                  <NavigationMenu viewport={false}>
                   <NavigationMenuList className="gap-2">
-                    <NavigationMenuItem>
-                       <NavigationMenuTrigger className={`bg-transparent hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[active]:bg-transparent text-sm font-medium transition-colors h-auto p-2 ${isFindActive ? "text-primary border-b-2 border-primary rounded-none" : "text-foreground hover:text-primary"}`}>
-                        {session?.user?.role === "volunteer"
-                          ? "Find opportunity"
-                          : session?.user?.role === "mentor"
-                            ? "Find volunteers"
-                            : "Find Volunteer"}
-                      </NavigationMenuTrigger>
-                      <NavigationMenuContent className=" p-0">
-                        <ul className="grid w-[200px] gap-1  ">
-                          <li>
-                            <NavigationMenuLink asChild>
-                              <Link
-                                href={
-                                  session?.user?.role === "volunteer"
-                                    ? "/find-opportunity/most-recent"
-                                    : session?.user?.role === "mentor"
-                                      ? "/find-volunteer"
-                                      : "/search/volunteers"
-                                }
-                                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground text-sm font-medium"
-                              >
-                                {session?.user?.role === "volunteer"
-                                  ? "Find Opportunity"
-                                  : session?.user?.role === "mentor"
-                                    ? "Find Volunteers"
-                                    : "Find Volunteer"}
-                              </Link>
-                            </NavigationMenuLink>
-                          </li>
-                        </ul>
-                      </NavigationMenuContent>
-                    </NavigationMenuItem>
+                     <NavigationMenuItem>
+                       <Link
+                         href={
+                           session?.user?.role === "volunteer"
+                             ? "/find-opportunity/most-recent"
+                             : "/search/volunteers"
+                         }
+                         className={`flex items-center text-sm font-medium transition-colors px-2 py-2 ${
+                           isFindActive
+                             ? "text-primary border-b-2 border-primary rounded-none"
+                             : "text-foreground hover:text-primary"
+                         }`}
+                       >
+                         {session?.user?.role === "volunteer"
+                           ? "Find opportunities"
+                           : session?.user?.role === "mentor"
+                             ? "Find volunteers"
+                             : "Find Volunteer"}
+                       </Link>
+                     </NavigationMenuItem>
+
+                     {/* Mentor-only: Find Organisation */}
+                     {normalizedRole === "mentor" && (
+                       <NavigationMenuItem>
+                         <Link
+                           href="/find-organisation/best-matches"
+                           className={`flex items-center text-sm font-medium transition-colors px-2 py-2 ${
+                             isFindOrgActive
+                               ? "text-primary border-b-2 border-primary rounded-none"
+                               : "text-foreground hover:text-primary"
+                           }`}
+                         >
+                           Find organisations
+                         </Link>
+                       </NavigationMenuItem>
+                     )}
 
                     <NavigationMenuItem>
                        <NavigationMenuTrigger className={`bg-transparent hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[active]:bg-transparent text-sm font-medium transition-colors h-auto p-2 ${isManageActive ? "text-primary border-b-2 border-primary rounded-none" : "text-foreground hover:text-primary"}`}>
-                        {session?.user?.role === "mentor"
+                        {session?.user?.role === "volunteer"
                           ? "My opportunities"
-                          : "Manage opportunity"}
+                          : "Opportunities"}
                       </NavigationMenuTrigger>
                       <NavigationMenuContent className="p-0">
                         <ul className="grid w-[200px] gap-1   ">
@@ -293,15 +290,13 @@ export default function ProtectedNavbar() {
                                     ? "/volunteer/manage-opportunities"
                                     : session?.user?.role === "mentor"
                                       ? "/mentor/manage-opportunities"
-                                      : "/organisation/opportunities"
+                                      : "/organisation/manage-opportunities"
                                 }
                                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground text-sm font-medium"
                               >
                                 {session?.user?.role === "volunteer"
                                   ? "My Opportunities"
-                                  : session?.user?.role === "mentor"
-                                    ? "My Opportunities"
-                                    : "Manage Opportunities"}
+                                  : "Manage Opportunities"}
                               </Link>
                             </NavigationMenuLink>
                           </li>
@@ -364,7 +359,7 @@ export default function ProtectedNavbar() {
               <NotificationBell />
             </div>
 
-            <ThemeToggle />
+            {mounted && <ThemeToggle />}
 
             {session?.user && <UserMenu user={session.user as SessionUser} />}
 

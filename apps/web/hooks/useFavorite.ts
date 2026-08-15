@@ -3,10 +3,7 @@ import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useState, useEffect } from "react";
 
 import { useSession } from "next-auth/react";
-
-interface FavoriteStatus {
-  isFavorite: boolean;
-}
+import { favoriteService, FavoriteStatus } from "@/services/favorite.service";
 
 export const useFavorite = (opportunityId: string) => {
   const { data: session } = useSession();
@@ -20,8 +17,7 @@ export const useFavorite = (opportunityId: string) => {
     queryKey: ["favoriteStatus", opportunityId],
     queryFn: async () => {
       if (!opportunityId) return { isFavorite: false };
-      const res = await axiosAuth.get(`/api/v1/applications/favorite-status/${opportunityId}`);
-      return res.data.data;
+      return favoriteService.getStatus(axiosAuth, opportunityId);
     },
     enabled: !!session?.user && !!opportunityId,
   });
@@ -41,10 +37,8 @@ export const useFavorite = (opportunityId: string) => {
 
   // Mutation to toggle favorite status
   const toggleFavoriteMutation = useMutation({
-    mutationFn: async (payload: { opportunityId: string }) => {
-      const res = await axiosAuth.put(`/api/v1/applications/favorite/${payload.opportunityId}`);
-      return res.data.data as FavoriteStatus;
-    },
+    mutationFn: (payload: { opportunityId: string }) => 
+      favoriteService.toggle(axiosAuth, payload.opportunityId),
     onSuccess: (data: FavoriteStatus) => {
       // Invalidate both the opportunities list and count queries
       queryClient.invalidateQueries({ queryKey: ["favoriteOpportunities"] });

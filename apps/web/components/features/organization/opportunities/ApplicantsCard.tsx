@@ -13,6 +13,8 @@ import UserAvatar from "@/components/common/UserAvatar";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
+import { organizationService } from "@/services/organization.service";
+import { applicationService } from "@/services/application.service";
 
 export interface Applicant {
   id: string;
@@ -61,22 +63,14 @@ export function ApplicantsCard({
 
   const { data: opportunityMentors } = useQuery({
     queryKey: ['opportunityMentors', opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/organization-mentors/opportunity/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => organizationService.getOpportunityMentors(axiosAuth, opportunityId as string),
     enabled: !!opportunityId && showMarkAsMentor,
   });
 
   // Get dynamic completed opportunities count
   const { data: dynamicCompletedCount } = useQuery({
     queryKey: ['dynamicCompletedCount', applicant.id, opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get('/api/v1/applications/completed/count', {
-        params: { volunteerId: applicant.id, currentOpportunityId: opportunityId || '' }
-      });
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getCompletedCount(axiosAuth, applicant.id, opportunityId),
     enabled: !!opportunityId && !!applicant.id,
   });
 
@@ -100,12 +94,7 @@ export function ApplicantsCard({
   };
 
   const recruitMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosAuth.post('/api/v1/recruitments', {
-        applicationId: applicant.applicationId,
-      });
-      return res.data.data;
-    },
+    mutationFn: () => applicationService.recruit(axiosAuth, applicant.applicationId),
     onSuccess: () => {
       toast.success('Applicant has been recruited successfully.');
       setIsModalOpen?.(false);
@@ -118,13 +107,10 @@ export function ApplicantsCard({
   });
 
   const toggleMentorMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosAuth.patch('/api/v1/organization-mentors/toggle', {
-        volunteerId: applicant.id,
-        opportunityId: opportunityId,
-      });
-      return res.data.data;
-    },
+    mutationFn: () => organizationService.toggleMentor(axiosAuth, {
+      volunteerId: applicant.id,
+      opportunityId: opportunityId as string,
+    }),
     onSuccess: (data) => {
       if (data.action === 'added') {
         toast.success('Volunteer has been marked as mentor for this opportunity successfully.');
@@ -176,7 +162,7 @@ export function ApplicantsCard({
         )}
 
         <Link
-          href={`/view-profile/volunteer/details/${applicant.id}`}
+          href={`/volunteers/${applicant.id}`}
           className="block"
         >
           <div className="flex gap-3 sm:gap-4">

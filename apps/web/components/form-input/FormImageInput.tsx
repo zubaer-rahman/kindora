@@ -6,6 +6,7 @@ import { Control, useController, Path, UseFormSetValue } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { useAxiosAuth } from '@/hooks/useAxiosAuth';
 import toast from 'react-hot-toast';
+import { uploadService } from '@/services/upload.service';
 
 type FormImageInputProps<T extends Record<string, unknown>> = {
   name: Path<T>;
@@ -36,8 +37,8 @@ export function FormImageInput<T extends Record<string, unknown>>({
 
   const uploadMutation = useMutation({
     mutationFn: async (payload: { base64File: string; fileName: string; fileType: string; folder: string }) => {
-      const res = await axiosAuth.post('/api/v1/upload', payload);
-      return res.data.data;
+      const data = await uploadService.uploadImage(axiosAuth, payload);
+      return data;
     },
     onSuccess: (data) => {
       const link = data.link;

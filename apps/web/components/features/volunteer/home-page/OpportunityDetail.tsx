@@ -46,7 +46,7 @@ type Opportunity = {
 
 interface OpportunityDetailProps {
   opportunity: Opportunity;
-  userRole?: "volunteer" | "organisation";
+  userRole?: "volunteer" | "organisation" | "mentor";
 }
 
 export function OpportunityDetail({ opportunity }: OpportunityDetailProps) {
@@ -64,7 +64,7 @@ export function OpportunityDetail({ opportunity }: OpportunityDetailProps) {
           <OpportunityActions opportunity={opportunity} />
           <PostSidebar
             organization_profile={
-              opportunity.organization_profile as unknown as import("@/server/db/interfaces/organization-profile").IOrgnizationPofile
+              opportunity.organization_profile as unknown as import("@/types/api/organization-profile").IOrgnizationPofile
             }
             userRole="volunteer"
           />

@@ -12,6 +12,7 @@ import { useAuthCheck } from "@/hooks/useAuthCheck";
 import { UserMenu } from "@/components/navbar/UserMenu";
 import { NotificationBell } from "@/components/navbar/NotificationBell";
 import { SessionUser } from "@/types/navigation";
+import { messageService } from "@/services/message.service";
 import { cn } from "@/lib/utils";
 import { MobileMenu } from "@/components/navbar/MobileMenu";
 import {
@@ -40,10 +41,7 @@ export default function LandingNavbar() {
   // Fetch conversations to get total unread count with polling
   const { data: conversations } = useQuery({
     queryKey: ["conversations"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/messages/conversations");
-      return res.data.data;
-    },
+    queryFn: () => messageService.getConversations(axiosAuth),
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -54,10 +52,7 @@ export default function LandingNavbar() {
   // Fetch groups to get total unread count with polling
   const { data: groups } = useQuery({
     queryKey: ["groups"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/messages/groups");
-      return res.data.data;
-    },
+    queryFn: () => messageService.getGroups(axiosAuth),
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -119,7 +114,7 @@ export default function LandingNavbar() {
     return [
       { label: "Home", href: "/" },
       { label: "About", href: "/about" },
-      { label: "Gallery", href: "/kindora/gallery" },
+      { label: "Gallery", href: "/gallery" },
       { label: "FAQ", href: "/faq" },
       { label: "Opportunities", href: "/opportunities" },
       { label: "Volunteers", href: "/volunteers" },

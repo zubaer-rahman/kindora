@@ -1,8 +1,8 @@
-import { registerSchema } from "@/server/validators/auth.validator";
-import { volunteerProfileSchema, resetPasswordSchema } from "@/server/validators/user.validator";
+import { registerSchema } from "@/utils/validation/auth.validator";
+import { volunteerProfileSchema, resetPasswordSchema } from "@/utils/validation/user.validator";
 import { z } from "zod";
-import { updateVolunteerProfileSchema } from "@/server/validators/volunteer-profile.validator";
-import { updateMentorProfileSchema } from "@/server/validators/mentor-profile.validator";
+import { updateVolunteerProfileSchema } from "@/utils/validation/volunteer-profile.validator";
+import { updateMentorProfileSchema } from "@/utils/validation/mentor-profile.validator";
 import { SKILL_OPTIONS, CATEGORIES_OPTIONS, STATES_OPTIONS, ORGANIZATION_TYPES } from "./select-options";
 
 export const SignupFormSchema = registerSchema;

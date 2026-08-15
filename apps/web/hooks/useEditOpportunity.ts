@@ -3,9 +3,11 @@ import { useSession } from "next-auth/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
-import { OpportunityFormValues } from "@/app/(protected)/organisation/opportunities/create/_components/types";
+import { OpportunityFormValues } from "@/app/(protected)/[role]/opportunities/create/_components/types";
 import { formatDateForInput } from "@/utils/helpers/formatDateForInput";
 import { useCallback } from "react";
+import { opportunityService } from "@/services/opportunity.service";
+import { IOpportunity } from "@/types/api/opportunity";
 
 export const useEditOpportunity = () => {
   const params = useParams();
@@ -17,21 +19,15 @@ export const useEditOpportunity = () => {
   const role = session?.user?.role as string | undefined;
 
   // Fetch the opportunity data
-  const { data: opportunity, isLoading: isLoadingOpportunity } = useQuery({
+  const { data: opportunity, isLoading: isLoadingOpportunity } = useQuery<IOpportunity, Error>({
     queryKey: ["opportunity", opportunityId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/opportunities/${opportunityId}`);
-      return res.data.data;
-    },
+    queryFn: () => opportunityService.getById(axiosAuth, opportunityId),
     enabled: !!opportunityId,
   });
 
   // Update opportunity mutation
-  const updateOpportunity = useMutation({
-    mutationFn: async (input: { id: string } & Partial<OpportunityFormValues>) => {
-      const res = await axiosAuth.put(`/api/v1/opportunities/${input.id}`, input);
-      return res.data.data;
-    },
+  const updateOpportunity = useMutation<IOpportunity, Error, { id: string } & Partial<OpportunityFormValues>>({
+    mutationFn: (input) => opportunityService.update(axiosAuth, input.id, input),
     onSuccess: () => {
       toast.success("Opportunity updated successfully!");
       // Invalidate necessary queries

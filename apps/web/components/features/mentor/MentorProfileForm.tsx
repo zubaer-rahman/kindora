@@ -15,10 +15,9 @@ import {
 import { MultiSelectField } from "@/components/form-input/MultiSelectField";
 import { PhoneField } from "@/components/form-input/PhoneField";
 import { suburbs } from "@/utils/constants/suburb";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import BackButton from "@/components/buttons/BackButton";
 import { useSession } from "next-auth/react";
 import { formatText } from "@/utils/helpers/formatText";
@@ -31,49 +30,24 @@ import {
   InfoGrid,
   BadgeList,
   SubmitButton,
+  ProfileSkeleton,
+  ProfileLayoutContainer,
+  ProfileHeader,
+  ProfileContent,
 } from "@/components/features/shared";
 import { SkillsMultiSelect } from "@/components/form-input/SkillsMultiSelectSelect";
-import RandomAvatar from "@/components/common/RandomAvatar";
 import { ProfilePhotoInput } from "@/components/form-input/ProfilePhotoInput";
+import { useMentorProfile } from "@/hooks/useMentorProfile";
+import { skillService } from "@/services/skill.service";
 
 export function MentorProfileForm() {
   const [editMode, setEditMode] = useState<"none" | "personal">("none");
   const [isImageUploading, setIsImageUploading] = useState(false);
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
-  const { data: mentorProfile, isLoading } = useQuery({
-    queryKey: ["mentorProfile"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/mentor-profiles/me");
-      return res.data.data;
-    },
-  });
+  const { profile: mentorProfile, isLoading, updateProfileMutation } = useMentorProfile();
   const { data: session, update: updateSession } = useSession();
-
   const countryOptions = useMemo(() => countryList().getData(), []);
-
-  const mentorProfileUpdateMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      const res = await axiosAuth.patch("/api/v1/mentor-profiles/me", payload);
-      return res.data.data;
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["mentorProfile"] });
-      await updateSession();
-      toast.success("Mentor profile updated successfully!");
-      setEditMode("none");
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to update profile");
-    },
-  });
-
-  const createSkillMutation = useMutation({
-    mutationFn: async (payload: { name: string }) => {
-      const res = await axiosAuth.post("/api/v1/skills", payload);
-      return res.data.data;
-    },
-  });
 
   const form = useForm<MentorProfileUpdateData>({
     resolver: zodResolver(MentorProfileUpdateSchema),
@@ -147,7 +121,7 @@ export function MentorProfileForm() {
 
       for (const skillName of newSkills) {
         try {
-          await createSkillMutation.mutateAsync({ name: skillName });
+          await skillService.createSkill(axiosAuth, skillName);
         } catch (error) {
           console.error("Failed to create skill:", error);
         }
@@ -158,53 +132,33 @@ export function MentorProfileForm() {
         area: data.area?.replace(/_/g, " "),
       };
 
-      await mentorProfileUpdateMutation.mutateAsync(formattedData);
+      await updateProfileMutation.mutateAsync(formattedData);
+      setEditMode("none");
     } catch {}
   };
 
   const handleCancelEdit = () => setEditMode("none");
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto mb-3"></div>
-          <p className="text-gray-600 text-sm">Loading profile...</p>
-        </div>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto p-3 md:p-6">
-        <BackButton className="mb-4" />
+    <ProfileLayoutContainer>
+      <ProfileHeader
+        name={mentorProfile?.name || session?.user?.name || "User"}
+        imageUrl={mentorProfile?.image || session?.user?.image}
+        subtitle={session?.user?.organization_profile?.title}
+      />
 
-        <div className="space-y-6">
-          {/* Profile Picture Card */}
-          <ProfileCard className="mb-6">
-            <div className="flex flex-col items-center space-y-4">
-              <RandomAvatar
-                name={mentorProfile?.name || session?.user?.name || "User"}
-                imageUrl={mentorProfile?.image || session?.user?.image}
-                size={120}
-                className="h-24 w-24 lg:h-28 lg:w-28 ring-3 ring-gray-100 shadow-lg"
-              />
-              <div className="text-center">
-                <h3 className="text-lg font-bold text-gray-900 mb-1">
-                  {mentorProfile?.name || session?.user?.name || "User"}
-                </h3>
-              </div>
-            </div>
-          </ProfileCard>
-
-          {/* Personal Information Card */}
-          <InformationCard
-            title="Personal Information"
-            editMode={editMode === "personal" ? "active" : "inactive"}
-            onEditClick={() => setEditMode("personal")}
-            onCancelClick={handleCancelEdit}
-          >
+      <ProfileContent>
+            <InformationCard
+              title="Personal Information"
+              editMode={editMode === "personal" ? "active" : "inactive"}
+              onEditClick={() => setEditMode("personal")}
+              onCancelClick={handleCancelEdit}
+              noBg
+            >
             {editMode === "personal" ? (
               <Form {...form}>
                 <form
@@ -213,7 +167,7 @@ export function MentorProfileForm() {
                 >
                   <InfoGrid>
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Profile Photo
                       </label>
                       <ProfilePhotoInput
@@ -237,25 +191,25 @@ export function MentorProfileForm() {
 
                   <InfoGrid>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium text-foreground">
                         Email
                       </label>
                       <input
                         type="email"
                         value={session?.user?.email || ""}
                         disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 border border-border rounded-md bg-muted text-muted-foreground cursor-not-allowed"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium text-foreground">
                         Role
                       </label>
                       <input
                         type="text"
                         value="Mentor"
                         disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 border border-border rounded-md bg-muted text-muted-foreground cursor-not-allowed"
                       />
                     </div>
                   </InfoGrid>
@@ -540,7 +494,7 @@ export function MentorProfileForm() {
 
                   <SubmitButton
                     isPending={
-                      mentorProfileUpdateMutation.isPending || isImageUploading
+                      updateProfileMutation.isPending || isImageUploading
                     }
                   />
                 </form>
@@ -619,9 +573,7 @@ export function MentorProfileForm() {
                             <InfoField
                               label="Currently Studying"
                               value={
-                                mentorProfile.is_currently_studying === "yes"
-                                  ? "Yes"
-                                  : mentorProfile.is_currently_studying === "no"
+                                mentorProfile.is_currently_studying === "no"
                                   ? "No"
                                   : "Not specified"
                               }
@@ -752,8 +704,7 @@ export function MentorProfileForm() {
               </div>
             )}
           </InformationCard>
-        </div>
-      </div>
-    </div>
+      </ProfileContent>
+    </ProfileLayoutContainer>
   );
 }

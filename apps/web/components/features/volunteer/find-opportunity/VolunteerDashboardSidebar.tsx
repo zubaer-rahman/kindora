@@ -10,6 +10,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
 import { MapPin, User, Heart, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { profileService } from "@/services/profile.service";
+import { applicationService } from "@/services/application.service";
 
 interface VolunteerDashboardSidebarProps {
     className?: string;
@@ -20,19 +22,11 @@ export default function VolunteerDashboardSidebar({ className }: VolunteerDashbo
     const axiosAuth = useAxiosAuth();
     const { data: volunteer, isLoading: isLoadingVolunteer } = useQuery({
         queryKey: ["volunteerProfile"],
-        queryFn: async () => {
-            const res = await axiosAuth.get("/api/v1/volunteer-profiles/me");
-            return res.data.data;
-        },
+        queryFn: () => profileService.getVolunteerProfile(axiosAuth),
     });
     const { data: applicationsData, isLoading: isLoadingApplications } = useQuery({
         queryKey: ["applications", "currentUser"],
-        queryFn: async () => {
-            const res = await axiosAuth.get("/api/v1/applications/me", {
-                params: { page: 1, limit: 5 },
-            });
-            return res.data.data;
-        },
+        queryFn: () => applicationService.getMyApplications(axiosAuth, 1, 5),
     });
 
     if (isLoadingVolunteer || isLoadingApplications) {
@@ -98,7 +92,7 @@ export default function VolunteerDashboardSidebar({ className }: VolunteerDashbo
         } else if (volunteer.is_currently_studying === "no") {
             if (volunteer.non_student_type === "staff") return "Staff Member";
             if (volunteer.non_student_type === "alumni") return "Alumni";
-            if (volunteer.non_student_type === "general") return "General Public";
+            if (volunteer.non_student_type === "general_public") return "General Public";
             return "Not Currently Studying";
         }
         return volunteer.student_type === "yes" ? "Student" : "Non-Student";
@@ -108,7 +102,7 @@ export default function VolunteerDashboardSidebar({ className }: VolunteerDashbo
         <div className={cn("bg-background rounded-[24px] border border-border p-6 flex flex-col gap-6", className)}>
             {/* Volunteer Profile Section */}
             <div className="flex items-center gap-4">
-                <UserAvatar user={volunteer} size={64} className="w-16 h-16 rounded-2xl" />
+                <UserAvatar user={{ name: volunteer.name || "Volunteer", image: volunteer.profile_img }} size={64} className="w-16 h-16 rounded-2xl" />
                 <div>
                     <h3 className="text-lg font-semibold text-foreground">{volunteer.name}</h3>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">

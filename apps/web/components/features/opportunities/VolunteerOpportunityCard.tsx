@@ -2,13 +2,14 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { Opportunity } from "@/types/opportunities";
 import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
-import { useOpportunityDrawer } from "./OpportunityDrawerProvider";
+import { useUnifiedDrawer } from "@/components/providers/UnifiedDrawerProvider";
 import { useVolunteerApplication } from "@/hooks/useVolunteerApplication";
 import {
     Heart,
@@ -16,9 +17,9 @@ import {
     ChevronLeft,
     ChevronRight
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
+import { favoriteService } from "@/services/favorite.service";
 
 interface VolunteerOpportunityCardProps {
     opportunity: Opportunity;
@@ -35,7 +36,7 @@ export default function VolunteerOpportunityCard({
 }: VolunteerOpportunityCardProps) {
     const router = useRouter();
     const { data: session } = useSession();
-    const { openDrawer } = useOpportunityDrawer();
+    const { openDrawer } = useUnifiedDrawer();
     const { isApplied } = useVolunteerApplication(opportunity._id);
     const [isExpanded, setIsExpanded] = useState(false);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -46,19 +47,15 @@ export default function VolunteerOpportunityCard({
     const axiosAuth = useAxiosAuth();
     const { data: favoriteData } = useQuery({
         queryKey: ["favoriteStatus", opportunity._id],
-        queryFn: async () => {
+        queryFn: () => {
             if (!opportunity._id) return { isFavorite: false };
-            const res = await axiosAuth.get(`/api/v1/applications/favorite-status/${opportunity._id}`);
-            return res.data.data;
+            return favoriteService.getStatus(axiosAuth, opportunity._id);
         },
         enabled: !!session?.user && !!opportunity._id,
     });
 
     const toggleFavoriteMutation = useMutation({
-        mutationFn: async (payload: { opportunityId: string }) => {
-            const res = await axiosAuth.put(`/api/v1/applications/favorite/${payload.opportunityId}`);
-            return res.data.data;
-        },
+        mutationFn: (payload: { opportunityId: string }) => favoriteService.toggle(axiosAuth, payload.opportunityId),
         onSuccess: () => {
             utils.invalidateQueries({ queryKey: ["favoriteStatus", opportunity._id] });
         },
@@ -103,7 +100,7 @@ export default function VolunteerOpportunityCard({
             return;
         }
         if (session) {
-            openDrawer(opportunity._id);
+            openDrawer("opportunity", opportunity._id);
         } else {
             router.push(`/login?redirect=/opportunities/${opportunity._id}`);
         }

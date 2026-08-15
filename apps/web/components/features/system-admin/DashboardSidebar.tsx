@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import UserAvatar from "@/components/common/UserAvatar";
 import { Users, BarChart3, ShieldAlert } from "lucide-react";
+import { userService } from "@/services/user.service";
 
 export default function SystemAdminDashboardSidebar() {
   const pathname = usePathname();
@@ -14,10 +15,7 @@ export default function SystemAdminDashboardSidebar() {
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["userMe"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/users/me");
-      return res.data.data;
-    },
+    queryFn: () => userService.getMe(axiosAuth),
   });
 
   const links = [

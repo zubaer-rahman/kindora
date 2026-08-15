@@ -3,6 +3,7 @@ import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-q
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { useRef, useState, useEffect } from "react";
+import { messageService } from "@/services/message.service";
 
 export const useMessages = (selectedUserId: string | null, isGroup: boolean) => {
   const { data: session } = useSession();
@@ -17,12 +18,7 @@ export const useMessages = (selectedUserId: string | null, isGroup: boolean) => 
   // Get messages with real-time updates (no more polling)
   const { data: messages, isLoading: isLoadingMessages, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ["messages", selectedUserId],
-    queryFn: async ({ pageParam }) => {
-      const res = await axiosAuth.get(`/api/v1/messages/conversation/${selectedUserId}`, {
-        params: { limit: 20, cursor: pageParam ?? undefined },
-      });
-      return res.data.data;
-    },
+    queryFn: ({ pageParam }) => messageService.getMessages(axiosAuth, selectedUserId!, pageParam ?? undefined),
     initialPageParam: undefined as string | undefined,
     enabled: !!selectedUserId && !isGroup,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -34,12 +30,7 @@ export const useMessages = (selectedUserId: string | null, isGroup: boolean) => 
 
   const { data: groupMessages, isLoading: isLoadingGroupMessages, fetchNextPage: fetchNextGroupPage, hasNextPage: hasNextGroupPage, isFetchingNextPage: isFetchingNextGroupNextPage } = useInfiniteQuery({
     queryKey: ["groupMessages", selectedUserId],
-    queryFn: async ({ pageParam }) => {
-      const res = await axiosAuth.get(`/api/v1/messages/groups/${selectedUserId}/messages`, {
-        params: { limit: 20, cursor: pageParam ?? undefined },
-      });
-      return res.data.data;
-    },
+    queryFn: ({ pageParam }) => messageService.getGroupMessages(axiosAuth, selectedUserId!, pageParam ?? undefined),
     initialPageParam: undefined as string | undefined,
     enabled: !!selectedUserId && isGroup,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -51,10 +42,8 @@ export const useMessages = (selectedUserId: string | null, isGroup: boolean) => 
 
   // Typing status mutation
   const setTypingStatusMutation = useMutation({
-    mutationFn: async (payload: { targetId: string; isTyping: boolean; isGroup: boolean }) => {
-      const res = await axiosAuth.post("/api/v1/messages/typing", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { targetId: string; isTyping: boolean; isGroup: boolean }) => 
+      messageService.setTypingStatus(axiosAuth, payload),
   });
 
   // Refetch group messages whenever the selected group changes
@@ -175,10 +164,8 @@ export const useMessages = (selectedUserId: string | null, isGroup: boolean) => 
   };
 
   const sendMessageMutation = useMutation({
-    mutationFn: async (payload: { receiverId: string; content?: string; attachments?: any[] }) => {
-      const res = await axiosAuth.post("/api/v1/messages", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { receiverId: string; content?: string; attachments?: any[] }) => 
+      messageService.sendMessage(axiosAuth, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
       setNewMessage("");
@@ -186,13 +173,8 @@ export const useMessages = (selectedUserId: string | null, isGroup: boolean) => 
   });
 
   const sendGroupMessageMutation = useMutation({
-    mutationFn: async (payload: { groupId: string; content?: string; attachments?: any[] }) => {
-      const res = await axiosAuth.post(
-        `/api/v1/messages/groups/${payload.groupId}/messages`,
-        { content: payload.content, attachments: payload.attachments }
-      );
-      return res.data.data;
-    },
+    mutationFn: (payload: { groupId: string; content?: string; attachments?: any[] }) => 
+      messageService.sendGroupMessage(axiosAuth, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["groups"] });
       setNewMessage("");

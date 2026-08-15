@@ -11,6 +11,8 @@ import {
   ChevronRight,
   UserMinus,
 } from "lucide-react";
+import { userService } from "@/services/user.service";
+import { organizationService } from "@/services/organization.service";
 import InviteMentorDialog from "@/components/features/organization/dashboard/InviteMentorDialog";
 import {
   Card,
@@ -36,16 +38,10 @@ export default function OrganizationSettingsPage() {
   const queryClient = useQueryClient();
   const { data: profileData } = useQuery({
     queryKey: ["profileCheckup"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/users/me/profile-checkup");
-      return res.data.data;
-    },
+    queryFn: () => userService.getProfileCheckup(axiosAuth),
   });
   const updateUserMutation = useMutation({
-    mutationFn: async (payload: { image: string }) => {
-      const res = await axiosAuth.patch("/api/v1/users/me", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { image: string }) => userService.updateMe(axiosAuth, payload),
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["profileCheckup"] });
       toast.success("Profile picture updated successfully!");
@@ -65,20 +61,17 @@ export default function OrganizationSettingsPage() {
     refetch: refetchMentors,
   } = useQuery({
     queryKey: ["mentors", profileData?.organizationProfile?._id || ""],
-    queryFn: async () => {
-      const res = await axiosAuth.get(
-        `/api/v1/organization-mentors/organization/${profileData?.organizationProfile?._id}`
-      );
-      return res.data.data;
-    },
+    queryFn: () =>
+      organizationService.getOrganizationMentors(
+        axiosAuth,
+        profileData?.organizationProfile?._id
+      ),
     enabled: !!profileData?.organizationProfile?._id,
   });
 
   const demoteMentorMutation = useMutation({
-    mutationFn: async (payload: { userId: string }) => {
-      const res = await axiosAuth.post(`/api/v1/users/${payload.userId}/demote`);
-      return res.data.data;
-    },
+    mutationFn: (payload: { userId: string }) =>
+      userService.demoteMentor(axiosAuth, payload.userId),
     onSuccess: () => {
       toast.success("Mentor role removed successfully");
       refetchMentors();

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import OrganizationAvatar from "@/components/common/OrganizationAvatar";
-import { useOpportunityDrawer } from "./OpportunityDrawerProvider";
+import { useUnifiedDrawer } from "@/components/providers/UnifiedDrawerProvider";
 import { useVolunteerApplication } from "@/hooks/useVolunteerApplication";
 import SignupModal from "@/components/features/opportunities/SignupModal";
 import { Loader2 } from "lucide-react";
@@ -26,7 +26,7 @@ export default function OpportunityCard({
 }: OpportunityCardProps) {
   const router = useRouter();
   const { data: session } = useSession();
-  const { openDrawer } = useOpportunityDrawer();
+  const { openDrawer } = useUnifiedDrawer();
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const { isApplied, isLoading: isApplicationLoading, applicationStatus } =
     useVolunteerApplication(opportunity._id);
@@ -79,7 +79,7 @@ export default function OpportunityCard({
     }
     if (session) {
       // Open drawer instead of navigating
-      openDrawer(opportunity._id);
+      openDrawer("opportunity", opportunity._id);
     } else {
       setIsSignupOpen(true);
     }
@@ -93,7 +93,7 @@ export default function OpportunityCard({
     }
     if (session) {
       // Open drawer instead of navigating
-      openDrawer(opportunity._id);
+      openDrawer("opportunity", opportunity._id);
     } else {
       setIsSignupOpen(true);
     }

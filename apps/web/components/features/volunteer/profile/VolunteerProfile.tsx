@@ -11,6 +11,9 @@ import countryList from "react-select-country-list";
 import { formatText } from "@/utils/helpers/formatText";
 import QueryStateWrapper from "@/components/common/QueryStateWrapper";
 import VolunteerProfileBanner from "./VolunteerProfileBanner";
+import { profileService } from "@/services/profile.service";
+import { applicationService } from "@/services/application.service";
+import { ProfileSkeleton } from "@/components/features/shared";
 
 interface VolunteerProfileProps {
   volunteerId: string;
@@ -34,20 +37,14 @@ interface Application {
 
 export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
   const axiosAuth = useAxiosAuth();
-  const { data: volunteer, isLoading } = useQuery({
+  const { data: volunteer, isLoading, error: volunteerError } = useQuery({
     queryKey: ['volunteer', volunteerId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/volunteer-profiles/${volunteerId}`);
-      return res.data.data;
-    },
+    queryFn: () => profileService.getVolunteerProfileById(axiosAuth, volunteerId),
     enabled: !!volunteerId,
   });
-  const { data: applications, isLoading: isLoadingApplications } = useQuery({
+  const { data: applications, isLoading: isLoadingApplications, error: applicationsError } = useQuery({
     queryKey: ['volunteerApplications', volunteerId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/applications/volunteer/${volunteerId}`);
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getVolunteerApplications(axiosAuth, volunteerId),
     enabled: !!volunteerId,
   });
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
@@ -79,7 +76,7 @@ export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
           return "Staff Member";
         } else if (volunteer.non_student_type === "alumni") {
           return "Alumni";
-        } else if (volunteer.non_student_type === "general") {
+        } else if (volunteer.non_student_type === "general_public") {
           return "General Public";
         }
         return "Not Currently Studying";
@@ -122,12 +119,16 @@ export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
     return null;
   };
 
+  const is404 = (volunteerError as any)?.response?.status === 404 || (applicationsError as any)?.response?.status === 404;
+  const activeError = is404 ? null : (volunteerError || applicationsError);
+
   return (
     <QueryStateWrapper
       isLoading={isLoading || isLoadingApplications}
-      error={null}
+      error={activeError}
+      notFound={is404}
       data={volunteer}
-      loadingMessage="Wait a sec..."
+      customSkeleton={<ProfileSkeleton />}
       notFoundTitle="Volunteer not found"
       notFoundDescription="The volunteer you're looking for doesn't exist."
     >
@@ -361,7 +362,7 @@ export function VolunteerProfile({ volunteerId }: VolunteerProfileProps) {
           <MessageDialog
             isOpen={isMessageModalOpen}
             onOpenChange={setIsMessageModalOpen}
-            volunteer={volunteer}
+            volunteer={volunteer as any}
           />
         </div>
       )}

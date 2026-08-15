@@ -1,5 +1,5 @@
-import { volunteerProfileSchema, organizationProfileSchema } from "@/server/validators/user.validator";
-import { registerSchema } from "@/server/validators/auth.validator";
+import { volunteerProfileSchema, organizationProfileSchema } from "@/utils/validation/user.validator";
+import { registerSchema } from "@/utils/validation/auth.validator";
 import { z } from "zod";
 
 export const signupBaseSchema = registerSchema.pick({

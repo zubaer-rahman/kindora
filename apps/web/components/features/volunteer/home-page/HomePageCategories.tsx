@@ -17,6 +17,9 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { formatTimeToAMPM } from "@/utils/helpers/formatTime";
 import OrganizationAvatar from "@/components/common/OrganizationAvatar";
+import { opportunityService } from "@/services/opportunity.service";
+import { applicationService } from "@/services/application.service";
+import { favoriteService } from "@/services/favorite.service";
 
 export type OpportunityDetails = {
   id: string;
@@ -78,31 +81,20 @@ export default function Categories() {
   // Fetch all opportunities
   const { data: opportunitiesData } = useQuery({
     queryKey: ["allOpportunities"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/opportunities", {
-        params: { page: 1, limit: 50 },
-      });
-      return res.data.data;
-    },
+    queryFn: () => opportunityService.getAll(axiosAuth, { page: 1, limit: 50 }),
   });
 
   // Fetch all applications to calculate available spots
   const { data: applications } = useQuery({
     queryKey: ["volunteerApplications", volunteerId],
-    queryFn: async () => {
-      const res = await axiosAuth.get(`/api/v1/applications/volunteer/${volunteerId}`);
-      return res.data.data;
-    },
+    queryFn: () => applicationService.getVolunteerApplications(axiosAuth, volunteerId as string),
     enabled: !!volunteerId
   });
 
   // Fetch user's favorite opportunities
   const { data: favoriteOpportunities } = useQuery({
     queryKey: ["favoriteOpportunities"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/volunteer-profiles/favorites");
-      return res.data.data;
-    },
+    queryFn: () => favoriteService.getAllFavorites(axiosAuth),
   });
 
   // Calculate available spots for each opportunity

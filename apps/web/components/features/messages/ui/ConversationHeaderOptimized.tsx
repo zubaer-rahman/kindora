@@ -170,7 +170,7 @@ export const ConversationHeaderOptimized: React.FC<ConversationHeaderProps> = ({
                 <>
                   <DropdownMenuItem asChild>
                     <Link
-                      href={`/view-profile/volunteer/details/${user._id}`}
+                      href={`/volunteers/${user._id}`}
                       className="flex items-center cursor-pointer"
                     >
                       <User className="mr-2 h-4 w-4" />

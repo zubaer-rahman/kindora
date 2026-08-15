@@ -6,13 +6,8 @@ import toast from "react-hot-toast";
 
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
-import {
-  registerUser,
-  SIGNUP_SUCCESS_UNVERIFIED,
-  EMAIL_ALREADY_REGISTERED,
-  getApiError,
-} from "@/lib/auth-api";
 import type { VolunteerSignupForm } from "@/types/auth";
+import { authService, SIGNUP_SUCCESS_UNVERIFIED, EMAIL_ALREADY_REGISTERED } from "@/services/auth.service";
 
 export type ProfileRedirectTarget = "profile" | "dashboard";
 
@@ -31,7 +26,7 @@ export const DEFAULT_VOLUNTEER_PROFILE = {
   postcode: "",
   is_currently_studying: "yes" as const,
   referral_source: "Other",
-  student_type: "no",
+  student_type: "no" as const,
   course: "",
   home_country: "",
   major: "",
@@ -51,19 +46,11 @@ export function useVolunteerSignup() {
   const redirectTargetRef = useRef<ProfileRedirectTarget>("dashboard");
 
   const patchUserProfile = useMutation({
-    mutationFn: async (volunteerProfileId: string) => {
-      const res = await axiosAuth.patch("/api/v1/users/me", {
-        volunteer_profile: volunteerProfileId,
-      });
-      return res.data;
-    },
+    mutationFn: (volunteerProfileId: string) => authService.patchUserProfile(axiosAuth, { volunteer_profile: volunteerProfileId }),
   });
 
   const createVolunteerProfile = useMutation({
-    mutationFn: async (payload: typeof DEFAULT_VOLUNTEER_PROFILE) => {
-      const res = await axiosAuth.post("/api/v1/users/me/volunteer-profile", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: typeof DEFAULT_VOLUNTEER_PROFILE) => authService.createVolunteerProfile(axiosAuth, payload),
     onSuccess: async (data) => {
       try {
         await patchUserProfile.mutateAsync(data._id);
@@ -122,7 +109,7 @@ export function useVolunteerSignup() {
       setIsLoading(true);
       const referral = searchParams?.get("referral") ?? undefined;
 
-      const response = await registerUser({
+      const response = await authService.registerUser({
         name: data.name,
         email: data.email,
         password: data.password,
@@ -138,7 +125,7 @@ export function useVolunteerSignup() {
 
       await createVolunteerProfile.mutateAsync(DEFAULT_VOLUNTEER_PROFILE);
     } catch (err) {
-      const apiError = getApiError(err);
+      const apiError = authService.getApiError(err);
       if (apiError.code === EMAIL_ALREADY_REGISTERED) {
         options.setEmailTakenError();
         return;

@@ -130,6 +130,7 @@ export default function PublicVolunteersPage() {
                 <SignupModal
                     isOpen={isSignupModalOpen}
                     onClose={() => setIsSignupModalOpen(false)}
+                    context="view-volunteer-profile"
                 />
             </div>
         </PublicLayout>

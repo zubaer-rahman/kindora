@@ -5,11 +5,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
+import { messageService } from "@/services/message.service";
 
 interface Volunteer {
   _id: string;
@@ -43,10 +45,7 @@ export default function MessageDialog({
   const axiosAuth = useAxiosAuth();
 
   const sendMessageMutation = useMutation({
-    mutationFn: async (payload: { receiverId: string; content: string }) => {
-      const res = await axiosAuth.post("/api/v1/messages", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { receiverId: string; content: string }) => messageService.sendMessage(axiosAuth, payload),
     onSuccess: () => {
       toast.success("Message sent successfully!");
       onOpenChange(false);

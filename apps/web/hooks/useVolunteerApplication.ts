@@ -3,6 +3,7 @@ import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { useState, useEffect, useMemo } from "react";
 
 import { useSession } from "next-auth/react";
+import { applicationService } from "@/services/application.service";
 
 export const useVolunteerApplication = (opportunityId: string) => {
   const { data: session } = useSession();
@@ -19,8 +20,7 @@ export const useVolunteerApplication = (opportunityId: string) => {
     queryKey: ["applicationStatus", opportunityId],
     queryFn: async () => {
       if (!opportunityId) return { status: null };
-      const res = await axiosAuth.get(`/api/v1/applications/status/${opportunityId}`);
-      return res.data.data;
+      return applicationService.getStatus(axiosAuth, opportunityId);
     },
     enabled: !!session?.user && !!opportunityId,
   });
@@ -55,10 +55,8 @@ export const useVolunteerApplication = (opportunityId: string) => {
 
   // Mutation to apply for opportunity
   const applyMutation = useMutation({
-    mutationFn: async (payload: { opportunityId: string }) => {
-      const res = await axiosAuth.post("/api/v1/applications/apply", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { opportunityId: string }) => 
+      applicationService.apply(axiosAuth, payload.opportunityId),
     onSuccess: () => {
       setIsApplied(true);
       // Invalidate all application-related queries to update dashboard tabs

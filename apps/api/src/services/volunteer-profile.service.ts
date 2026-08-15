@@ -29,12 +29,12 @@ export async function getVolunteerById(volunteerId: string) {
   }
 
   return {
+    ...user.volunteer_profile._doc,
     _id: user._id,
     name: user.name,
     email: user.email,
     image: user.image,
     role: user.role,
-    ...user.volunteer_profile._doc,
   };
 }
 

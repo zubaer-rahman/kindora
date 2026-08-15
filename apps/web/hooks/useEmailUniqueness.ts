@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { checkEmailUniqueness } from "@/lib/auth-api";
+import { authService } from "@/services/auth.service";
 
 export function useEmailUniqueness(email: string | undefined) {
   const [isTaken, setIsTaken] = useState(false);
@@ -20,7 +20,7 @@ export function useEmailUniqueness(email: string | undefined) {
 
     const timeoutId = setTimeout(async () => {
       try {
-        const taken = await checkEmailUniqueness(value, controller.signal);
+        const taken = await authService.checkEmailUniqueness(value, controller.signal);
         if (!controller.signal.aborted) setIsTaken(taken);
       } catch {
         if (!controller.signal.aborted) setIsTaken(false);

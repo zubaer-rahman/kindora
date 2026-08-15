@@ -46,9 +46,12 @@ export default function SystemAdminShell({
 
   if (status === "loading") {
     return (
-      <Loading size="medium">
-        <p className="text-gray-600 mt-2">Checking access…</p>
-      </Loading>
+      <Fragment>
+        <ProtectedNavbar />
+        <Loading size="medium">
+          <p className="text-gray-600 mt-2">Checking access…</p>
+        </Loading>
+      </Fragment>
     );
   }
 

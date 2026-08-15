@@ -1,22 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import { AvailableUser } from "@/types/message";
+import { userService } from "@/services/user.service";
 
 export const useAvailableUsers = (enabled: boolean) => {
   const axiosAuth = useAxiosAuth();
 
   const { data, isLoading } = useQuery<{ users: AvailableUser[] }>({
     queryKey: ["availableUsers"],
-    queryFn: async () => {
-      const res = await axiosAuth.get("/api/v1/users/available", {
-        params: {
-          page: 1,
-          limit: 200,
-          includeMentors: true,
-        },
-      });
-      return res.data.data;
-    },
+    queryFn: () => userService.getAvailableUsers(axiosAuth, { page: 1, limit: 200, isMentorOnly: true }),
     enabled,
   });
 

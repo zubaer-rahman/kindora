@@ -2,9 +2,6 @@ import NextAuth from "next-auth";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./options";
 
-// Register models
-import "@/server/db/models";
-
 const handler = NextAuth(authOptions);
 
 export default handler;

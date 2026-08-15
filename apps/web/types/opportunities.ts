@@ -1,5 +1,5 @@
-import { createOpportunitySchema } from "@/server/validators/opportunity.validator";
-import { organizationProfileSchema } from "@/server/validators/user.validator";
+import { createOpportunitySchema } from "@/utils/validation/opportunity.validator";
+import { organizationProfileSchema } from "@/utils/validation/user.validator";
 import { z } from "zod";
 
 export type CreateOpportunityInput = z.infer<typeof createOpportunitySchema>;

@@ -3,19 +3,19 @@
 import { MapPin, Globe, Eye, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import OrganizationAvatar from "@/components/common/OrganizationAvatar";
-import { IOrgnizationPofile } from "@/server/db/interfaces/organization-profile";
-import { Types } from "mongoose";
+import { IOrgnizationPofile } from "@/types/api/organization-profile";
 import { formatText } from "@/utils/helpers/formatText";
 
 interface PostSidebarProps {
   organization_profile: IOrgnizationPofile;
   userRole?: "volunteer" | "organization";
   className?: string;
+  onViewProfileClick?: () => void;
 }
 
 // Type for organization profile that can handle both populated and unpopulated cases
 type OrganizationProfileData = IOrgnizationPofile & {
-  _id: string | Types.ObjectId;
+  _id: string;
   title?: string;
   name?: string;
 };
@@ -24,6 +24,7 @@ export function PostSidebar({
   organization_profile,
   userRole = "volunteer",
   className,
+  onViewProfileClick,
 }: PostSidebarProps) {
   // Handle both populated and unpopulated organization_profile
   const orgProfile = organization_profile as unknown as OrganizationProfileData;
@@ -56,13 +57,23 @@ export function PostSidebar({
 
         {/* Quick Actions */}
         {userRole === "volunteer" && orgProfile?._id && (
-          <Link
-            href={`/view-profile/organisation/details/${orgProfile._id.toString()}`}
-            className="text-sm text-primary hover:text-primary/80 hover:underline flex items-center gap-1.5"
-          >
-            <Eye className="w-3.5 h-3.5" />
-            View Profile
-          </Link>
+          onViewProfileClick ? (
+            <button
+              onClick={onViewProfileClick}
+              className="text-sm text-primary hover:text-primary/80 hover:underline flex items-center gap-1.5"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              View Profile
+            </button>
+          ) : (
+            <Link
+              href={`/organisations/${orgProfile._id.toString()}`}
+              className="text-sm text-primary hover:text-primary/80 hover:underline flex items-center gap-1.5"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              View Profile
+            </Link>
+          )
         )}
       </div>
 
@@ -139,7 +150,7 @@ export function PostSidebar({
             }
           </p>
           {orgProfile.bio.length > 120 && userRole === "volunteer" && orgProfile?._id && (
-            <Link href={`/view-profile/organisation/details/${orgProfile._id.toString()}`}>
+            <Link href={`/organisations/${orgProfile._id.toString()}`}>
               <span className="text-sm text-primary hover:text-primary/80 hover:underline cursor-pointer">
                 Read more
               </span>

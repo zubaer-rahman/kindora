@@ -10,6 +10,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
+import { messageService } from "@/services/message.service";
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -32,10 +33,8 @@ export function CreateGroupModal({
   const queryClient = useQueryClient();
 
   const createGroupMutation = useMutation({
-    mutationFn: async (payload: { name: string; memberIds: string[]; description?: string; isOrganizationGroup: boolean; opportunityId?: string }) => {
-      const res = await axiosAuth.post("/api/v1/messages/groups", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { name: string; memberIds: string[]; description?: string; isOrganizationGroup: boolean; opportunityId?: string }) => 
+      messageService.createGroup(axiosAuth, { name: payload.name, members: payload.memberIds, opportunityId: payload.opportunityId }),
     onSuccess: (data) => {
       toast.success("Group created successfully!");
       onGroupCreated(data._id);

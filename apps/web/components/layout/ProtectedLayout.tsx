@@ -42,9 +42,12 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
 
   if (isLoading || !isAuthenticated) {
     return (
-      <Loading size="medium">
-        <p className="text-muted-foreground mt-2">Wait a sec...</p>
-      </Loading>
+      <Fragment>
+        <ProtectedNavbar />
+        <Loading size="medium">
+          <p className="text-muted-foreground mt-2">Wait a sec...</p>
+        </Loading>
+      </Fragment>
     );
   }
 

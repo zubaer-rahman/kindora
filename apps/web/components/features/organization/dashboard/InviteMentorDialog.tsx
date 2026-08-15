@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import { UserPlus, Loader2 } from "lucide-react";
+import { organizationService } from "@/services/organization.service";
 
 interface InviteMentorDialogProps {
   organizationId: string;
@@ -21,8 +22,7 @@ export default function InviteMentorDialog({ organizationId }: InviteMentorDialo
 
   const inviteMentor = useMutation({
     mutationFn: async (payload: { email: string; name: string; organizationId: string }) => {
-      const res = await axiosAuth.post("/api/v1/organization-mentors/invite", payload);
-      return res.data.data;
+      return organizationService.inviteMentor(axiosAuth, payload);
     },
     onSuccess: () => {
       toast.success("Mentor invitation sent successfully!");

@@ -10,6 +10,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { Opportunity } from "@/types/opportunities";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { OpportunityCard } from "@/components/common";
 
@@ -27,6 +28,7 @@ export default function LatestOpportunitiesSection({
   showSeeAllButton = true,
 }: LatestOpportunitiesSectionProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
 
   // Fetch opportunities using public endpoint
   const { data: opportunitiesData, isLoading, error } = useQuery({
@@ -151,7 +153,11 @@ export default function LatestOpportunitiesSection({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px] mb-12">
             {opportunities.map((opportunity) => (
-              <OpportunityCard key={opportunity._id} opportunity={opportunity} />
+              <OpportunityCard 
+                key={opportunity._id} 
+                opportunity={opportunity} 
+                onCardClick={() => router.push(`/opportunities/${opportunity._id}/details`)}
+              />
             ))}
           </div>
         )}

@@ -7,8 +7,6 @@ export function useAuthCheck() {
   const { data: session, status, update: updateSession } = useSession();
   const axiosAuth = useAxiosAuth();
 
-  // If there's a session but no api_token, the cookie is stale (pre-migration).
-  // Skip the profile query entirely — we'll handle sign-out below.
   const hasApiToken = !!(session?.user as any)?.api_token;
 
   const { data: profileCheck, isLoading: isProfileLoading, error: profileError } = useQuery({

@@ -7,6 +7,7 @@ import UserAvatar from "@/components/common/UserAvatar";
 import { formatText } from "@/utils/helpers/formatText";
 import { MapPin } from "lucide-react";
 import { toTitleCase } from '@/utils/helpers/toTitleCase';
+import { useUnifiedDrawer } from "@/components/providers/UnifiedDrawerProvider";
 
 interface Volunteer {
   _id: string;
@@ -42,6 +43,7 @@ export default function VolunteerCard({
   isPublic = false,
 }: VolunteerCardProps) {
   const router = useRouter();
+  const { openDrawer } = useUnifiedDrawer();
 
   return (
     <Card
@@ -51,9 +53,7 @@ export default function VolunteerCard({
         if (onCardClick) {
           onCardClick(volunteer);
         } else {
-          const targetUrl = `/find-volunteer/volunteer/details/${volunteer._id || (volunteer as any).id}`;
-
-          router.push(targetUrl);
+          openDrawer("volunteer", volunteer._id || (volunteer as any).id);
         }
       }}
     >
@@ -122,14 +122,16 @@ export default function VolunteerCard({
             <Button
               variant="default"
               className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-1 text-sm h-9 cursor-pointer"
-              asChild
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onCardClick) {
+                  onCardClick(volunteer);
+                } else {
+                  openDrawer("volunteer", volunteer._id || (volunteer as any).id);
+                }
+              }}
             >
-              <Link 
-                href={`/find-volunteer/volunteer/details/${volunteer._id || (volunteer as any).id}`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                View Profile
-              </Link>
+              View Profile
             </Button>
           ) : (
             <>
@@ -139,7 +141,7 @@ export default function VolunteerCard({
                 asChild
               >
                 <Link 
-                  href={`/find-volunteer/volunteer/details/${volunteer._id || (volunteer as any).id}`}
+                  href={`/volunteers/${volunteer._id || (volunteer as any).id}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   View Profile

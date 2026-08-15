@@ -1,13 +1,12 @@
-import SearchVolunteer from "@/components/features/organization/search-volunteer/SearchVolunteer";
+"use client";
+
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
-import React from "react";
+import SearchVolunteer from "@/components/features/organization/search-volunteer/SearchVolunteer";
 
-const FindVolunteerPage = () => {
-  return (
-    <ProtectedLayout>
-      <SearchVolunteer />
-    </ProtectedLayout>
-  );
-};
-
-export default FindVolunteerPage;
+export default function FindVolunteerPage() {
+    return (
+        <ProtectedLayout>
+            <SearchVolunteer />
+        </ProtectedLayout>
+    );
+}

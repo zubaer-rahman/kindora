@@ -14,6 +14,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAxiosAuth } from "@/hooks/useAxiosAuth";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
+import { feedbackService } from "@/services/feedback.service";
 
 interface FeedbackModalProps {
   isOpen: boolean;
@@ -26,10 +27,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
   const axiosAuth = useAxiosAuth();
 
   const createFeedbackMutation = useMutation({
-    mutationFn: async (payload: { message: string }) => {
-      const res = await axiosAuth.post("/api/v1/feedback", payload);
-      return res.data.data;
-    },
+    mutationFn: (payload: { message: string }) => feedbackService.createFeedback(axiosAuth, payload),
     onSuccess: () => {
       toast.success("Thank you for your feedback!");
       setMessage("");
